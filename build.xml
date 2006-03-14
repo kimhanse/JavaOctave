@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="usage">
+
+  <target name="usage">
+    <echo>
+Known targets:
+
+    clean
+    build
+    test
+    jar
+    </echo>
+  </target>
+
+  <!-- Clean build directories -->
+  <target name="clean" description="Clean output dirs">
+    <delete dir="build" />
+    <delete file="javaoctave.jar" />
+  </target>
+
+  <!-- Build -->
+  <target name="build">
+    <mkdir dir="build" />
+    <mkdir dir="build/classes" />
+    <javac destdir="build/classes">
+      <src path="src" />
+    </javac>
+  </target>
+
+  <!-- JAR -->
+  <target name="jar" depends="build">
+    <jar destfile="javaoctave.jar" basedir="build/classes" />
+  </target>
+
+  <!-- Test -->
+  <target name="test" depends="jar">
+    <mkdir dir="build/test" />
+    <javac destdir="build/test">
+      <classpath location="javaoctave.jar" />
+      <src path="test" />
+    </javac>
+    <junit fork="yes" haltonfailure="yes" printsummary="yes">
+      <classpath location="build/test" />
+      <classpath location="javaoctave.jar" />
+      <batchtest>
+        <fileset dir="build/test">
+          <include name="**/*Test*.class" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+</project>
