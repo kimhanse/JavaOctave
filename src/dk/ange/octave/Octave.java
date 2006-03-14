@@ -180,18 +180,22 @@ public class Octave {
         // - NONE -> BOTH_RUNNING
         // - BOTH_RUNNING -> WRITER_OK
         // - WRITER_OK -> NONE
+        // - BOTH_RUNNING -> BROKEN
         // - WRITER_OK -> BROKEN
         // - BROKEN -> CLOSED
-        // - BOTH_RUNNING -> BROKEN ??
         if (!(this.executeState == ExecuteState.NONE
                 && executeState == ExecuteState.BOTH_RUNNING
                 || this.executeState == ExecuteState.BOTH_RUNNING
                 && executeState == ExecuteState.WRITER_OK
                 || this.executeState == ExecuteState.WRITER_OK
                 && executeState == ExecuteState.NONE
+                || this.executeState == ExecuteState.BOTH_RUNNING
+                && executeState == ExecuteState.BROKEN 
                 || this.executeState == ExecuteState.WRITER_OK
-                && executeState == ExecuteState.BROKEN || this.executeState == ExecuteState.BROKEN
-                && executeState == ExecuteState.CLOSED)) {
+                && executeState == ExecuteState.BROKEN 
+                || this.executeState == ExecuteState.BROKEN
+                && executeState == ExecuteState.CLOSED
+                )) {
             throw new OctaveException("setExecuteState Error: "
                     + this.executeState + " -> " + executeState);
         }
