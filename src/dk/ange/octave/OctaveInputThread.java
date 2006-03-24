@@ -41,8 +41,10 @@ class OctaveInputThread extends Thread {
             octaveWriter.flush();
             octave.setExecuteState(Octave.ExecuteState.WRITER_OK);
         } catch (IOException e1) {
+            // TODO
             e1.printStackTrace();
         } catch (OctaveException e2) {
+            // TODO
             e2.printStackTrace();
         }
     }

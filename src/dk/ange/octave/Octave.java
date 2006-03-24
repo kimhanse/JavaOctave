@@ -31,7 +31,7 @@ public class Octave {
     private Writer stdout;
 
     enum ExecuteState {
-        NONE, BOTH_RUNNING, WRITER_OK, BROKEN, CLOSED
+        NONE, BOTH_RUNNING, WRITER_OK, CLOSING, CLOSED
     }
 
     private ExecuteState executeState = ExecuteState.NONE;
@@ -146,27 +146,24 @@ public class Octave {
     }
 
     public void close() throws OctaveException {
-        BufferedReader resultReader = new BufferedReader(
-                execute(new StringReader("exit")));
-        // Pipe to octave should break as octave exits
+        setExecuteState(ExecuteState.CLOSING);
+        writer.write("exit\n");
+        writer.close();
         try {
-            char[] cbuf = new char[BUFFERSIZE];
-            int len = resultReader.read();
-            if (len != -1) {
-                String buffer = new String(cbuf, 0, len);
-                throw new OctaveException(
-                        "Unexpected output when exiting octave: " + buffer);
+            String read = reader.readLine();
+            if (read != null) {
+                throw new OctaveException("Expected reader to be closed: "
+                        + read);
             }
-            throw new OctaveException("Missing IOException when exiting octave");
+            reader.close();
         } catch (IOException e) {
-            if (!e.getMessage().equals("Pipe to octave-process broken"))
-                throw new OctaveException(e);
+            throw new OctaveException("reader error", e);
         }
         setExecuteState(ExecuteState.CLOSED);
         try {
             stdout.close();
         } catch (IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveException("stdout error", e);
         }
     }
 
@@ -180,22 +177,18 @@ public class Octave {
         // - NONE -> BOTH_RUNNING
         // - BOTH_RUNNING -> WRITER_OK
         // - WRITER_OK -> NONE
-        // - BOTH_RUNNING -> BROKEN
-        // - WRITER_OK -> BROKEN
-        // - BROKEN -> CLOSED
+        // - NONE -> CLOSING
+        // - CLOSING -> CLOSED
         if (!(this.executeState == ExecuteState.NONE
                 && executeState == ExecuteState.BOTH_RUNNING
                 || this.executeState == ExecuteState.BOTH_RUNNING
                 && executeState == ExecuteState.WRITER_OK
                 || this.executeState == ExecuteState.WRITER_OK
                 && executeState == ExecuteState.NONE
-                || this.executeState == ExecuteState.BOTH_RUNNING
-                && executeState == ExecuteState.BROKEN 
-                || this.executeState == ExecuteState.WRITER_OK
-                && executeState == ExecuteState.BROKEN 
-                || this.executeState == ExecuteState.BROKEN
-                && executeState == ExecuteState.CLOSED
-                )) {
+                || this.executeState == ExecuteState.NONE
+                && executeState == ExecuteState.CLOSING 
+                || this.executeState == ExecuteState.CLOSING
+                && executeState == ExecuteState.CLOSED)) {
             throw new OctaveException("setExecuteState Error: "
                     + this.executeState + " -> " + executeState);
         }

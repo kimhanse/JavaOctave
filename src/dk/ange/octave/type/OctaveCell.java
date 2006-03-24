@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Vector;
 
-import dk.ange.octave.OctaveException;
-
 public class OctaveCell extends OctaveType {
 
     private Vector<Vector<OctaveType>> data;
@@ -68,30 +66,26 @@ public class OctaveCell extends OctaveType {
     }
 
     @Override
-    public void toOctave(Writer writer, String name) throws OctaveException {
-        try {
-            // FIXME This will break with nested cells
-            String tmp_var_name = "octave_java_tmp_cell";
-            boolean tmp_var_used = false;
-            writer.write(name + "=cell(" + rows + ',' + columns + ");\n");
-            for (int r = 1; r <= rows; ++r) {
-                Vector<OctaveType> row = data.get(r - 1);
-                for (int c = 1; c <= row.size(); c++) {
-                    OctaveType d = row.get(c - 1);
-                    if (d == null)
-                        continue;
-                    writer.write("clear " + tmp_var_name + ";\n");
-                    d.toOctave(writer, tmp_var_name);
-                    tmp_var_used = true;
-                    writer.write(name + '{' + r + ',' + c + "}=" + tmp_var_name
-                            + ";\n");
-                }
-            }
-            if (tmp_var_used) {
+    public void toOctave(Writer writer, String name) throws IOException {
+        // FIXME This will break with nested cells
+        String tmp_var_name = "octave_java_tmp_cell";
+        boolean tmp_var_used = false;
+        writer.write(name + "=cell(" + rows + ',' + columns + ");\n");
+        for (int r = 1; r <= rows; ++r) {
+            Vector<OctaveType> row = data.get(r - 1);
+            for (int c = 1; c <= row.size(); c++) {
+                OctaveType d = row.get(c - 1);
+                if (d == null)
+                    continue;
                 writer.write("clear " + tmp_var_name + ";\n");
+                d.toOctave(writer, tmp_var_name);
+                tmp_var_used = true;
+                writer.write(name + '{' + r + ',' + c + "}=" + tmp_var_name
+                        + ";\n");
             }
-        } catch (IOException e) {
-            throw new OctaveException(e);
+        }
+        if (tmp_var_used) {
+            writer.write("clear " + tmp_var_name + ";\n");
         }
     }
 

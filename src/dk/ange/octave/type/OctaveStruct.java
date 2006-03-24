@@ -5,8 +5,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import dk.ange.octave.OctaveException;
-
 public class OctaveStruct extends OctaveType {
 
     private Map<String, OctaveType> data;
@@ -16,25 +14,20 @@ public class OctaveStruct extends OctaveType {
     }
 
     @Override
-    public void toOctave(Writer writer, String name) throws OctaveException {
-        try {
-            // FIXME This will break with nested structs
-            String tmp_var_name = "octave_java_tmp_struct";
-            boolean tmp_var_used = false;
-            writer.write(name + "=struct();\n");
-            for (Map.Entry<String, OctaveType> e : data.entrySet()) {
-                writer.write("clear " + tmp_var_name + ";\n");
-                e.getValue().toOctave(writer, tmp_var_name);
-                tmp_var_used = true;
-                writer.write(name + '.' + e.getKey() + "=" + tmp_var_name
-                        + ";\n");
+    public void toOctave(Writer writer, String name) throws IOException {
+        // FIXME This will break with nested structs
+        String tmp_var_name = "octave_java_tmp_struct";
+        boolean tmp_var_used = false;
+        writer.write(name + "=struct();\n");
+        for (Map.Entry<String, OctaveType> e : data.entrySet()) {
+            writer.write("clear " + tmp_var_name + ";\n");
+            e.getValue().toOctave(writer, tmp_var_name);
+            tmp_var_used = true;
+            writer.write(name + '.' + e.getKey() + "=" + tmp_var_name + ";\n");
 
-            }
-            if (tmp_var_used) {
-                writer.write("clear " + tmp_var_name + ";\n");
-            }
-        } catch (IOException e) {
-            throw new OctaveException(e);
+        }
+        if (tmp_var_used) {
+            writer.write("clear " + tmp_var_name + ";\n");
         }
     }
 

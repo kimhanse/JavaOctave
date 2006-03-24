@@ -105,20 +105,16 @@ public class OctaveMatrix extends OctaveType {
     }
 
     @Override
-    public void toOctave(Writer writer, String name) throws OctaveException {
-        try {
-            writer.write(name + "=[\n");
-            for (int r = 0; r < rows; r++) {
-                for (int c = 0; c < columns; c++) {
-                    writer.write(Double.toString(data[r * columns + c]));
-                    writer.write(' ');
-                }
-                writer.write('\n');
+    public void toOctave(Writer writer, String name) throws IOException {
+        writer.write(name + "=[\n");
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < columns; c++) {
+                writer.write(Double.toString(data[r * columns + c]));
+                writer.write(' ');
             }
-            writer.write("];\n");
-        } catch (IOException e) {
-            throw new OctaveException(e);
+            writer.write('\n');
         }
+        writer.write("];\n");
     }
 
     public int getRowDimension() {

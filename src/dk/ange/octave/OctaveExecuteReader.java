@@ -33,11 +33,6 @@ class OctaveExecuteReader extends Reader {
         if (buffer == null) {
             String line = octaveReader.readLine();
             if (line == null) {
-                try {
-                    octave.setExecuteState(Octave.ExecuteState.BROKEN);
-                } catch (OctaveException e) {
-                    throw new IOException(e.toString());
-                }
                 throw new IOException("Pipe to octave-process broken");
             }
             if (spacer.equals(line)) {

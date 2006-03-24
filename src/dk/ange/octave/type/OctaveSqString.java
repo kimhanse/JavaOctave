@@ -30,12 +30,8 @@ public class OctaveSqString extends OctaveType {
     }
 
     @Override
-    public void toOctave(Writer writer, String name) throws OctaveException {
-        try {
-            writer.write(name + "='" + value + "';\n");
-        } catch (IOException e) {
-            throw new OctaveException(e);
-        }
+    public void toOctave(Writer writer, String name) throws IOException {
+        writer.write(name + "='" + value + "';\n");
     }
 
     @Override

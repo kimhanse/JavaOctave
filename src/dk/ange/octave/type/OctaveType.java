@@ -27,7 +27,7 @@ public abstract class OctaveType {
      * @throws OctaveException
      */
     abstract public void toOctave(Writer writer, String name)
-            throws OctaveException;
+            throws IOException;
 
     public Reader octaveReader(String name) throws OctaveException {
         PipedReader pipedReader = new PipedReader();
@@ -62,11 +62,6 @@ public abstract class OctaveType {
         public void run() {
             try {
                 octaveType.toOctave(pipedWriter, name);
-            } catch (OctaveException e) {
-                // Auto-generated catch block
-                e.printStackTrace();
-            }
-            try {
                 pipedWriter.close();
             } catch (IOException e1) {
                 // Auto-generated catch block
@@ -82,19 +77,20 @@ public abstract class OctaveType {
      * @return Text to enter into octave to define the variable
      * @throws OctaveException
      */
-    public String toOctave(String name) throws OctaveException {
+    public String toOctave(String name) {
         StringWriter writer = new StringWriter();
-        toOctave(writer, name);
+        try {
+            toOctave(writer, name);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return writer.toString();
     }
 
     @Override
     public String toString() {
-        try {
-            return toOctave("ans");
-        } catch (OctaveException e) {
-            return e.toString();
-        }
+        return toOctave("ans");
     }
 
     /**
