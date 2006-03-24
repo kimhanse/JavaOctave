@@ -2,6 +2,7 @@ package dk.ange.octave;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -36,11 +37,11 @@ public class Octave {
 
     private ExecuteState executeState = ExecuteState.NONE;
 
-    public Octave(Writer stdin, Writer stdout, Writer stderr)
+    public Octave(Writer stdin, Writer stdout, Writer stderr, File dir)
             throws OctaveException {
         this.stdout = stdout;
         try {
-            process = Runtime.getRuntime().exec(cmdarray);
+            process = Runtime.getRuntime().exec(cmdarray, null, dir);
         } catch (IOException e) {
             throw new OctaveException(e);
         }
@@ -55,6 +56,11 @@ public class Octave {
                 .getInputStream()));
         new Pipe(new BufferedReader(new InputStreamReader(process
                 .getErrorStream())), stderr).start();
+    }
+
+    public Octave(Writer stdin, Writer stdout, Writer stderr)
+            throws OctaveException {
+        this(stdin, stdout, stderr, null);
     }
 
     public Octave(Writer stdout, Writer stderr) throws OctaveException {
@@ -186,8 +192,7 @@ public class Octave {
                 || this.executeState == ExecuteState.WRITER_OK
                 && executeState == ExecuteState.NONE
                 || this.executeState == ExecuteState.NONE
-                && executeState == ExecuteState.CLOSING 
-                || this.executeState == ExecuteState.CLOSING
+                && executeState == ExecuteState.CLOSING || this.executeState == ExecuteState.CLOSING
                 && executeState == ExecuteState.CLOSED)) {
             throw new OctaveException("setExecuteState Error: "
                     + this.executeState + " -> " + executeState);
