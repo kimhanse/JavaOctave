@@ -2,13 +2,15 @@ package dk.ange.octave.type;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 3d matrix class created as a list of 2d matrices
  */
 public class Octave3dMatrix extends OctaveType {
 
-    private double[] data;
+    private List<OctaveMatrix> data;
 
     private int rows;
 
@@ -18,7 +20,10 @@ public class Octave3dMatrix extends OctaveType {
 
     public Octave3dMatrix(int rows, int columns, int depth) {
         init(rows, columns, depth);
-        data = new double[rows * columns * depth];
+        data = new ArrayList<OctaveMatrix>(depth);
+        for (int i = 1; i <= depth; ++i) {
+            data.add(new OctaveMatrix(rows, columns));
+        }
     }
 
     private void init(int rows, int columns, int depth)
@@ -37,30 +42,19 @@ public class Octave3dMatrix extends OctaveType {
         this.depth = depth;
     }
 
-    public Octave3dMatrix(double[] data, int rows, int columns, int depth) {
-        init(rows, columns, depth);
-        if (rows * columns * depth != data.length)
-            throw new IllegalArgumentException(
-                    "length of data doesn't fit with size");
-        this.data = data;
-    }
-
-    public void set(double value, int... pos) {
-        // TODO check args
-        data[pos[1] + rows] = value;
+    public void set(double value, int row, int column, int depth) {
+        if (column > columns)
+            throw new IllegalArgumentException("column > columns");
+        if (row > rows)
+            throw new IllegalArgumentException("row > rows");
+        data.get(depth - 1).set(row, column, value);
     }
 
     @Override
     public void toOctave(Writer writer, String name) throws IOException {
-        writer.write(name + "=[\n");
-        // for (int r = 0; r < rows; r++) {
-        // for (int c = 0; c < columns; c++) {
-        // writer.write(Double.toString(data[r * columns + c]));
-        // writer.write(' ');
-        // }
-        // writer.write('\n');
-        // }
-        writer.write("];\n");
+        for (int i = 1; i <= depth; ++i) {
+            data.get(i - 1).toOctave(writer, name + "(:,:," + i + ")");
+        }
     }
 
 }
