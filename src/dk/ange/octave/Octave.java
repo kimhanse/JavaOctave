@@ -84,7 +84,7 @@ public class Octave {
                 + ".* -=\\+X\\+=-");
     }
 
-    public Reader execute(Reader inputReader) throws OctaveException {
+    public Reader executeReader(Reader inputReader) throws OctaveException {
         assert check();
         String spacer = generateSpacer();
         assert isSpacer(spacer);
@@ -100,7 +100,7 @@ public class Octave {
     public void execute(Reader inputReader, boolean echo)
             throws OctaveException {
         assert check();
-        Reader resultReader = execute(inputReader);
+        Reader resultReader = executeReader(inputReader);
         try {
             char[] cbuf = new char[BUFFERSIZE];
             while (true) {
@@ -119,21 +119,21 @@ public class Octave {
         assert check();
     }
 
+    public void execute(Reader reader) throws OctaveException {
+        execute(reader, true);
+    }
+
     public void execute(String cmd, boolean echo) throws OctaveException {
-        assert check();
         execute(new StringReader(cmd), echo);
-        assert check();
     }
 
     public void execute(String cmd) throws OctaveException {
-        assert check();
         execute(cmd, true);
-        assert check();
     }
 
     public void set(String name, OctaveType value) throws OctaveException {
         assert check();
-        Reader resultReader = execute(value.octaveReader(name));
+        Reader resultReader = executeReader(value.octaveReader(name));
         try {
             char[] cbuf = new char[BUFFERSIZE];
             int len = resultReader.read(cbuf);
@@ -153,7 +153,7 @@ public class Octave {
     public BufferedReader get(String name) throws OctaveException {
         assert check();
         BufferedReader resultReader = new BufferedReader(
-                execute(new StringReader("save -text - " + name)));
+                executeReader(new StringReader("save -text - " + name)));
         try {
             String line = reader.readLine();
             if (line == null || !line.startsWith("# Created by Octave 2.9"))

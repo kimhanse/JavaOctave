@@ -1,6 +1,5 @@
 package dk.ange.octave;
 
-import java.io.Reader;
 import java.io.StringReader;
 
 import junit.framework.Assert;
@@ -56,13 +55,7 @@ public class TestOctave extends TestCase {
     public void testExec() throws Exception {
         Octave octave = new Octave();
         octave.set("x", new OctaveScalar(42));
-
-        Reader outputReader = octave.execute(new StringReader("x=x+10;"));
-        while (outputReader.read() != -1) {
-            // slurp
-        }
-        outputReader.close(); // Do NOT forget the close()!
-
+        octave.execute(new StringReader("x=x+10;"));
         double x = new OctaveScalar(octave.get("x")).getDouble();
         assertEquals(52.0, x, 0.0);
         octave.close();

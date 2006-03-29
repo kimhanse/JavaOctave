@@ -24,7 +24,7 @@ public class RunOctave {
             System.out.println("Java: a = "
                     + new OctaveScalar(octave.get("a")).getDouble());
 
-            Reader outputReader = octave.execute(new StringReader(
+            Reader outputReader = octave.executeReader(new StringReader(
                     "a\na=a+10;\na"));
             while (true) {
                 int c = outputReader.read();
