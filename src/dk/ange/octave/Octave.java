@@ -79,8 +79,15 @@ public class Octave {
                 + " -=+X+=-";
     }
 
+    private boolean isSpacer(String string) {
+        return string.matches("-=\\+X\\+=- Octave\\.java spacer -=\\+X\\+=- "
+                + ".* -=\\+X\\+=-");
+    }
+
     public Reader execute(Reader inputReader) throws OctaveException {
+        assert check();
         String spacer = generateSpacer();
+        assert isSpacer(spacer);
         OctaveInputThread octaveInputThread = new OctaveInputThread(
                 inputReader, writer, spacer, this);
         OctaveExecuteReader outputReader = new OctaveExecuteReader(reader,
@@ -92,6 +99,7 @@ public class Octave {
 
     public void execute(Reader inputReader, boolean echo)
             throws OctaveException {
+        assert check();
         Reader resultReader = execute(inputReader);
         try {
             char[] cbuf = new char[BUFFERSIZE];
@@ -108,17 +116,23 @@ public class Octave {
         } catch (IOException e1) {
             throw new OctaveException(e1);
         }
+        assert check();
     }
 
     public void execute(String cmd, boolean echo) throws OctaveException {
+        assert check();
         execute(new StringReader(cmd), echo);
+        assert check();
     }
 
     public void execute(String cmd) throws OctaveException {
+        assert check();
         execute(cmd, true);
+        assert check();
     }
 
     public void set(String name, OctaveType value) throws OctaveException {
+        assert check();
         Reader resultReader = execute(value.octaveReader(name));
         try {
             char[] cbuf = new char[BUFFERSIZE];
@@ -133,9 +147,11 @@ public class Octave {
         } catch (IOException e1) {
             throw new OctaveException(e1);
         }
+        assert check();
     }
 
     public BufferedReader get(String name) throws OctaveException {
+        assert check();
         BufferedReader resultReader = new BufferedReader(
                 execute(new StringReader("save -text - " + name)));
         try {
@@ -144,7 +160,10 @@ public class Octave {
                 throw new OctaveException("huh? " + line);
             line = reader.readLine();
             if (line == null || !line.equals("# name: " + name))
-                throw new OctaveException("huh? " + line);
+                if (isSpacer(line))
+                    throw new OctaveException("no such variable '" + name + "'");
+                else
+                    throw new OctaveException("huh?? " + line);
         } catch (IOException e) {
             throw new OctaveException(e);
         }
@@ -152,6 +171,7 @@ public class Octave {
     }
 
     public void close() throws OctaveException {
+        assert check();
         setExecuteState(ExecuteState.CLOSING);
         writer.write("exit\n");
         writer.close();
@@ -173,8 +193,21 @@ public class Octave {
         }
     }
 
+    public boolean check() throws OctaveException {
+        ExecuteState executeState = getExecuteState();
+        if (executeState != ExecuteState.NONE) {
+            throw new OctaveException("Failed check(), executeState="
+                    + executeState);
+        }
+        return true;
+    }
+
     public void destroy() {
         process.destroy();
+    }
+
+    private ExecuteState getExecuteState() {
+        return executeState;
     }
 
     synchronized void setExecuteState(ExecuteState executeState)

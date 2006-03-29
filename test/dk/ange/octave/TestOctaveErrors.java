@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 public class TestOctaveErrors extends TestCase {
 
-    public void testError() {
+    public void testError() throws Exception {
         StringWriter stdout = new StringWriter();
         StringWriter stderr = new StringWriter();
         try {
@@ -17,6 +17,8 @@ public class TestOctaveErrors extends TestCase {
         } catch (OctaveException e) {
             // ok
         }
+        stdout.close();
+        stderr.close();
         assertEquals("", stdout.toString());
         assertEquals("error: testError()\n", stderr.toString());
     }

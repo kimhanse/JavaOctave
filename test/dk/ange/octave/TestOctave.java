@@ -23,20 +23,6 @@ public class TestOctave extends TestCase {
         super(name);
     }
 
-    private Octave octave;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        octave = new Octave();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        octave.close();
-    }
-
     // Tests:
 
     /*
@@ -51,6 +37,7 @@ public class TestOctave extends TestCase {
      * Test method for set(String,double), getScalar(), execute(String)
      */
     public void testExecute() throws Exception {
+        Octave octave = new Octave();
         OctaveType X = new OctaveScalar(42);
 
         octave.set("x", X);
@@ -60,22 +47,25 @@ public class TestOctave extends TestCase {
         octave.execute("x = x + 10;");
         x = new OctaveScalar(octave.get("x")).getDouble();
         Assert.assertEquals(52.0, x, 0.0);
+        octave.close();
     }
 
     /*
      * Test method for reader=exec(reader)
      */
     public void testExec() throws Exception {
+        Octave octave = new Octave();
         octave.set("x", new OctaveScalar(42));
 
         Reader outputReader = octave.execute(new StringReader("x=x+10;"));
         while (outputReader.read() != -1) {
             // slurp
         }
-        outputReader.close();
+        outputReader.close(); // Do NOT forget the close()!
 
         double x = new OctaveScalar(octave.get("x")).getDouble();
-        Assert.assertEquals(52.0, x, 0.0);
+        assertEquals(52.0, x, 0.0);
+        octave.close();
     }
 
 }
