@@ -46,7 +46,7 @@ Known targets:
       <classpath location="javaoctave.jar" />
       <src path="test" />
     </javac>
-    <junit fork="yes" haltonfailure="yes" printsummary="withOutAndErr">
+    <junit fork="yes" haltonfailure="no">
       <classpath location="build/test" />
       <classpath location="javaoctave.jar" />
       <batchtest>
@@ -54,6 +54,7 @@ Known targets:
           <include name="**/*Test*.class" />
         </fileset>
       </batchtest>
+      <formatter type="brief" usefile="false" />
     </junit>
   </target>
 
