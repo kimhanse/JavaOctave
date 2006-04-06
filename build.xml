@@ -22,7 +22,7 @@ Known targets:
   <target name="build">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
-    <javac destdir="build/classes">
+    <javac destdir="build/classes" debug="true">
       <src path="src" />
     </javac>
   </target>
@@ -42,7 +42,7 @@ Known targets:
   <!-- Test -->
   <target name="test" depends="jar">
     <mkdir dir="build/test" />
-    <javac destdir="build/test">
+    <javac destdir="build/test" debug="true">
       <classpath location="javaoctave.jar" />
       <src path="test" />
     </javac>
