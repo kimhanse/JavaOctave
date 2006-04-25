@@ -206,8 +206,12 @@ public class Octave {
     public boolean check() throws OctaveException {
         ExecuteState executeState = getExecuteState();
         if (executeState != ExecuteState.NONE) {
-            throw new OctaveException("Failed check(), executeState="
-                    + executeState);
+            OctaveException octaveException = new OctaveException(
+                    "Failed check(), executeState=" + executeState);
+            if (executeState == ExecuteState.DESTROYED) {
+                octaveException.setDestroyed(true);
+            }
+            throw octaveException;
         }
         return true;
     }
