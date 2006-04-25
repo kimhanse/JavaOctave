@@ -12,7 +12,7 @@ package dk.ange.octave;
  */
 public class OctaveException extends Exception {
 
-    private static final long serialVersionUID = -6545738819976969964L;
+    private static final long serialVersionUID = 1L;
 
     public OctaveException() {
         super();
@@ -28,6 +28,21 @@ public class OctaveException extends Exception {
 
     public OctaveException(Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * Set to true on exceptions thrown from an Octave object when the reason
+     * for the exception is that the object has been asked to destroy its octave
+     * process.
+     */
+    private boolean destroyed = false;
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public void setDestroyed(boolean destroyed) {
+        this.destroyed = destroyed;
     }
 
 }

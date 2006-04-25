@@ -1,5 +1,6 @@
 package dk.ange.octave;
 
+import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import junit.framework.TestCase;
@@ -10,7 +11,7 @@ public class TestOctaveErrors extends TestCase {
         StringWriter stdout = new StringWriter();
         StringWriter stderr = new StringWriter();
         try {
-            Octave octave = new Octave(stdout, stderr);
+            Octave octave = new Octave(new PrintWriter(stdout), stderr);
             octave.execute("error('testError()');");
             fail("error in octave should cause execute() to throw an exception");
             octave.close();
@@ -20,6 +21,7 @@ public class TestOctaveErrors extends TestCase {
         stdout.close();
         stderr.close();
         assertEquals("", stdout.toString());
+        // FIXME This test fail some times
         assertEquals("error: testError()\n", stderr.toString());
     }
 

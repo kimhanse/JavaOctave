@@ -40,12 +40,16 @@ class OctaveInputThread extends Thread {
             octaveWriter.write("\nprintf(\"%s\\n\", \"" + spacer + "\");\n");
             octaveWriter.flush();
             octave.setExecuteState(Octave.ExecuteState.WRITER_OK);
-        } catch (IOException e1) {
-            // TODO
-            e1.printStackTrace();
-        } catch (OctaveException e2) {
-            // TODO
-            e2.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Unexpected IOException in OctaveInputThread");
+            e.printStackTrace();
+        } catch (OctaveException octaveException) {
+            if (octaveException.isDestroyed()) {
+                return;
+            }
+            System.err
+                    .println("Unexpected OctaveException in OctaveInputThread");
+            octaveException.printStackTrace();
         }
     }
 

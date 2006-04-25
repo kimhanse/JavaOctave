@@ -61,4 +61,13 @@ public class TestOctave extends TestCase {
         octave.close();
     }
 
+    public void testDestroy() throws Exception {
+        Octave octave = new Octave();
+        new DestroyThread(octave).start();
+        try {
+            octave.execute("sleep(10);");
+        } catch (OctaveException e) {
+            assertTrue(e.isDestroyed());
+        }
+    }
 }

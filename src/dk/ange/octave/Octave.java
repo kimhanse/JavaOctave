@@ -18,7 +18,7 @@ import dk.ange.util.TeeWriter;
 
 public class Octave {
 
-    private static final String[] cmdarray = { "octave", "--no-history",
+    private static final String[] CMD_ARRAY = { "octave", "--no-history",
             "--no-init-file", "--no-line-editing", "--no-site-file", "--silent" };
 
     private static final int BUFFERSIZE = 1024;
@@ -29,19 +29,13 @@ public class Octave {
 
     private BufferedReader reader;
 
-    private Writer stdout;
+    private PrintWriter stdout;
 
-    enum ExecuteState {
-        NONE, BOTH_RUNNING, WRITER_OK, CLOSING, CLOSED
-    }
-
-    private ExecuteState executeState = ExecuteState.NONE;
-
-    public Octave(Writer stdin, Writer stdout, Writer stderr, File dir)
+    public Octave(Writer stdin, PrintWriter stdout, Writer stderr, File dir)
             throws OctaveException {
         this.stdout = stdout;
         try {
-            process = Runtime.getRuntime().exec(cmdarray, null, dir);
+            process = Runtime.getRuntime().exec(CMD_ARRAY, null, dir);
         } catch (IOException e) {
             throw new OctaveException(e);
         }
@@ -56,20 +50,22 @@ public class Octave {
                 .getInputStream()));
         new Pipe(new BufferedReader(new InputStreamReader(process
                 .getErrorStream())), stderr).start();
+        writer.write("crash_dumps_octave_core=0;\n");
+        writer.write("sigterm_dumps_octave_core=0;\n");
     }
 
-    public Octave(Writer stdin, Writer stdout, Writer stderr)
+    public Octave(Writer stdin, PrintWriter stdout, Writer stderr)
             throws OctaveException {
         this(stdin, stdout, stderr, null);
     }
 
-    public Octave(Writer stdout, Writer stderr) throws OctaveException {
+    public Octave(PrintWriter stdout, Writer stderr) throws OctaveException {
         this(null, stdout, stderr);
     }
 
     public Octave() throws OctaveException {
-        this(null, new OutputStreamWriter(System.out), new OutputStreamWriter(
-                System.err));
+        this(null, new PrintWriter(new OutputStreamWriter(System.out)),
+                new OutputStreamWriter(System.err));
     }
 
     private Random random = new Random();
@@ -113,8 +109,12 @@ public class Octave {
                 }
             }
             resultReader.close();
-        } catch (IOException e1) {
-            throw new OctaveException(e1);
+        } catch (IOException e) {
+            OctaveException octaveException = new OctaveException(e);
+            if (getExecuteState() == ExecuteState.DESTROYED) {
+                octaveException.setDestroyed(true);
+            }
+            throw octaveException;
         }
         assert check();
     }
@@ -144,8 +144,12 @@ public class Octave {
                                 + buffer);
             }
             resultReader.close();
-        } catch (IOException e1) {
-            throw new OctaveException(e1);
+        } catch (IOException e) {
+            OctaveException octaveException = new OctaveException(e);
+            if (getExecuteState() == ExecuteState.DESTROYED) {
+                octaveException.setDestroyed(true);
+            }
+            throw octaveException;
         }
         assert check();
     }
@@ -165,7 +169,11 @@ public class Octave {
                 else
                     throw new OctaveException("huh?? " + line);
         } catch (IOException e) {
-            throw new OctaveException(e);
+            OctaveException octaveException = new OctaveException(e);
+            if (getExecuteState() == ExecuteState.DESTROYED) {
+                octaveException.setDestroyed(true);
+            }
+            throw octaveException;
         }
         return resultReader;
     }
@@ -183,14 +191,16 @@ public class Octave {
             }
             reader.close();
         } catch (IOException e) {
-            throw new OctaveException("reader error", e);
+            OctaveException octaveException = new OctaveException(
+                    "reader error", e);
+            if (getExecuteState() == ExecuteState.DESTROYED) {
+                octaveException.setDestroyed(true);
+            }
+            System.err.println("getExecuteState() : " + getExecuteState());
+            throw octaveException;
         }
         setExecuteState(ExecuteState.CLOSED);
-        try {
-            stdout.close();
-        } catch (IOException e) {
-            throw new OctaveException("stdout error", e);
-        }
+        stdout.close();
     }
 
     public boolean check() throws OctaveException {
@@ -202,9 +212,18 @@ public class Octave {
         return true;
     }
 
-    public void destroy() {
+    public void destroy() throws OctaveException {
+        setExecuteState(ExecuteState.DESTROYED);
+        stdout.close();
+        writer.close();
         process.destroy();
     }
+
+    static enum ExecuteState {
+        NONE, BOTH_RUNNING, WRITER_OK, CLOSING, CLOSED, DESTROYED
+    }
+
+    private ExecuteState executeState = ExecuteState.NONE;
 
     private ExecuteState getExecuteState() {
         return executeState;
@@ -212,12 +231,21 @@ public class Octave {
 
     synchronized void setExecuteState(ExecuteState executeState)
             throws OctaveException {
+        // Throw exception with isDestroyed if state changes from DESTROYED
+        if (this.executeState == ExecuteState.DESTROYED) {
+            OctaveException octaveException = new OctaveException(
+                    "setExecuteState Error: " + this.executeState + " -> "
+                            + executeState);
+            octaveException.setDestroyed(true);
+            throw octaveException;
+        }
         // Accepted transitions:
         // - NONE -> BOTH_RUNNING
         // - BOTH_RUNNING -> WRITER_OK
         // - WRITER_OK -> NONE
         // - NONE -> CLOSING
         // - CLOSING -> CLOSED
+        // - * -> DESTROYED
         if (!(this.executeState == ExecuteState.NONE
                 && executeState == ExecuteState.BOTH_RUNNING
                 || this.executeState == ExecuteState.BOTH_RUNNING
@@ -225,8 +253,9 @@ public class Octave {
                 || this.executeState == ExecuteState.WRITER_OK
                 && executeState == ExecuteState.NONE
                 || this.executeState == ExecuteState.NONE
-                && executeState == ExecuteState.CLOSING || this.executeState == ExecuteState.CLOSING
-                && executeState == ExecuteState.CLOSED)) {
+                && executeState == ExecuteState.CLOSING
+                || this.executeState == ExecuteState.CLOSING
+                && executeState == ExecuteState.CLOSED || executeState == ExecuteState.DESTROYED)) {
             throw new OctaveException("setExecuteState Error: "
                     + this.executeState + " -> " + executeState);
         }
