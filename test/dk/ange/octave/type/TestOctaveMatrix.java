@@ -89,4 +89,16 @@ public class TestOctaveMatrix extends TestCase {
         Assert.assertEquals(in.toString(), out.toString());
     }
 
+    public void testPerformance() throws Exception {
+        OctaveMatrix matrix = new OctaveMatrix(0, 30);
+        long t = System.currentTimeMillis();
+        for (int pos = 1; pos <= 4125; ++pos) {
+            matrix.set(pos, 1, 4.2);
+            matrix.set(pos, 30, 4.2);
+        }
+        assertTrue("Performance test didn't finish in 100ms", System
+                .currentTimeMillis()
+                - t < 100);
+    }
+
 }

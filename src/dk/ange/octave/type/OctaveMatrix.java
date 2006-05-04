@@ -77,14 +77,22 @@ public class OctaveMatrix extends OctaveType {
     }
 
     public void set(int row, int column, double value) {
-        if (row < 0 || column < 0)
-            throw new IllegalArgumentException();
+        if (row <= 0)
+            throw new IndexOutOfBoundsException("row not positive, row=" + row);
+        if (column <= 0)
+            throw new IndexOutOfBoundsException("column not positive, column="
+                    + column);
         if (row > rows || column > columns)
             resize(row, column);
         data[(row - 1) * columns + column - 1] = value;
     }
 
     public double get(int row, int column) {
+        if (row <= 0 || row > rows)
+            throw new IndexOutOfBoundsException("row out of range, row=" + row);
+        if (column <= 0 || column > columns)
+            throw new IndexOutOfBoundsException("column out of range, column="
+                    + column);
         return data[(row - 1) * columns + column - 1];
     }
 
@@ -99,8 +107,11 @@ public class OctaveMatrix extends OctaveType {
         }
         rows = newRows;
         columns = newColumns;
+        if (rows * columns <= data.length)
+            return;
+        // Resize the data-array
         double[] oldData = data;
-        data = new double[rows * columns];
+        data = new double[rows * columns * 2];
         System.arraycopy(oldData, 0, data, 0, oldData.length);
     }
 
