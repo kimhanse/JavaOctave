@@ -117,15 +117,19 @@ public class OctaveMatrix extends OctaveType {
 
     @Override
     public void toOctave(Writer writer, String name) throws IOException {
-        writer.write(name + "=[\n");
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < columns; c++) {
-                writer.write(Double.toString(data[r * columns + c]));
-                writer.write(' ');
+        if (rows == 0 || columns == 0) {
+            writer.write(name + "=zeros(" + rows + "," + columns + ");\n");
+        } else {
+            writer.write(name + "=[\n");
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < columns; c++) {
+                    writer.write(' ');
+                    writer.write(Double.toString(data[r * columns + c]));
+                }
+                writer.write('\n');
             }
-            writer.write('\n');
+            writer.write("];\n");
         }
-        writer.write("];\n");
     }
 
     public int getRowDimension() {

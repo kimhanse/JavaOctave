@@ -10,7 +10,7 @@ public class TestOctaveMatrix extends TestCase {
         OctaveMatrix matrix = new OctaveMatrix();
         Assert.assertEquals(0, matrix.getRowDimension());
         Assert.assertEquals(0, matrix.getColumnDimension());
-        Assert.assertEquals("matrix=[\n];\n", matrix.toOctave("matrix"));
+        Assert.assertEquals("matrix=zeros(0,0);\n", matrix.toOctave("matrix"));
     }
 
     public void testConstructorMatrix() throws Exception {
@@ -18,7 +18,7 @@ public class TestOctaveMatrix extends TestCase {
         OctaveMatrix matrix = new OctaveMatrix(numbers, 2, 3);
         Assert.assertEquals(2, matrix.getRowDimension());
         Assert.assertEquals(3, matrix.getColumnDimension());
-        Assert.assertEquals("matrix=[\n1.0 2.0 3.0 \n4.0 5.0 6.0 \n];\n",
+        Assert.assertEquals("matrix=[\n 1.0 2.0 3.0\n 4.0 5.0 6.0\n];\n",
                 matrix.toOctave("matrix"));
     }
 
@@ -26,10 +26,10 @@ public class TestOctaveMatrix extends TestCase {
         OctaveMatrix matrix = new OctaveMatrix(2, 3);
         Assert.assertEquals(2, matrix.getRowDimension());
         Assert.assertEquals(3, matrix.getColumnDimension());
-        Assert.assertEquals("matrix=[\n0.0 0.0 0.0 \n0.0 0.0 0.0 \n];\n",
+        Assert.assertEquals("matrix=[\n 0.0 0.0 0.0\n 0.0 0.0 0.0\n];\n",
                 matrix.toOctave("matrix"));
         matrix.set(1, 2, 42);
-        Assert.assertEquals("matrix=[\n0.0 42.0 0.0 \n0.0 0.0 0.0 \n];\n",
+        Assert.assertEquals("matrix=[\n 0.0 42.0 0.0\n 0.0 0.0 0.0\n];\n",
                 matrix.toOctave("matrix"));
     }
 
@@ -39,30 +39,29 @@ public class TestOctaveMatrix extends TestCase {
         matrix = new OctaveMatrix(0, 0);
         Assert.assertEquals(0, matrix.getRowDimension());
         Assert.assertEquals(0, matrix.getColumnDimension());
-        Assert.assertEquals("matrix=[\n"//
-                + "];\n"//
+        Assert.assertEquals("matrix=zeros(0,0);\n"//
                 + "", matrix.toOctave("matrix"));
         matrix.set(1, 1, 1);
         Assert.assertEquals(1, matrix.getRowDimension());
         Assert.assertEquals(1, matrix.getColumnDimension());
         Assert.assertEquals("matrix=[\n"//
-                + "1.0 \n"//
+                + " 1.0\n"//
                 + "];\n"//
                 + "", matrix.toOctave("matrix"));
         matrix.set(3, 1, 3);
         Assert.assertEquals(3, matrix.getRowDimension());
         Assert.assertEquals(1, matrix.getColumnDimension());
         Assert.assertEquals("matrix=[\n"//
-                + "1.0 \n"//
-                + "0.0 \n"//
-                + "3.0 \n"//
+                + " 1.0\n"//
+                + " 0.0\n"//
+                + " 3.0\n"//
                 + "];\n"//
                 + "", matrix.toOctave("matrix"));
 
         matrix = new OctaveMatrix(0, 0);
         matrix.set(1, 3, 3);
         Assert.assertEquals("matrix=[\n"//
-                + "0.0 0.0 3.0 \n"//
+                + " 0.0 0.0 3.0\n"//
                 + "];\n"//
                 + "", matrix.toOctave("matrix"));
     }
@@ -73,8 +72,8 @@ public class TestOctaveMatrix extends TestCase {
         OctaveMatrix matrix = new OctaveMatrix(octave.get("m"));
         matrix = new OctaveMatrix(octave.get("m"));
         Assert.assertEquals("matrix=[\n"//
-                + "1.0 2.0 \n"//
-                + "3.0 4.0 \n"//
+                + " 1.0 2.0\n"//
+                + " 3.0 4.0\n"//
                 + "];\n"//
                 + "", matrix.toOctave("matrix"));
     }
