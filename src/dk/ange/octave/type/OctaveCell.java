@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Vector;
 
+/**
+ * @author Kim Hansen
+ */
 public class OctaveCell extends OctaveType {
 
     private Vector<Vector<OctaveType>> data;
@@ -12,12 +15,18 @@ public class OctaveCell extends OctaveType {
 
     private int columns;
 
+    /**
+     * 
+     */
     public OctaveCell() {
         data = new Vector<Vector<OctaveType>>();
         rows = 0;
         columns = 0;
     }
 
+    /**
+     * @param value
+     */
     public OctaveCell(OctaveType value) {
         data = new Vector<Vector<OctaveType>>();
         data.add(new Vector<OctaveType>());
@@ -26,6 +35,10 @@ public class OctaveCell extends OctaveType {
         columns = 1;
     }
 
+    /**
+     * @param rows
+     * @param columns
+     */
     public OctaveCell(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
@@ -49,6 +62,11 @@ public class OctaveCell extends OctaveType {
         throw new Error("Not implemented! " + value + row + column);
     }
 
+    /**
+     * @param row
+     * @param column
+     * @param value
+     */
     public void set(int row, int column, OctaveType value) {
         // TODO: Check row, column > 0
         if (row > rows) {
@@ -89,10 +107,16 @@ public class OctaveCell extends OctaveType {
         }
     }
 
+    /**
+     * @return Returns number or rows.
+     */
     public int getRowDimension() {
         return rows;
     }
 
+    /**
+     * @return Returns number of columns
+     */
     public int getColumnDimension() {
         return columns;
     }

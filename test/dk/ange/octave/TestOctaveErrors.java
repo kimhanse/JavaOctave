@@ -5,8 +5,14 @@ import java.io.StringWriter;
 
 import junit.framework.TestCase;
 
+/**
+ * @author Kim Hansen
+ */
 public class TestOctaveErrors extends TestCase {
 
+    /**
+     * @throws Exception
+     */
     public void testError() throws Exception {
         StringWriter stdout = new StringWriter();
         StringWriter stderr = new StringWriter();
@@ -25,6 +31,9 @@ public class TestOctaveErrors extends TestCase {
         assertEquals("error: testError()\n", stderr.toString());
     }
 
+    /**
+     * @throws Exception
+     */
     public void testOk() throws Exception {
         Octave octave = new Octave();
         octave.execute("ok=1;");

@@ -13,9 +13,12 @@ import java.io.Writer;
 import java.util.Random;
 
 import dk.ange.octave.type.OctaveType;
-import dk.ange.util.Pipe;
-import dk.ange.util.TeeWriter;
+import dk.ange.octave.util.Pipe;
+import dk.ange.octave.util.TeeWriter;
 
+/**
+ * @author Kim Hansen
+ */
 public class Octave {
 
     private static final String[] CMD_ARRAY = { "octave", "--no-history",
@@ -31,6 +34,13 @@ public class Octave {
 
     private PrintWriter stdout;
 
+    /**
+     * @param stdin
+     * @param stdout
+     * @param stderr
+     * @param dir
+     * @throws OctaveException
+     */
     public Octave(Writer stdin, PrintWriter stdout, Writer stderr, File dir)
             throws OctaveException {
         this.stdout = stdout;
@@ -54,15 +64,29 @@ public class Octave {
         writer.write("sigterm_dumps_octave_core=0;\n");
     }
 
+    /**
+     * @param stdin
+     * @param stdout
+     * @param stderr
+     * @throws OctaveException
+     */
     public Octave(Writer stdin, PrintWriter stdout, Writer stderr)
             throws OctaveException {
         this(stdin, stdout, stderr, null);
     }
 
+    /**
+     * @param stdout
+     * @param stderr
+     * @throws OctaveException
+     */
     public Octave(PrintWriter stdout, Writer stderr) throws OctaveException {
         this(null, stdout, stderr);
     }
 
+    /**
+     * @throws OctaveException
+     */
     public Octave() throws OctaveException {
         this(null, new PrintWriter(new OutputStreamWriter(System.out)),
                 new OutputStreamWriter(System.err));
@@ -80,6 +104,12 @@ public class Octave {
                 + ".* -=\\+X\\+=-");
     }
 
+    /**
+     * @param inputReader
+     * @return Returns a Reader that will return the result from the statements
+     *         that octave gets from the inputReader
+     * @throws OctaveException
+     */
     public Reader executeReader(Reader inputReader) throws OctaveException {
         assert check();
         String spacer = generateSpacer();
@@ -93,6 +123,11 @@ public class Octave {
         return outputReader;
     }
 
+    /**
+     * @param inputReader
+     * @param echo
+     * @throws OctaveException
+     */
     public void execute(Reader inputReader, boolean echo)
             throws OctaveException {
         assert check();
@@ -119,18 +154,36 @@ public class Octave {
         assert check();
     }
 
+    /**
+     * @param reader
+     * @throws OctaveException
+     */
     public void execute(Reader reader) throws OctaveException {
         execute(reader, true);
     }
 
+    /**
+     * @param cmd
+     * @param echo
+     * @throws OctaveException
+     */
     public void execute(String cmd, boolean echo) throws OctaveException {
         execute(new StringReader(cmd), echo);
     }
 
+    /**
+     * @param cmd
+     * @throws OctaveException
+     */
     public void execute(String cmd) throws OctaveException {
         execute(cmd, true);
     }
 
+    /**
+     * @param name
+     * @param value
+     * @throws OctaveException
+     */
     public void set(String name, OctaveType value) throws OctaveException {
         assert check();
         Reader resultReader = executeReader(value.octaveReader(name));
@@ -154,6 +207,12 @@ public class Octave {
         assert check();
     }
 
+    /**
+     * @param name
+     * @return Returns a Reader that will return the value of the variable name
+     *         in the octave-text format
+     * @throws OctaveException
+     */
     public BufferedReader get(String name) throws OctaveException {
         assert check();
         BufferedReader resultReader = new BufferedReader(
@@ -178,6 +237,9 @@ public class Octave {
         return resultReader;
     }
 
+    /**
+     * @throws OctaveException
+     */
     public void close() throws OctaveException {
         assert check();
         setExecuteState(ExecuteState.CLOSING);
@@ -203,6 +265,13 @@ public class Octave {
         stdout.close();
     }
 
+    /**
+     * @return Returns always true, return value is needed in order for this to
+     *         be used in assert statements. If there was an error
+     *         OctaveException would be thrown.
+     * @throws OctaveException
+     *             when the executeState is illegal
+     */
     public boolean check() throws OctaveException {
         ExecuteState executeState = getExecuteState();
         if (executeState != ExecuteState.NONE) {
@@ -216,6 +285,9 @@ public class Octave {
         return true;
     }
 
+    /**
+     * @throws OctaveException
+     */
     public void destroy() throws OctaveException {
         setExecuteState(ExecuteState.DESTROYED);
         stdout.close();
@@ -223,6 +295,7 @@ public class Octave {
         process.destroy();
     }
 
+    @SuppressWarnings("all")
     static enum ExecuteState {
         NONE, BOTH_RUNNING, WRITER_OK, CLOSING, CLOSED, DESTROYED
     }

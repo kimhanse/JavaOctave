@@ -4,13 +4,22 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
 
+/**
+ * @author Kim Hansen
+ */
 public class TestOctave3dMatrix extends TestCase {
 
+    /**
+     * @throws Exception
+     */
     public void testConstructor() throws Exception {
         Octave3dMatrix matrix = new Octave3dMatrix(0, 0, 0);
         Assert.assertEquals("", matrix.toOctave("matrix3d"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testConstructorIntIntInt() throws Exception {
         Octave3dMatrix matrix = new Octave3dMatrix(3, 4, 2);
         Assert.assertEquals("" //
@@ -40,6 +49,9 @@ public class TestOctave3dMatrix extends TestCase {
                 + "", matrix.toOctave("matrix3d"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testOctave() throws Exception {
         Octave3dMatrix matrix3d = new Octave3dMatrix(3, 4, 2);
         matrix3d.set(42.0, 1, 3, 2);

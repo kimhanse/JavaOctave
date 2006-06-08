@@ -14,10 +14,16 @@ import dk.ange.octave.type.OctaveType;
  */
 public class TestOctave extends TestCase {
 
+    /**
+     * @param args
+     */
     public static void main(String[] args) {
         junit.textui.TestRunner.run(TestOctave.class);
     }
 
+    /**
+     * @param name
+     */
     public TestOctave(String name) {
         super(name);
     }
@@ -32,8 +38,10 @@ public class TestOctave extends TestCase {
      * close() is tested in tearDown()
      */
 
-    /*
+    /**
      * Test method for set(String,double), getScalar(), execute(String)
+     * 
+     * @throws Exception
      */
     public void testExecute() throws Exception {
         Octave octave = new Octave();
@@ -49,8 +57,10 @@ public class TestOctave extends TestCase {
         octave.close();
     }
 
-    /*
+    /**
      * Test method for reader=exec(reader)
+     * 
+     * @throws Exception
      */
     public void testExec() throws Exception {
         Octave octave = new Octave();
@@ -61,6 +71,9 @@ public class TestOctave extends TestCase {
         octave.close();
     }
 
+    /**
+     * @throws Exception
+     */
     public void testDestroy() throws Exception {
         Octave octave = new Octave();
         new DestroyThread(octave).start();
@@ -68,6 +81,30 @@ public class TestOctave extends TestCase {
             octave.execute("sleep(10);");
         } catch (OctaveException e) {
             assertTrue(e.isDestroyed());
+        }
+    }
+
+    /**
+     * Helper for TestOctave
+     * 
+     * @author Kim Hansen
+     */
+    class DestroyThread extends Thread {
+
+        private Octave octave;
+
+        DestroyThread(Octave octave) {
+            this.octave = octave;
+        }
+
+        @Override
+        public void run() {
+            try {
+                sleep(1000);
+                octave.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

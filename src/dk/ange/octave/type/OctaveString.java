@@ -16,6 +16,10 @@ public class OctaveString extends OctaveType {
 
     String value;
 
+    /**
+     * @param reader
+     * @throws OctaveException
+     */
     public OctaveString(BufferedReader reader) throws OctaveException {
         String line;
         line = readerReadLine(reader);
@@ -31,6 +35,9 @@ public class OctaveString extends OctaveType {
         value = readerReadLine(reader);
     }
 
+    /**
+     * @param value
+     */
     public OctaveString(String value) {
         this.value = value;
     }

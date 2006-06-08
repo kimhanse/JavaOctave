@@ -14,18 +14,31 @@ public class OctaveException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 
+     */
     public OctaveException() {
         super();
     }
 
+    /**
+     * @param message
+     */
     public OctaveException(String message) {
         super(message);
     }
 
+    /**
+     * @param message
+     * @param cause
+     */
     public OctaveException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * @param cause
+     */
     public OctaveException(Throwable cause) {
         super(cause);
     }
@@ -37,10 +50,16 @@ public class OctaveException extends Exception {
      */
     private boolean destroyed = false;
 
+    /**
+     * @return destroyed
+     */
     public boolean isDestroyed() {
         return destroyed;
     }
 
+    /**
+     * @param destroyed
+     */
     public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
     }

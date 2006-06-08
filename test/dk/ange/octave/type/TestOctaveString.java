@@ -7,33 +7,33 @@ import dk.ange.octave.Octave;
 /**
  * @author Kim Hansen
  */
-public class TestOctaveScalar extends TestCase {
+public class TestOctaveString extends TestCase {
 
     /**
      * @throws Exception
      */
     public void testToString() throws Exception {
-        OctaveType integer = new OctaveScalar(42);
-        Assert.assertEquals(integer.toString(), "ans=42.0;\n");
+        OctaveType string = new OctaveString("tekst");
+        Assert.assertEquals("ans=\"tekst\";\n", string.toString());
     }
 
     /**
      * @throws Exception
      */
     public void testToOctave() throws Exception {
-        OctaveType integer = new OctaveScalar(43);
-        Assert.assertEquals(integer.toOctave("tre"), "tre=43.0;\n");
+        OctaveType string = new OctaveString("tekst");
+        Assert.assertEquals("tre=\"tekst\";\n", string.toOctave("tre"));
     }
 
     /**
      * @throws Exception
      */
     public void testOctaveConnection() throws Exception {
-        OctaveType i1 = new OctaveScalar(42);
+        OctaveType s1 = new OctaveString("tekst");
         Octave octave = new Octave();
-        octave.set("i", i1);
-        OctaveScalar i2 = new OctaveScalar(octave.get("i"));
-        Assert.assertEquals(i1, i2);
+        octave.set("st", s1);
+        OctaveString s2 = new OctaveString(octave.get("st"));
+        Assert.assertEquals(s1, s2);
     }
 
 }

@@ -6,10 +6,17 @@ import java.io.Writer;
 
 import dk.ange.octave.OctaveException;
 
+/**
+ * @author Kim Hansen
+ */
 public class OctaveScalar extends OctaveType {
 
     double value;
 
+    /**
+     * @param reader
+     * @throws OctaveException
+     */
     public OctaveScalar(BufferedReader reader) throws OctaveException {
         try {
             String line = reader.readLine();
@@ -23,6 +30,9 @@ public class OctaveScalar extends OctaveType {
         }
     }
 
+    /**
+     * @param value
+     */
     public OctaveScalar(double value) {
         this.value = value;
     }
@@ -41,6 +51,9 @@ public class OctaveScalar extends OctaveType {
         return this.value == that.value;
     }
 
+    /**
+     * @return Returns the value of this object
+     */
     public double getDouble() {
         return value;
     }

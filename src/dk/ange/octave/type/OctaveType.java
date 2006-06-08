@@ -24,11 +24,17 @@ public abstract class OctaveType {
      *            Writer to write to
      * @param name
      *            name of variable
-     * @throws OctaveException
+     * @throws IOException
      */
     abstract public void toOctave(Writer writer, String name)
             throws IOException;
 
+    /**
+     * @param name
+     * @return Returns a Reader from which the octave input version of this
+     *         object can be read.
+     * @throws OctaveException
+     */
     public Reader octaveReader(String name) throws OctaveException {
         PipedReader pipedReader = new PipedReader();
         PipedWriter pipedWriter = new PipedWriter();
@@ -51,6 +57,11 @@ public abstract class OctaveType {
 
         String name;
 
+        /**
+         * @param octaveType
+         * @param pipedWriter
+         * @param name
+         */
         public ToOctaveWriter(OctaveType octaveType, PipedWriter pipedWriter,
                 String name) {
             this.octaveType = octaveType;
@@ -75,7 +86,6 @@ public abstract class OctaveType {
      * @param name
      *            name of variable
      * @return Text to enter into octave to define the variable
-     * @throws OctaveException
      */
     public String toOctave(String name) {
         StringWriter writer = new StringWriter();

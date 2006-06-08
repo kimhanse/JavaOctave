@@ -17,6 +17,12 @@ class OctaveInputThread extends Thread {
 
     private Octave octave;
 
+    /**
+     * @param inputReader
+     * @param octaveWriter
+     * @param spacer
+     * @param octave
+     */
     public OctaveInputThread(Reader inputReader, PrintWriter octaveWriter,
             String spacer, Octave octave) {
         this.inputReader = inputReader;

@@ -3,8 +3,14 @@ package dk.ange.octave.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+/**
+ * @author Kim Hansen
+ */
 public class TestOctaveCell extends TestCase {
 
+    /**
+     * @throws Exception
+     */
     public void testConstructor() throws Exception {
         OctaveCell cell = new OctaveCell();
         Assert.assertEquals(0, cell.getRowDimension());
@@ -12,6 +18,9 @@ public class TestOctaveCell extends TestCase {
         Assert.assertEquals("ans=cell(0,0);\n", cell.toOctave("ans"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testConstructorValue() throws Exception {
         OctaveCell cell = new OctaveCell(new OctaveScalar(42));
         Assert.assertEquals(1, cell.getRowDimension());
@@ -24,6 +33,9 @@ public class TestOctaveCell extends TestCase {
                 cell.toOctave("ans"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testConstructorIntInt() throws Exception {
         OctaveCell cell = new OctaveCell(2, 2);
         Assert.assertEquals(2, cell.getRowDimension());
@@ -32,6 +44,9 @@ public class TestOctaveCell extends TestCase {
                 cell.toOctave("ans"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testSetIntInt() throws Exception {
         OctaveCell cell = new OctaveCell();
         Assert.assertEquals(0, cell.getRowDimension());

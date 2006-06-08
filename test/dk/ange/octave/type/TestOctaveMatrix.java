@@ -4,8 +4,14 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
 
+/**
+ * @author Kim Hansen
+ */
 public class TestOctaveMatrix extends TestCase {
 
+    /**
+     * @throws Exception
+     */
     public void testConstructor() throws Exception {
         OctaveMatrix matrix = new OctaveMatrix();
         Assert.assertEquals(0, matrix.getRowDimension());
@@ -13,6 +19,9 @@ public class TestOctaveMatrix extends TestCase {
         Assert.assertEquals("matrix=zeros(0,0);\n", matrix.toOctave("matrix"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testConstructorMatrix() throws Exception {
         double[] numbers = { 1, 2, 3, 4, 5, 6 };
         OctaveMatrix matrix = new OctaveMatrix(numbers, 2, 3);
@@ -22,6 +31,9 @@ public class TestOctaveMatrix extends TestCase {
                 matrix.toOctave("matrix"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testConstructorIntInt() throws Exception {
         OctaveMatrix matrix = new OctaveMatrix(2, 3);
         Assert.assertEquals(2, matrix.getRowDimension());
@@ -33,6 +45,9 @@ public class TestOctaveMatrix extends TestCase {
                 matrix.toOctave("matrix"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testGrowth() throws Exception {
         OctaveMatrix matrix;
 
@@ -66,6 +81,9 @@ public class TestOctaveMatrix extends TestCase {
                 + "", matrix.toOctave("matrix"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testOctaveGet() throws Exception {
         Octave octave = new Octave();
         octave.execute("m=[1 2;3 4];");
@@ -78,6 +96,9 @@ public class TestOctaveMatrix extends TestCase {
                 + "", matrix.toOctave("matrix"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testOctaveSetExecGet() throws Exception {
         double[] numbers = { 1, 2, 3, 4, 5, 6 };
         Octave octave = new Octave();
@@ -88,6 +109,9 @@ public class TestOctaveMatrix extends TestCase {
         Assert.assertEquals(in.toString(), out.toString());
     }
 
+    /**
+     * @throws Exception
+     */
     public void testPerformance() throws Exception {
         OctaveMatrix matrix = new OctaveMatrix(0, 30);
         long t = System.currentTimeMillis();

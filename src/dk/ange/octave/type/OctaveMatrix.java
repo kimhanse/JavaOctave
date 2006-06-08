@@ -6,6 +6,9 @@ import java.io.Writer;
 
 import dk.ange.octave.OctaveException;
 
+/**
+ * @author Kim Hansen
+ */
 public class OctaveMatrix extends OctaveType {
 
     private double[] data;
@@ -14,10 +17,17 @@ public class OctaveMatrix extends OctaveType {
 
     private int columns;
 
+    /**
+     * 
+     */
     public OctaveMatrix() {
         this(0, 0);
     }
 
+    /**
+     * @param rows
+     * @param columns
+     */
     public OctaveMatrix(int rows, int columns) {
         init(rows, columns);
         data = new double[rows * columns];
@@ -34,11 +44,20 @@ public class OctaveMatrix extends OctaveType {
                     "columns less than zero. columns=" + columns);
     }
 
+    /**
+     * @param data
+     * @param rows
+     * @param columns
+     */
     public OctaveMatrix(double[] data, int rows, int columns) {
         init(rows, columns);
         this.data = data;
     }
 
+    /**
+     * @param reader
+     * @throws OctaveException
+     */
     public OctaveMatrix(BufferedReader reader) throws OctaveException {
         try {
             String line;
@@ -76,6 +95,11 @@ public class OctaveMatrix extends OctaveType {
         }
     }
 
+    /**
+     * @param row
+     * @param column
+     * @param value
+     */
     public void set(int row, int column, double value) {
         if (row <= 0)
             throw new IndexOutOfBoundsException("row not positive, row=" + row);
@@ -87,6 +111,11 @@ public class OctaveMatrix extends OctaveType {
         data[(row - 1) * columns + column - 1] = value;
     }
 
+    /**
+     * @param row
+     * @param column
+     * @return Returns the value at (row,column)
+     */
     public double get(int row, int column) {
         if (row <= 0 || row > rows)
             throw new IndexOutOfBoundsException("row out of range, row=" + row);
@@ -132,10 +161,16 @@ public class OctaveMatrix extends OctaveType {
         }
     }
 
+    /**
+     * @return Returns the number of rows.
+     */
     public int getRowDimension() {
         return rows;
     }
 
+    /**
+     * @return Returns the number of columns.
+     */
     public int getColumnDimension() {
         return columns;
     }

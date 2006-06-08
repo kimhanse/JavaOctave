@@ -5,10 +5,16 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Kim Hansen
+ */
 public class OctaveStruct extends OctaveType {
 
     private Map<String, OctaveType> data;
 
+    /**
+     * 
+     */
     public OctaveStruct() {
         data = new HashMap<String, OctaveType>();
     }
@@ -31,6 +37,10 @@ public class OctaveStruct extends OctaveType {
         }
     }
 
+    /**
+     * @param key
+     * @param value
+     */
     public void set(String key, OctaveType value) {
         data.put(key, value);
     }

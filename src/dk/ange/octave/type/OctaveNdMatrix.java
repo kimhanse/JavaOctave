@@ -6,12 +6,18 @@ package dk.ange.octave.type;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * @author Kim Hansen
+ */
 public class OctaveNdMatrix extends OctaveType {
 
     private double[] data;
 
     private int[] size;
 
+    /**
+     * @param size
+     */
     public OctaveNdMatrix(int... size) {
         init(size);
         data = new double[product(size)];
@@ -37,6 +43,10 @@ public class OctaveNdMatrix extends OctaveType {
         throw new IllegalArgumentException("NOT IMPLEMENTED");
     }
 
+    /**
+     * @param data
+     * @param size
+     */
     public OctaveNdMatrix(double[] data, int... size) {
         init(size);
         if (product(size) != data.length)
@@ -45,6 +55,10 @@ public class OctaveNdMatrix extends OctaveType {
         this.data = data;
     }
 
+    /**
+     * @param value
+     * @param pos
+     */
     public void set(double value, int... pos) {
         // TODO check args
         data[pos[1] + size[0]] = value;

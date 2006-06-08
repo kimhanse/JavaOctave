@@ -18,6 +18,11 @@ public class Octave3dMatrix extends OctaveType {
 
     private int depth;
 
+    /**
+     * @param rows
+     * @param columns
+     * @param depth
+     */
     public Octave3dMatrix(int rows, int columns, int depth) {
         init(rows, columns, depth);
         data = new ArrayList<OctaveMatrix>(depth);
@@ -42,6 +47,12 @@ public class Octave3dMatrix extends OctaveType {
         this.depth = depth;
     }
 
+    /**
+     * @param value
+     * @param row
+     * @param column
+     * @param depth
+     */
     public void set(double value, int row, int column, int depth) {
         if (column > columns)
             throw new IllegalArgumentException("column > columns");

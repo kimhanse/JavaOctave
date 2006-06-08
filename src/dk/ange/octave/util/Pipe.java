@@ -1,4 +1,4 @@
-package dk.ange.util;
+package dk.ange.octave.util;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -17,6 +17,10 @@ public class Pipe extends Thread {
 
     Writer writer;
 
+    /**
+     * @param reader
+     * @param writer
+     */
     public Pipe(Reader reader, Writer writer) {
         this.reader = reader;
         this.writer = writer;

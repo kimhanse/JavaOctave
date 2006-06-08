@@ -18,6 +18,12 @@ class OctaveExecuteReader extends Reader {
 
     private boolean eof = false;
 
+    /**
+     * @param octaveReader
+     * @param spacer
+     * @param octaveInputThread
+     * @param octave
+     */
     public OctaveExecuteReader(BufferedReader octaveReader, String spacer,
             OctaveInputThread octaveInputThread, Octave octave) {
         this.octaveReader = octaveReader;

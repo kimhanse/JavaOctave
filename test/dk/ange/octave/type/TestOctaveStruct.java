@@ -3,13 +3,22 @@ package dk.ange.octave.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+/**
+ * @author Kim Hansen
+ */
 public class TestOctaveStruct extends TestCase {
 
+    /**
+     * @throws Exception
+     */
     public void testConstructor() throws Exception {
         OctaveStruct struct = new OctaveStruct();
         Assert.assertEquals("ans=struct();\n", struct.toOctave("ans"));
     }
 
+    /**
+     * @throws Exception
+     */
     public void testSet() throws Exception {
         OctaveStruct struct = new OctaveStruct();
         struct.set("a", new OctaveScalar(42));
