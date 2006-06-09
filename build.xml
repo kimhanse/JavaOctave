@@ -51,7 +51,8 @@ Known targets:
       <classpath location="javaoctave.jar" />
       <batchtest>
         <fileset dir="build/test">
-          <include name="**/*Test*.class" />
+          <include name="**/Test*.class" />
+          <exclude name="**/Test*$$*.class" />
         </fileset>
       </batchtest>
       <formatter type="brief" usefile="false" />
