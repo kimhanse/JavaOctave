@@ -9,19 +9,19 @@ import java.io.Writer;
  * 
  * A Thread that moves data from a Reader to a Writer
  */
-public class Pipe extends Thread {
+public class ReaderWriterPipeThread extends Thread {
 
-    private static final int BUFFERSIZE = 1024;
+    private static final int BUFFERSIZE = 8192;
 
-    Reader reader;
+    private final Reader reader;
 
-    Writer writer;
+    private final Writer writer;
 
     /**
      * @param reader
      * @param writer
      */
-    public Pipe(Reader reader, Writer writer) {
+    public ReaderWriterPipeThread(Reader reader, Writer writer) {
         this.reader = reader;
         this.writer = writer;
     }
@@ -29,16 +29,16 @@ public class Pipe extends Thread {
     @Override
     public void run() {
         try {
-            char[] cbuf = new char[BUFFERSIZE];
+            final char[] cbuf = new char[BUFFERSIZE];
             while (true) {
-                int c = reader.read(cbuf);
+                final int c = reader.read(cbuf);
                 if (c < 0)
                     break;
                 writer.write(cbuf, 0, c);
                 writer.flush();
             }
             reader.close();
-            writer.flush(); // Don't close writer, other programs might use that
+            writer.flush(); // Don't close writer, other programs might use it
         } catch (IOException e1) {
             try {
                 writer.write(e1.getMessage());

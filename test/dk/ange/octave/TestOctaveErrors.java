@@ -17,7 +17,8 @@ public class TestOctaveErrors extends TestCase {
         StringWriter stdout = new StringWriter();
         StringWriter stderr = new StringWriter();
         try {
-            Octave octave = new Octave(new PrintWriter(stdout), stderr);
+            Octave octave = new Octave(null, new PrintWriter(stdout), stderr,
+                    null);
             octave.execute("error('testError()');");
             fail("error in octave should cause execute() to throw an exception");
             octave.close();

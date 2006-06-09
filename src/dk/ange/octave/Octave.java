@@ -1,19 +1,19 @@
 package dk.ange.octave;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.Random;
 
 import dk.ange.octave.type.OctaveType;
-import dk.ange.octave.util.Pipe;
+import dk.ange.octave.util.NoCloseWriter;
+import dk.ange.octave.util.ReaderSinkThread;
+import dk.ange.octave.util.ReaderWriterPipeThread;
 import dk.ange.octave.util.TeeWriter;
 
 /**
@@ -24,44 +24,56 @@ public class Octave {
     private static final String[] CMD_ARRAY = { "octave", "--no-history",
             "--no-init-file", "--no-line-editing", "--no-site-file", "--silent" };
 
-    private static final int BUFFERSIZE = 1024;
+    private static final int BUFFERSIZE = 8192;
 
     private Process process;
 
-    private PrintWriter writer;
+    private Writer processWriter;
 
-    private BufferedReader reader;
+    private BufferedReader processReader;
 
-    private PrintWriter stdout;
+    private Writer stdoutLog;
 
     /**
-     * @param stdin
-     * @param stdout
-     * @param stderr
+     * @param stdinLog
+     * @param stdoutLog
+     * @param stderrLog
      * @param dir
      * @throws OctaveException
      */
-    public Octave(Writer stdin, PrintWriter stdout, Writer stderr, File dir)
+    public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog, File dir)
             throws OctaveException {
-        this.stdout = stdout;
         try {
             process = Runtime.getRuntime().exec(CMD_ARRAY, null, dir);
         } catch (IOException e) {
             throw new OctaveException(e);
         }
-        if (stdin == null) {
-            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                    process.getOutputStream())), true);
+        // Connect stderr
+        if (stderrLog == null) {
+            new ReaderSinkThread(
+                    new InputStreamReader(process.getErrorStream())).start();
         } else {
-            writer = new PrintWriter(new BufferedWriter(new TeeWriter(stdin,
-                    new OutputStreamWriter(process.getOutputStream()))), true);
+            new ReaderWriterPipeThread(new InputStreamReader(process
+                    .getErrorStream()), stderrLog).start();
         }
-        reader = new BufferedReader(new InputStreamReader(process
+        // Connect stdout
+        this.stdoutLog = stdoutLog;
+        processReader = new BufferedReader(new InputStreamReader(process
                 .getInputStream()));
-        new Pipe(new BufferedReader(new InputStreamReader(process
-                .getErrorStream())), stderr).start();
-        writer.write("crash_dumps_octave_core=0;\n");
-        writer.write("sigterm_dumps_octave_core=0;\n");
+        // Connect stdin
+        if (stdinLog == null) {
+            processWriter = new OutputStreamWriter(process.getOutputStream());
+        } else {
+            processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
+                    new OutputStreamWriter(process.getOutputStream()));
+        }
+        // Setup octave process
+        try {
+            processWriter.write("crash_dumps_octave_core=0;\n");
+            processWriter.write("sigterm_dumps_octave_core=0;\n");
+        } catch (IOException e) {
+            throw new OctaveException(e);
+        }
     }
 
     /**
@@ -70,7 +82,8 @@ public class Octave {
      * @param stderr
      * @throws OctaveException
      */
-    public Octave(Writer stdin, PrintWriter stdout, Writer stderr)
+    @Deprecated
+    public Octave(Writer stdin, Writer stdout, Writer stderr)
             throws OctaveException {
         this(stdin, stdout, stderr, null);
     }
@@ -80,7 +93,8 @@ public class Octave {
      * @param stderr
      * @throws OctaveException
      */
-    public Octave(PrintWriter stdout, Writer stderr) throws OctaveException {
+    @Deprecated
+    public Octave(Writer stdout, Writer stderr) throws OctaveException {
         this(null, stdout, stderr);
     }
 
@@ -88,8 +102,8 @@ public class Octave {
      * @throws OctaveException
      */
     public Octave() throws OctaveException {
-        this(null, new PrintWriter(new OutputStreamWriter(System.out)),
-                new OutputStreamWriter(System.err));
+        this(null, new OutputStreamWriter(System.out), new OutputStreamWriter(
+                System.err), null);
     }
 
     private Random random = new Random();
@@ -115,9 +129,9 @@ public class Octave {
         String spacer = generateSpacer();
         assert isSpacer(spacer);
         OctaveInputThread octaveInputThread = new OctaveInputThread(
-                inputReader, writer, spacer, this);
-        OctaveExecuteReader outputReader = new OctaveExecuteReader(reader,
-                spacer, octaveInputThread, this);
+                inputReader, processWriter, spacer, this);
+        OctaveExecuteReader outputReader = new OctaveExecuteReader(
+                processReader, spacer, octaveInputThread, this);
         setExecuteState(ExecuteState.BOTH_RUNNING);
         octaveInputThread.start();
         return outputReader;
@@ -139,8 +153,8 @@ public class Octave {
                 if (len == -1)
                     break;
                 if (echo) {
-                    stdout.write(cbuf, 0, len);
-                    stdout.flush();
+                    stdoutLog.write(cbuf, 0, len);
+                    stdoutLog.flush();
                 }
             }
             resultReader.close();
@@ -218,10 +232,10 @@ public class Octave {
         BufferedReader resultReader = new BufferedReader(
                 executeReader(new StringReader("save -text - " + name)));
         try {
-            String line = reader.readLine();
+            String line = processReader.readLine();
             if (line == null || !line.startsWith("# Created by Octave 2.9"))
                 throw new OctaveException("huh? " + line);
-            line = reader.readLine();
+            line = processReader.readLine();
             if (line == null || !line.equals("# name: " + name))
                 if (isSpacer(line))
                     throw new OctaveException("no such variable '" + name + "'");
@@ -243,15 +257,15 @@ public class Octave {
     public void close() throws OctaveException {
         assert check();
         setExecuteState(ExecuteState.CLOSING);
-        writer.write("exit\n");
-        writer.close();
         try {
-            String read = reader.readLine();
+            processWriter.write("exit\n");
+            processWriter.close();
+            String read = processReader.readLine();
             if (read != null) {
                 throw new OctaveException("Expected reader to be closed: "
                         + read);
             }
-            reader.close();
+            processReader.close();
         } catch (IOException e) {
             OctaveException octaveException = new OctaveException(
                     "reader error", e);
@@ -262,7 +276,6 @@ public class Octave {
             throw octaveException;
         }
         setExecuteState(ExecuteState.CLOSED);
-        stdout.close();
     }
 
     /**
@@ -290,9 +303,12 @@ public class Octave {
      */
     public void destroy() throws OctaveException {
         setExecuteState(ExecuteState.DESTROYED);
-        stdout.close();
-        writer.close();
         process.destroy();
+        try {
+            processWriter.close();
+        } catch (IOException e) {
+            throw new OctaveException(e);
+        }
     }
 
     @SuppressWarnings("all")

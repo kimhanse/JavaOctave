@@ -1,7 +1,6 @@
 package dk.ange.octave;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -23,7 +22,7 @@ class OctaveInputThread extends Thread {
      * @param spacer
      * @param octave
      */
-    public OctaveInputThread(Reader inputReader, PrintWriter octaveWriter,
+    public OctaveInputThread(Reader inputReader, Writer octaveWriter,
             String spacer, Octave octave) {
         this.inputReader = inputReader;
         this.octaveWriter = octaveWriter;
