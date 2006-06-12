@@ -1,6 +1,8 @@
 package dk.ange.octave;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.io.Writer;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -89,11 +91,10 @@ public class TestOctave extends TestCase {
      * 
      * @author Kim Hansen
      */
-    class DestroyThread extends Thread {
-
+    private static class DestroyThread extends Thread {
         private Octave octave;
 
-        DestroyThread(Octave octave) {
+        private DestroyThread(Octave octave) {
             this.octave = octave;
         }
 
@@ -107,4 +108,61 @@ public class TestOctave extends TestCase {
             }
         }
     }
+
+    /**
+     * Test null input to Octave()
+     * 
+     * @throws Exception
+     */
+    public void testNullInput() throws Exception {
+        Octave octave = new Octave(null, null, null, null);
+        octave.execute("disp('Test');");
+        octave.close();
+    }
+
+    /**
+     * Test if files are closed by the Octave object
+     * 
+     * @throws Exception
+     */
+    public void testFileClose() throws Exception {
+        final Writer stdin = new DontCloseWriter("stdin");
+        final Writer stdout = new DontCloseWriter("stdout");
+        final Writer stderr = new DontCloseWriter("stderr");
+        final Octave octave = new Octave(stdin, stdout, stderr, null);
+        octave.execute("disp('Test');");
+        octave.close();
+        final Octave octave2 = new Octave(stdin, stdout, stderr, null);
+        try {
+            octave2.execute("error('Test');");
+            fail();
+        } catch (OctaveException e) {
+            assertTrue(e.getCause() instanceof IOException);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static class DontCloseWriter extends Writer {
+        private final String name;
+
+        private DontCloseWriter(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void write(char[] cbuf, int off, int len) throws IOException {
+            // Don't do anything
+        }
+
+        @Override
+        public void flush() throws IOException {
+            // Don't do anything
+        }
+
+        @Override
+        public void close() throws IOException {
+            throw new IOException("DontCloseWriter '" + name + "' closed.");
+        }
+    }
+
 }

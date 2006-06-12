@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-class OctaveInputThread extends Thread {
+final class OctaveInputThread extends Thread {
 
     private static final int BUFFERSIZE = 1024;
 

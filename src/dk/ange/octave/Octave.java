@@ -19,7 +19,7 @@ import dk.ange.octave.util.TeeWriter;
 /**
  * @author Kim Hansen
  */
-public class Octave {
+public final class Octave {
 
     private static final String[] CMD_ARRAY = { "octave", "--no-history",
             "--no-init-file", "--no-line-editing", "--no-site-file", "--silent" };
@@ -57,7 +57,11 @@ public class Octave {
                     .getErrorStream()), stderrLog).start();
         }
         // Connect stdout
-        this.stdoutLog = stdoutLog;
+        if (stdoutLog == null) {
+            this.stdoutLog = new TeeWriter();
+        } else {
+            this.stdoutLog = stdoutLog;            
+        }
         processReader = new BufferedReader(new InputStreamReader(process
                 .getInputStream()));
         // Connect stdin

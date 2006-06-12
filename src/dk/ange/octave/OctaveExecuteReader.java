@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-class OctaveExecuteReader extends Reader {
+final class OctaveExecuteReader extends Reader {
 
     private BufferedReader octaveReader;
 

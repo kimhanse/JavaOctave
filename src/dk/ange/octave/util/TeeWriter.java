@@ -19,6 +19,13 @@ public class TeeWriter extends Writer {
     private Writer[] writers;
 
     /**
+     * Create a writer that doesn't do anything.
+     */
+    public TeeWriter() {
+        this.writers = new Writer[0];
+    }
+
+    /**
      * Create a single writer that writes to multiple writers.
      * 
      * @param writers
