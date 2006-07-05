@@ -60,7 +60,7 @@ public final class Octave {
         if (stdoutLog == null) {
             this.stdoutLog = new TeeWriter();
         } else {
-            this.stdoutLog = stdoutLog;            
+            this.stdoutLog = stdoutLog;
         }
         processReader = new BufferedReader(new InputStreamReader(process
                 .getInputStream()));
@@ -73,8 +73,14 @@ public final class Octave {
         }
         // Setup octave process
         try {
-            processWriter.write("crash_dumps_octave_core=0;\n");
-            processWriter.write("sigterm_dumps_octave_core=0;\n");
+            final InputStreamReader setup = new InputStreamReader(getClass()
+                    .getResourceAsStream("setup.m"));
+            final char[] buffer = new char[4096];
+            int len;
+            while ((len = setup.read(buffer)) != -1) {
+                processWriter.write(buffer, 0, len);
+            }
+            setup.close();
         } catch (IOException e) {
             throw new OctaveException(e);
         }
@@ -290,11 +296,11 @@ public final class Octave {
      *             when the executeState is illegal
      */
     public boolean check() throws OctaveException {
-        ExecuteState executeState = getExecuteState();
-        if (executeState != ExecuteState.NONE) {
+        ExecuteState executeState2 = getExecuteState();
+        if (executeState2 != ExecuteState.NONE) {
             OctaveException octaveException = new OctaveException(
-                    "Failed check(), executeState=" + executeState);
-            if (executeState == ExecuteState.DESTROYED) {
+                    "Failed check(), executeState=" + executeState2);
+            if (executeState2 == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
             throw octaveException;

@@ -33,15 +33,15 @@ public class OctaveMatrix extends OctaveType {
         data = new double[rows * columns];
     }
 
-    private void init(int rows, int columns) throws IllegalArgumentException {
-        this.rows = rows;
-        this.columns = columns;
-        if (rows < 0)
+    private void init(int rows_, int columns_) throws IllegalArgumentException {
+        this.rows = rows_;
+        this.columns = columns_;
+        if (rows_ < 0)
             throw new IllegalArgumentException("rows less than zero. rows="
-                    + rows);
-        if (columns < 0)
+                    + rows_);
+        if (columns_ < 0)
             throw new IllegalArgumentException(
-                    "columns less than zero. columns=" + columns);
+                    "columns less than zero. columns=" + columns_);
     }
 
     /**

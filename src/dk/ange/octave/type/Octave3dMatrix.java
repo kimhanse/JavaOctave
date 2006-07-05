@@ -31,20 +31,20 @@ public class Octave3dMatrix extends OctaveType {
         }
     }
 
-    private void init(int rows, int columns, int depth)
+    private void init(int rows_, int columns_, int depth_)
             throws IllegalArgumentException {
-        if (rows < 0)
+        if (rows_ < 0)
             throw new IllegalArgumentException("rows in size less than zero. ="
-                    + rows);
-        if (columns < 0)
+                    + rows_);
+        if (columns_ < 0)
             throw new IllegalArgumentException(
-                    "columns in size less than zero. =" + columns);
-        if (depth < 0)
+                    "columns in size less than zero. =" + columns_);
+        if (depth_ < 0)
             throw new IllegalArgumentException("depth less than zero. ="
-                    + depth);
-        this.rows = rows;
-        this.columns = columns;
-        this.depth = depth;
+                    + depth_);
+        this.rows = rows_;
+        this.columns = columns_;
+        this.depth = depth_;
     }
 
     /**

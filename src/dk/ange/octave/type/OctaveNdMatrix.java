@@ -30,15 +30,15 @@ public class OctaveNdMatrix extends OctaveType {
         return p;
     }
 
-    private void init(int... size) throws IllegalArgumentException {
-        if (size.length == 0)
+    private void init(int... size_) throws IllegalArgumentException {
+        if (size_.length == 0)
             throw new IllegalArgumentException("no size");
-        for (int s : size) {
+        for (int s : size_) {
             if (s < 0)
                 throw new IllegalArgumentException(
                         "element in size less than zero. =" + s);
         }
-        this.size = size;
+        this.size = size_;
         // FIXME NOT IMPLEMENTED
         throw new IllegalArgumentException("NOT IMPLEMENTED");
     }
