@@ -34,9 +34,18 @@ Known targets:
     </copy>
   </target>
 
+  <!-- target: version -->
+  <target name="version">
+    <exec executable="svnversion" outputproperty="svn.version" />
+  </target>
+
   <!-- JAR -->
-  <target name="jar" depends="build,install.src">
-    <jar destfile="javaoctave.jar" basedir="build/classes" />
+  <target name="jar" depends="build,install.src,version">
+    <jar destfile="javaoctave.jar" basedir="build/classes">
+      <manifest>
+        <attribute name="SVN-Version" value="${svn.version}" />
+      </manifest>
+    </jar>
   </target>
 
   <!-- Test -->
