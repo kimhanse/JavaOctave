@@ -2,7 +2,10 @@
 if (strcmp(octave_config_info.version, "2.9.5"))
   crash_dumps_octave_core = 0;
   sigterm_dumps_octave_core = 0;
-elseif (strcmp(octave_config_info.version, "2.9.6") || strcmp(octave_config_info.version, "2.9.7") || strcmp(octave_config_info.version, "2.9.8"))
+elseif (strcmp(octave_config_info.version, "2.9.6") || 
+        strcmp(octave_config_info.version, "2.9.7") || 
+        strcmp(octave_config_info.version, "2.9.8") || 
+        strcmp(octave_config_info.version, "2.9.9"))
   crash_dumps_octave_core(0);
   sigterm_dumps_octave_core(0);
 else
