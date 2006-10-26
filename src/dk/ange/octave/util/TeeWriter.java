@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Executes the action on a single writer to multible writers.
+ * Executes the action on a single writer to multiple writers.
  * 
  * If the list of writers in the constructor is empty everything that is written
  * will be discarted.

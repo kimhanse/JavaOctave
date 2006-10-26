@@ -87,28 +87,6 @@ public final class Octave {
     }
 
     /**
-     * @param stdin
-     * @param stdout
-     * @param stderr
-     * @throws OctaveException
-     */
-    @Deprecated
-    public Octave(Writer stdin, Writer stdout, Writer stderr)
-            throws OctaveException {
-        this(stdin, stdout, stderr, null);
-    }
-
-    /**
-     * @param stdout
-     * @param stderr
-     * @throws OctaveException
-     */
-    @Deprecated
-    public Octave(Writer stdout, Writer stderr) throws OctaveException {
-        this(null, stdout, stderr);
-    }
-
-    /**
      * @throws OctaveException
      */
     public Octave() throws OctaveException {
