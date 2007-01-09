@@ -1,5 +1,6 @@
 package dk.ange.octave;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
@@ -116,6 +117,18 @@ public class TestOctave extends TestCase {
      */
     public void testNullInput() throws Exception {
         Octave octave = new Octave(null, null, null, null);
+        octave.execute("disp('Test');");
+        octave.close();
+    }
+
+    /**
+     * Test advanced Constructor to Octave()
+     * TODO Detect path instead of having it hardcoded
+     * 
+     * @throws Exception
+     */
+    public void testConstructor() throws Exception {
+        Octave octave = new Octave(null, null, null, null,new File("/usr/bin/octave"),null);
         octave.execute("disp('Test');");
         octave.close();
     }

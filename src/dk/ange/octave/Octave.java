@@ -26,13 +26,13 @@ public final class Octave {
 
     private static final int BUFFERSIZE = 8192;
 
-    private Process process;
+    private final Process process;
 
-    private Writer processWriter;
+    private final Writer processWriter;
 
-    private BufferedReader processReader;
+    private final BufferedReader processReader;
 
-    private Writer stdoutLog;
+    private final Writer stdoutLog;
 
     /**
      * @param stdinLog
@@ -43,8 +43,26 @@ public final class Octave {
      */
     public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog, File dir)
             throws OctaveException {
+        this(stdinLog,stdoutLog,stderrLog,dir,null,null);
+    }
+    
+    /**
+     * 
+     * @param stdinLog
+     * @param stdoutLog
+     * @param stderrLog
+     * @param dir
+     * @param path
+     * @param env
+     * @throws OctaveException
+     */
+    public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog, File dir, File path, String[] env)
+        throws OctaveException {
         try {
-            process = Runtime.getRuntime().exec(CMD_ARRAY, null, dir);
+            String[] cmdArray=CMD_ARRAY.clone();
+            if (path!=null)
+                cmdArray[0]=path.getPath();
+            process = Runtime.getRuntime().exec(cmdArray, env, dir);
         } catch (IOException e) {
             throw new OctaveException(e);
         }
