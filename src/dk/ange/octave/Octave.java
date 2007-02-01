@@ -21,8 +21,8 @@ import dk.ange.octave.util.TeeWriter;
  */
 public final class Octave {
 
-    private static final String[] CMD_ARRAY = { "octave", "--no-history",
-            "--no-init-file", "--no-line-editing", "--no-site-file", "--silent" };
+    private static final String[] CMD_ARRAY = { "octave", "--no-history", "--no-init-file", "--no-line-editing",
+            "--no-site-file", "--silent" };
 
     private static final int BUFFERSIZE = 8192;
 
@@ -35,44 +35,48 @@ public final class Octave {
     private final Writer stdoutLog;
 
     /**
-     * @param stdinLog
-     * @param stdoutLog
-     * @param stderrLog
-     * @param dir
-     * @throws OctaveException
-     */
-    public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog, File dir)
-            throws OctaveException {
-        this(stdinLog,stdoutLog,stderrLog,dir,null,null);
-    }
-    
-    /**
+     * Will start the octave process.
      * 
      * @param stdinLog
+     *            This writer will capture all that is written to the octave
+     *            process via stdin, if null the data will not be captured.
      * @param stdoutLog
+     *            This writer will capture all that is written from the octave
+     *            process on stdout, if null the data will not be captured.
      * @param stderrLog
-     * @param dir
-     * @param path
-     * @param env
+     *            This writer will capture all that is written from the octave
+     *            process on stderr, if null the data will not be captured.
+     * @param octaveProgram
+     *            This is the path to the octave program, if it is null the
+     *            program 'octave' will be assumed to be in the PATH.
+     * @param environment
+     *            The environment for the octave process, if null the process
+     *            will inherit the environment for the virtual mashine.
+     * @param workingDir
+     *            This will be the working dir for the octave process, if null
+     *            the process will inherit the working dir of the current
+     *            process.
      * @throws OctaveException
      */
-    public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog, File dir, File path, String[] env)
-        throws OctaveException {
+    public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog, File octaveProgram, String[] environment,
+            File workingDir) throws OctaveException {
+        final String[] cmdArray;
+        if (octaveProgram == null) {
+            cmdArray = CMD_ARRAY;
+        } else {
+            cmdArray = CMD_ARRAY.clone();
+            cmdArray[0] = octaveProgram.getPath();
+        }
         try {
-            String[] cmdArray=CMD_ARRAY.clone();
-            if (path!=null)
-                cmdArray[0]=path.getPath();
-            process = Runtime.getRuntime().exec(cmdArray, env, dir);
+            process = Runtime.getRuntime().exec(cmdArray, environment, workingDir);
         } catch (IOException e) {
             throw new OctaveException(e);
         }
         // Connect stderr
         if (stderrLog == null) {
-            new ReaderSinkThread(
-                    new InputStreamReader(process.getErrorStream())).start();
+            new ReaderSinkThread(new InputStreamReader(process.getErrorStream())).start();
         } else {
-            new ReaderWriterPipeThread(new InputStreamReader(process
-                    .getErrorStream()), stderrLog).start();
+            new ReaderWriterPipeThread(new InputStreamReader(process.getErrorStream()), stderrLog).start();
         }
         // Connect stdout
         if (stdoutLog == null) {
@@ -80,8 +84,7 @@ public final class Octave {
         } else {
             this.stdoutLog = stdoutLog;
         }
-        processReader = new BufferedReader(new InputStreamReader(process
-                .getInputStream()));
+        processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         // Connect stdin
         if (stdinLog == null) {
             processWriter = new OutputStreamWriter(process.getOutputStream());
@@ -91,8 +94,7 @@ public final class Octave {
         }
         // Setup octave process
         try {
-            final InputStreamReader setup = new InputStreamReader(getClass()
-                    .getResourceAsStream("setup.m"));
+            final InputStreamReader setup = new InputStreamReader(getClass().getResourceAsStream("setup.m"));
             final char[] buffer = new char[4096];
             int len;
             while ((len = setup.read(buffer)) != -1) {
@@ -105,23 +107,41 @@ public final class Octave {
     }
 
     /**
+     * Will start the octave process in a standard environment.
+     * 
+     * @param stdinLog
+     *            This writer will capture all that is written to the octave
+     *            process via stdin, if null the data will not be captured.
+     * @param stdoutLog
+     *            This writer will capture all that is written from the octave
+     *            process on stdout, if null the data will not be captured.
+     * @param stderrLog
+     *            This writer will capture all that is written from the octave
+     *            process on stderr, if null the data will not be captured.
+     * @throws OctaveException
+     */
+    public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog) throws OctaveException {
+        this(stdinLog, stdoutLog, stderrLog, null, null, null);
+    }
+
+    /**
+     * Will start the octave process with its output connected to System.out and
+     * System.err.
+     * 
      * @throws OctaveException
      */
     public Octave() throws OctaveException {
-        this(null, new OutputStreamWriter(System.out), new OutputStreamWriter(
-                System.err), null);
+        this(null, new OutputStreamWriter(System.out), new OutputStreamWriter(System.err));
     }
 
     private Random random = new Random();
 
     private String generateSpacer() {
-        return "-=+X+=- Octave.java spacer -=+X+=- " + random.nextLong()
-                + " -=+X+=-";
+        return "-=+X+=- Octave.java spacer -=+X+=- " + random.nextLong() + " -=+X+=-";
     }
 
     private boolean isSpacer(String string) {
-        return string.matches("-=\\+X\\+=- Octave\\.java spacer -=\\+X\\+=- "
-                + ".* -=\\+X\\+=-");
+        return string.matches("-=\\+X\\+=- Octave\\.java spacer -=\\+X\\+=- " + ".* -=\\+X\\+=-");
     }
 
     /**
@@ -134,10 +154,8 @@ public final class Octave {
         assert check();
         String spacer = generateSpacer();
         assert isSpacer(spacer);
-        OctaveInputThread octaveInputThread = new OctaveInputThread(
-                inputReader, processWriter, spacer, this);
-        OctaveExecuteReader outputReader = new OctaveExecuteReader(
-                processReader, spacer, octaveInputThread, this);
+        OctaveInputThread octaveInputThread = new OctaveInputThread(inputReader, processWriter, spacer, this);
+        OctaveExecuteReader outputReader = new OctaveExecuteReader(processReader, spacer, octaveInputThread, this);
         setExecuteState(ExecuteState.BOTH_RUNNING);
         octaveInputThread.start();
         return outputReader;
@@ -148,8 +166,7 @@ public final class Octave {
      * @param echo
      * @throws OctaveException
      */
-    public void execute(Reader inputReader, boolean echo)
-            throws OctaveException {
+    public void execute(Reader inputReader, boolean echo) throws OctaveException {
         assert check();
         Reader resultReader = executeReader(inputReader);
         try {
@@ -212,9 +229,7 @@ public final class Octave {
             int len = resultReader.read(cbuf);
             if (len != -1) {
                 String buffer = new String(cbuf, 0, len);
-                throw new OctaveException(
-                        "Unexpected output when setting variable in octave: "
-                                + buffer);
+                throw new OctaveException("Unexpected output when setting variable in octave: " + buffer);
             }
             resultReader.close();
         } catch (IOException e) {
@@ -235,8 +250,7 @@ public final class Octave {
      */
     public BufferedReader get(String name) throws OctaveException {
         assert check();
-        BufferedReader resultReader = new BufferedReader(
-                executeReader(new StringReader("save -text - " + name)));
+        BufferedReader resultReader = new BufferedReader(executeReader(new StringReader("save -text - " + name)));
         try {
             String line = processReader.readLine();
             if (line == null || !line.startsWith("# Created by Octave 2.9"))
@@ -268,13 +282,11 @@ public final class Octave {
             processWriter.close();
             String read = processReader.readLine();
             if (read != null) {
-                throw new OctaveException("Expected reader to be closed: "
-                        + read);
+                throw new OctaveException("Expected reader to be closed: " + read);
             }
             processReader.close();
         } catch (IOException e) {
-            OctaveException octaveException = new OctaveException(
-                    "reader error", e);
+            OctaveException octaveException = new OctaveException("reader error", e);
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
@@ -294,8 +306,7 @@ public final class Octave {
     public boolean check() throws OctaveException {
         ExecuteState executeState2 = getExecuteState();
         if (executeState2 != ExecuteState.NONE) {
-            OctaveException octaveException = new OctaveException(
-                    "Failed check(), executeState=" + executeState2);
+            OctaveException octaveException = new OctaveException("Failed check(), executeState=" + executeState2);
             if (executeState2 == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
@@ -328,13 +339,11 @@ public final class Octave {
         return executeState;
     }
 
-    synchronized void setExecuteState(ExecuteState executeState)
-            throws OctaveException {
+    synchronized void setExecuteState(ExecuteState executeState) throws OctaveException {
         // Throw exception with isDestroyed if state changes from DESTROYED
         if (this.executeState == ExecuteState.DESTROYED) {
-            OctaveException octaveException = new OctaveException(
-                    "setExecuteState Error: " + this.executeState + " -> "
-                            + executeState);
+            OctaveException octaveException = new OctaveException("setExecuteState Error: " + this.executeState
+                    + " -> " + executeState);
             octaveException.setDestroyed(true);
             throw octaveException;
         }
@@ -345,18 +354,12 @@ public final class Octave {
         // - NONE -> CLOSING
         // - CLOSING -> CLOSED
         // - * -> DESTROYED
-        if (!(this.executeState == ExecuteState.NONE
-                && executeState == ExecuteState.BOTH_RUNNING
-                || this.executeState == ExecuteState.BOTH_RUNNING
-                && executeState == ExecuteState.WRITER_OK
-                || this.executeState == ExecuteState.WRITER_OK
-                && executeState == ExecuteState.NONE
-                || this.executeState == ExecuteState.NONE
-                && executeState == ExecuteState.CLOSING
-                || this.executeState == ExecuteState.CLOSING
-                && executeState == ExecuteState.CLOSED || executeState == ExecuteState.DESTROYED)) {
-            throw new OctaveException("setExecuteState Error: "
-                    + this.executeState + " -> " + executeState);
+        if (!(this.executeState == ExecuteState.NONE && executeState == ExecuteState.BOTH_RUNNING
+                || this.executeState == ExecuteState.BOTH_RUNNING && executeState == ExecuteState.WRITER_OK
+                || this.executeState == ExecuteState.WRITER_OK && executeState == ExecuteState.NONE
+                || this.executeState == ExecuteState.NONE && executeState == ExecuteState.CLOSING
+                || this.executeState == ExecuteState.CLOSING && executeState == ExecuteState.CLOSED || executeState == ExecuteState.DESTROYED)) {
+            throw new OctaveException("setExecuteState Error: " + this.executeState + " -> " + executeState);
         }
         this.executeState = executeState;
     }

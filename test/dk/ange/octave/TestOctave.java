@@ -116,19 +116,20 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testNullInput() throws Exception {
-        Octave octave = new Octave(null, null, null, null);
+        Octave octave = new Octave(null, null, null);
         octave.execute("disp('Test');");
         octave.close();
     }
 
     /**
      * Test advanced Constructor to Octave()
+     * 
      * TODO Detect path instead of having it hardcoded
      * 
      * @throws Exception
      */
     public void testConstructor() throws Exception {
-        Octave octave = new Octave(null, null, null, null,new File("/usr/bin/octave"),null);
+        Octave octave = new Octave(null, null, null, new File("/usr/bin/octave"), null, null);
         octave.execute("disp('Test');");
         octave.close();
     }
@@ -142,10 +143,10 @@ public class TestOctave extends TestCase {
         final Writer stdin = new DontCloseWriter("stdin");
         final Writer stdout = new DontCloseWriter("stdout");
         final Writer stderr = new DontCloseWriter("stderr");
-        final Octave octave = new Octave(stdin, stdout, stderr, null);
+        final Octave octave = new Octave(stdin, stdout, stderr);
         octave.execute("disp('Test');");
         octave.close();
-        final Octave octave2 = new Octave(stdin, stdout, stderr, null);
+        final Octave octave2 = new Octave(stdin, stdout, stderr);
         try {
             octave2.execute("error('Test');");
             fail();
