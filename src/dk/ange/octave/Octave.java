@@ -11,8 +11,8 @@ import java.io.Writer;
 import java.util.Random;
 
 import dk.ange.octave.type.OctaveType;
+import dk.ange.octave.util.InputStreamSinkThread;
 import dk.ange.octave.util.NoCloseWriter;
-import dk.ange.octave.util.ReaderSinkThread;
 import dk.ange.octave.util.ReaderWriterPipeThread;
 import dk.ange.octave.util.TeeWriter;
 
@@ -34,28 +34,32 @@ public final class Octave {
 
     private final Writer stdoutLog;
 
+    /*
+     * TODO We should wait() on this thread before stderrLog is close()'d
+     */
+    private final Thread errorStreamThread;
+
     /**
      * Will start the octave process.
      * 
      * @param stdinLog
-     *            This writer will capture all that is written to the octave
-     *            process via stdin, if null the data will not be captured.
+     *            This writer will capture all that is written to the octave process via stdin, if null the data will
+     *            not be captured.
      * @param stdoutLog
-     *            This writer will capture all that is written from the octave
-     *            process on stdout, if null the data will not be captured.
+     *            This writer will capture all that is written from the octave process on stdout, if null the data will
+     *            not be captured.
      * @param stderrLog
-     *            This writer will capture all that is written from the octave
-     *            process on stderr, if null the data will not be captured.
+     *            This writer will capture all that is written from the octave process on stderr, if null the data will
+     *            not be captured.
      * @param octaveProgram
-     *            This is the path to the octave program, if it is null the
-     *            program 'octave' will be assumed to be in the PATH.
+     *            This is the path to the octave program, if it is null the program 'octave' will be assumed to be in
+     *            the PATH.
      * @param environment
-     *            The environment for the octave process, if null the process
-     *            will inherit the environment for the virtual mashine.
+     *            The environment for the octave process, if null the process will inherit the environment for the
+     *            virtual mashine.
      * @param workingDir
-     *            This will be the working dir for the octave process, if null
-     *            the process will inherit the working dir of the current
-     *            process.
+     *            This will be the working dir for the octave process, if null the process will inherit the working dir
+     *            of the current process.
      * @throws OctaveException
      */
     public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog, File octaveProgram, String[] environment,
@@ -74,9 +78,11 @@ public final class Octave {
         }
         // Connect stderr
         if (stderrLog == null) {
-            new ReaderSinkThread(new InputStreamReader(process.getErrorStream())).start();
+            new InputStreamSinkThread(process.getErrorStream()).start();
+            errorStreamThread = null;
         } else {
-            new ReaderWriterPipeThread(new InputStreamReader(process.getErrorStream()), stderrLog).start();
+            errorStreamThread = new ReaderWriterPipeThread(new InputStreamReader(process.getErrorStream()), stderrLog);
+            errorStreamThread.start();
         }
         // Connect stdout
         if (stdoutLog == null) {
@@ -110,14 +116,14 @@ public final class Octave {
      * Will start the octave process in a standard environment.
      * 
      * @param stdinLog
-     *            This writer will capture all that is written to the octave
-     *            process via stdin, if null the data will not be captured.
+     *            This writer will capture all that is written to the octave process via stdin, if null the data will
+     *            not be captured.
      * @param stdoutLog
-     *            This writer will capture all that is written from the octave
-     *            process on stdout, if null the data will not be captured.
+     *            This writer will capture all that is written from the octave process on stdout, if null the data will
+     *            not be captured.
      * @param stderrLog
-     *            This writer will capture all that is written from the octave
-     *            process on stderr, if null the data will not be captured.
+     *            This writer will capture all that is written from the octave process on stderr, if null the data will
+     *            not be captured.
      * @throws OctaveException
      */
     public Octave(Writer stdinLog, Writer stdoutLog, Writer stderrLog) throws OctaveException {
@@ -125,8 +131,7 @@ public final class Octave {
     }
 
     /**
-     * Will start the octave process with its output connected to System.out and
-     * System.err.
+     * Will start the octave process with its output connected to System.out and System.err.
      * 
      * @throws OctaveException
      */
@@ -146,8 +151,7 @@ public final class Octave {
 
     /**
      * @param inputReader
-     * @return Returns a Reader that will return the result from the statements
-     *         that octave gets from the inputReader
+     * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
      * @throws OctaveException
      */
     public Reader executeReader(Reader inputReader) throws OctaveException {
@@ -244,8 +248,7 @@ public final class Octave {
 
     /**
      * @param name
-     * @return Returns a Reader that will return the value of the variable name
-     *         in the octave-text format
+     * @return Returns a Reader that will return the value of the variable name in the octave-text format
      * @throws OctaveException
      */
     public BufferedReader get(String name) throws OctaveException {
@@ -297,9 +300,8 @@ public final class Octave {
     }
 
     /**
-     * @return Returns always true, return value is needed in order for this to
-     *         be used in assert statements. If there was an error
-     *         OctaveException would be thrown.
+     * @return Returns always true, return value is needed in order for this to be used in assert statements. If there
+     *         was an error OctaveException would be thrown.
      * @throws OctaveException
      *             when the executeState is illegal
      */

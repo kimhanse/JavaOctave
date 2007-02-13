@@ -3,18 +3,22 @@ package dk.ange.octave.util;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- * Executes the action on a single writer to multiple writers.
+ * Executes the actions on a single writer to multiple writers.
  * 
- * If the list of writers in the constructor is empty everything that is written
- * will be discarted.
+ * If the list of writers in the constructor is empty everything that is written will be discarted.
  * 
- * If there is thrown an exception the writers at the end of the list will not
- * get the writes. TODO Handle exceptions better.
+ * If there is thrown one or more exception all writers will still be accessed, the exceptions will be logged and the
+ * last exception thrown will be passed on outside.
  * 
  * @author Kim Hansen
  */
 public class TeeWriter extends Writer {
+
+    private static final Log log = LogFactory.getLog(TeeWriter.class);
 
     private Writer[] writers;
 
@@ -37,22 +41,49 @@ public class TeeWriter extends Writer {
 
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
+        IOException ioe = null;
         for (Writer writer : writers) {
-            writer.write(cbuf, off, len);
+            try {
+                writer.write(cbuf, off, len);
+            } catch (IOException e) {
+                log.info("Exception during write()", e);
+                ioe = e;
+            }
+        }
+        if (ioe != null) {
+            throw ioe;
         }
     }
 
     @Override
     public void flush() throws IOException {
+        IOException ioe = null;
         for (Writer writer : writers) {
-            writer.flush();
+            try {
+                writer.flush();
+            } catch (IOException e) {
+                log.info("Exception during flush()", e);
+                ioe = e;
+            }
+        }
+        if (ioe != null) {
+            throw ioe;
         }
     }
 
     @Override
     public void close() throws IOException {
+        IOException ioe = null;
         for (Writer writer : writers) {
-            writer.close();
+            try {
+                writer.close();
+            } catch (IOException e) {
+                log.info("Exception during close()", e);
+                ioe = e;
+            }
+        }
+        if (ioe != null) {
+            throw ioe;
         }
     }
 

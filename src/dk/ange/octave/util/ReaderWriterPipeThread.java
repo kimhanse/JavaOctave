@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author Kim Hansen
  * 
@@ -11,13 +14,18 @@ import java.io.Writer;
  */
 public class ReaderWriterPipeThread extends Thread {
 
-    private static final int BUFFERSIZE = 8192;
+    private static final Log log = LogFactory.getLog(ReaderWriterPipeThread.class);
+
+    private static final int BUFFERSIZE = 4 * 1024;
 
     private final Reader reader;
 
     private final Writer writer;
 
     /**
+     * Will create a thread that reads from reader and writes to write until reader reaches EOF. Then it will close
+     * reader and finish. Remember to wait() on this thread before writer is closed.
+     * 
      * @param reader
      * @param writer
      */
@@ -28,25 +36,33 @@ public class ReaderWriterPipeThread extends Thread {
 
     @Override
     public void run() {
-        try {
-            final char[] cbuf = new char[BUFFERSIZE];
-            while (true) {
-                final int c = reader.read(cbuf);
-                if (c < 0)
-                    break;
-                writer.write(cbuf, 0, c);
-                writer.flush();
-            }
-            reader.close();
-            writer.flush(); // Don't close writer, other programs might use it
-        } catch (IOException e1) {
+        final char[] b = new char[BUFFERSIZE];
+        while (true) {
+            final int len;
             try {
-                writer.write(e1.getMessage());
+                len = reader.read(b);
+            } catch (IOException e) {
+                log.info("Error when reading from reader", e);
+                return;
+            }
+            if (len == -1) // eof
+                break;
+            try {
+                writer.write(b, 0, len);
                 writer.flush();
-            } catch (IOException e2) {
-                e2.printStackTrace();
+            } catch (IOException e) {
+                log.info("Error when writing to writer", e);
+                return;
             }
         }
+        try {
+            reader.close();
+            // Don't close writer, other programs might use it
+        } catch (IOException e) {
+            log.info("Error when closing reader", e);
+            return;
+        }
+        log.debug("ReaderWriterPipeThread finished without error");
     }
 
 }

@@ -3,13 +3,17 @@ package dk.ange.octave.util;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- * Will protect a Writer from beeing closed by .close(), usefull for protecting
- * stdout and stderr from beeing closed.
+ * Will protect a Writer from beeing closed by .close(), usefull for protecting stdout and stderr from beeing closed.
  * 
  * @author Kim Hansen
  */
 public class NoCloseWriter extends Writer {
+
+    private static final Log log = LogFactory.getLog(NoCloseWriter.class);
 
     private Writer writer;
 
@@ -45,6 +49,7 @@ public class NoCloseWriter extends Writer {
      */
     @Override
     public void close() throws IOException {
+        log.debug("ignoring close() on a writer");
         if (writer == null)
             return;
         writer.flush();
@@ -60,6 +65,7 @@ public class NoCloseWriter extends Writer {
      *             if the NoCloseWriter has been closed.
      */
     public void reallyClose() throws IOException {
+        log.debug("reallyClose() a writer");
         writer.close();
     }
 
