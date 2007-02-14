@@ -7,6 +7,8 @@ import java.io.Reader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dk.ange.octave.util.StringUtil;
+
 /**
  * Reader that passes the reading on to the output from the octave process until the spacer reached, then it returns
  * EOF.
@@ -53,6 +55,9 @@ final class OctaveExecuteReader extends Reader {
             return -1;
         if (buffer == null) {
             String line = octaveReader.readLine();
+            if (log.isTraceEnabled()) {
+                log.trace("octaveReader.readLine() = " + StringUtil.jQuote(line));
+            }
             if (line == null) {
                 throw new IOException("Pipe to octave-process broken");
             }

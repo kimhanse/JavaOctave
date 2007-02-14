@@ -7,6 +7,8 @@ import java.io.Writer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dk.ange.octave.util.StringUtil;
+
 /**
  * @author Kim Hansen
  */
@@ -45,6 +47,9 @@ final class OctaveInputThread extends Thread {
                 int c = inputReader.read(cbuf);
                 if (c < 0)
                     break;
+                if (log.isTraceEnabled()) {
+                    log.trace("octaveWriter.write(" + StringUtil.jQuote(cbuf, c) + ", 0, " + c + ")");
+                }
                 octaveWriter.write(cbuf, 0, c);
                 octaveWriter.flush();
             }
