@@ -24,7 +24,7 @@ public class ReaderWriterPipeThread extends Thread {
 
     /**
      * Will create a thread that reads from reader and writes to write until reader reaches EOF. Then it will close
-     * reader and finish. Remember to wait() on this thread before writer is closed.
+     * reader and finish. Remember to join() this thread before writer is closed.
      * 
      * @param reader
      * @param writer

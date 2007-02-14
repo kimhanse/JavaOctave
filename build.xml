@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="usage">
 
-  <target name="usage">
-    <echo>
-Known targets:
+  <path id="classpath">
+    <fileset dir="lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
 
-    clean
-    build
-    test
-    jar
-    </echo>
+  <!-- Usage -->
+  <target name="usage" description="--> This help">
+    <java classname="org.apache.tools.ant.Main">
+      <arg value="-projecthelp" />
+      <arg value="-buildfile" />
+      <arg value="${ant.file}" />
+    </java>
   </target>
 
   <!-- Clean build directories -->
-  <target name="clean" description="Clean output dirs">
+  <target name="clean" description="--> Clean output dirs">
     <delete dir="build" />
     <delete file="javaoctave.jar" />
   </target>
 
   <!-- Build -->
-  <target name="build">
+  <target name="build" description="--> Compile classes">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
-    <javac destdir="build/classes" debug="true">
+    <javac destdir="build/classes" debug="true" classpathref="classpath" >
       <src path="src" />
     </javac>
   </target>
@@ -30,17 +34,13 @@ Known targets:
   <!-- Install source -->
   <target name="install.src">
     <copy todir="build/classes">
-        <fileset dir="src" />
+      <fileset dir="src" />
     </copy>
   </target>
 
-  <!-- target: version -->
-  <target name="version">
-    <exec executable="svnversion" outputproperty="svn.version" />
-  </target>
-
   <!-- JAR -->
-  <target name="jar" depends="build,install.src,version">
+  <target name="jar" depends="build,install.src" description="--> Assemble jar">
+    <exec executable="svnversion" outputproperty="svn.version" />
     <jar destfile="javaoctave.jar" basedir="build/classes">
       <manifest>
         <attribute name="SVN-Version" value="${svn.version}" />
@@ -49,15 +49,19 @@ Known targets:
   </target>
 
   <!-- Test -->
-  <target name="test" depends="jar">
+  <target name="test" depends="jar" description="--> Run unit tests">
     <mkdir dir="build/test" />
-    <javac destdir="build/test" debug="true">
+    <javac destdir="build/test" debug="true" classpathref="classpath" >
       <classpath location="javaoctave.jar" />
       <src path="test" />
     </javac>
     <junit fork="yes" haltonfailure="no">
-      <classpath location="build/test" />
-      <classpath location="javaoctave.jar" />
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="build/test" />
+        <pathelement location="javaoctave.jar" />
+        <pathelement location="." />
+      </classpath>
       <batchtest>
         <fileset dir="build/test">
           <include name="**/Test*.class" />

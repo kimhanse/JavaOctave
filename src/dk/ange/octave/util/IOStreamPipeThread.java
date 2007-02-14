@@ -24,7 +24,7 @@ public final class IOStreamPipeThread extends Thread {
 
     /**
      * Will create a thread that reads from inputStream and writes to outputStream until inputStream reaches EOF. Then
-     * it will close inputStream and finish. Remember to wait() on this thread before outputStream is closed.
+     * it will close inputStream and finish. Remember to join() this thread before outputStream is closed.
      * 
      * @param inputStream
      * @param outputStream

@@ -10,6 +10,9 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.util.Random;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import dk.ange.octave.type.OctaveType;
 import dk.ange.octave.util.InputStreamSinkThread;
 import dk.ange.octave.util.NoCloseWriter;
@@ -20,6 +23,8 @@ import dk.ange.octave.util.TeeWriter;
  * @author Kim Hansen
  */
 public final class Octave {
+
+    private static final Log log = LogFactory.getLog(Octave.class);
 
     private static final String[] CMD_ARRAY = { "octave", "--no-history", "--no-init-file", "--no-line-editing",
             "--no-site-file", "--silent" };
@@ -146,7 +151,7 @@ public final class Octave {
     }
 
     private boolean isSpacer(String string) {
-        return string.matches("-=\\+X\\+=- Octave\\.java spacer -=\\+X\\+=- " + ".* -=\\+X\\+=-");
+        return string.matches("-=\\+X\\+=- Octave\\.java spacer -=\\+X\\+=- .* -=\\+X\\+=-");
     }
 
     /**
@@ -363,6 +368,7 @@ public final class Octave {
                 || this.executeState == ExecuteState.CLOSING && executeState == ExecuteState.CLOSED || executeState == ExecuteState.DESTROYED)) {
             throw new OctaveException("setExecuteState Error: " + this.executeState + " -> " + executeState);
         }
+        log.debug("State changed from " + this.executeState + " to " + executeState);
         this.executeState = executeState;
     }
 

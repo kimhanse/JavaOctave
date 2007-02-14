@@ -4,9 +4,17 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * @author Kim Hansen
+ */
 final class OctaveInputThread extends Thread {
 
-    private static final int BUFFERSIZE = 1024;
+    private static final Log log = LogFactory.getLog(OctaveInputThread.class);
+
+    private static final int BUFFERSIZE = 4 * 1024;
 
     private Reader inputReader;
 
@@ -22,8 +30,7 @@ final class OctaveInputThread extends Thread {
      * @param spacer
      * @param octave
      */
-    public OctaveInputThread(Reader inputReader, Writer octaveWriter,
-            String spacer, Octave octave) {
+    public OctaveInputThread(Reader inputReader, Writer octaveWriter, String spacer, Octave octave) {
         this.inputReader = inputReader;
         this.octaveWriter = octaveWriter;
         this.spacer = spacer;
@@ -52,10 +59,10 @@ final class OctaveInputThread extends Thread {
             if (octaveException.isDestroyed()) {
                 return;
             }
-            System.err
-                    .println("Unexpected OctaveException in OctaveInputThread");
+            System.err.println("Unexpected OctaveException in OctaveInputThread");
             octaveException.printStackTrace();
         }
+        log.debug("Thread finished succesfully");
     }
 
 }

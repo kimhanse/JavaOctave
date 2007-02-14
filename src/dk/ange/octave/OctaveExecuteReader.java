@@ -4,7 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * Reader that passes the reading on to the output from the octave process until the spacer reached, then it returns
+ * EOF.
+ * 
+ * @author Kim Hansen
+ */
 final class OctaveExecuteReader extends Reader {
+
+    private static final Log log = LogFactory.getLog(OctaveExecuteReader.class);
 
     private BufferedReader octaveReader;
 
@@ -19,13 +30,17 @@ final class OctaveExecuteReader extends Reader {
     private boolean eof = false;
 
     /**
+     * This reader will read from octaveReader until a single line equal() spacer is read, after that this reader will
+     * return eof. When this reader is closed it will join() the octaveInputThread and update the state of octave to
+     * NONE.
+     * 
      * @param octaveReader
      * @param spacer
      * @param octaveInputThread
      * @param octave
      */
-    public OctaveExecuteReader(BufferedReader octaveReader, String spacer,
-            OctaveInputThread octaveInputThread, Octave octave) {
+    public OctaveExecuteReader(BufferedReader octaveReader, String spacer, OctaveInputThread octaveInputThread,
+            Octave octave) {
         this.octaveReader = octaveReader;
         this.spacer = spacer;
         this.octaveInputThread = octaveInputThread;
@@ -76,6 +91,7 @@ final class OctaveExecuteReader extends Reader {
         } catch (OctaveException e) {
             throw new IOException("OctaveException: " + e);
         }
+        log.debug("Reader closed()");
     }
 
 }
