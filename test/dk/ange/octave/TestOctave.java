@@ -79,6 +79,7 @@ public class TestOctave extends TestCase {
      */
     public void testDestroy() throws Exception {
         Octave octave = new Octave();
+        octave.execute("sigterm_dumps_octave_core(0);");
         new DestroyThread(octave).start();
         try {
             octave.execute("sleep(10);");

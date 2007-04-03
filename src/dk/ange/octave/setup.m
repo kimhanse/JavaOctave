@@ -1,3 +1,4 @@
+THIS IS NOT USED ANYMORE
 
 if (strcmp(octave_config_info.version, "2.9.5"))
   crash_dumps_octave_core = 0;

@@ -104,6 +104,11 @@ public final class Octave {
                     new OutputStreamWriter(process.getOutputStream()));
         }
         // Setup octave process
+        // readSetup();
+    }
+
+    @SuppressWarnings("unused")
+    private void readSetup() throws OctaveException {
         try {
             final InputStreamReader setup = new InputStreamReader(getClass().getResourceAsStream("setup.m"));
             final char[] buffer = new char[4096];
