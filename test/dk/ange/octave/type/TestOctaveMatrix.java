@@ -1,5 +1,8 @@
 package dk.ange.octave.type;
 
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
@@ -27,8 +30,7 @@ public class TestOctaveMatrix extends TestCase {
         OctaveMatrix matrix = new OctaveMatrix(numbers, 2, 3);
         Assert.assertEquals(2, matrix.getRowDimension());
         Assert.assertEquals(3, matrix.getColumnDimension());
-        Assert.assertEquals("matrix=[\n 1.0 2.0 3.0\n 4.0 5.0 6.0\n];\n",
-                matrix.toOctave("matrix"));
+        Assert.assertEquals("matrix=[\n 1.0 2.0 3.0\n 4.0 5.0 6.0\n];\n", matrix.toOctave("matrix"));
     }
 
     /**
@@ -38,11 +40,9 @@ public class TestOctaveMatrix extends TestCase {
         OctaveMatrix matrix = new OctaveMatrix(2, 3);
         Assert.assertEquals(2, matrix.getRowDimension());
         Assert.assertEquals(3, matrix.getColumnDimension());
-        Assert.assertEquals("matrix=[\n 0.0 0.0 0.0\n 0.0 0.0 0.0\n];\n",
-                matrix.toOctave("matrix"));
+        Assert.assertEquals("matrix=[\n 0.0 0.0 0.0\n 0.0 0.0 0.0\n];\n", matrix.toOctave("matrix"));
         matrix.set(1, 2, 42);
-        Assert.assertEquals("matrix=[\n 0.0 42.0 0.0\n 0.0 0.0 0.0\n];\n",
-                matrix.toOctave("matrix"));
+        Assert.assertEquals("matrix=[\n 0.0 42.0 0.0\n 0.0 0.0 0.0\n];\n", matrix.toOctave("matrix"));
     }
 
     /**
@@ -119,9 +119,33 @@ public class TestOctaveMatrix extends TestCase {
             matrix.set(pos, 1, 4.2);
             matrix.set(pos, 30, 4.2);
         }
-        assertTrue("Performance test didn't finish in 100ms", System
-                .currentTimeMillis()
-                - t < 100);
+        assertTrue("Performance test didn't finish in 100ms", System.currentTimeMillis() - t < 100);
+    }
+
+    /**
+     * Test how the system handles save of Inf and NaN
+     * 
+     * @throws Exception
+     */
+    public void testSaveNanInf() throws Exception {
+        StringWriter stderr = new StringWriter();
+        Octave octave = new Octave(null, new OutputStreamWriter(System.out), stderr);
+        octave.execute("ok=1;");
+        octave.execute("xnan=[NaN 0];");
+        new OctaveScalar(octave.get("ok"));
+        OctaveMatrix xnan = new OctaveMatrix(octave.get("xnan"));
+        assertEquals(Double.NaN, xnan.get(1, 1));
+        assertEquals(Double.valueOf(0), xnan.get(1, 2));
+        new OctaveScalar(octave.get("ok"));
+        octave.execute("xinf=[Inf -Inf];");
+        new OctaveScalar(octave.get("ok"));
+        OctaveMatrix xinf = new OctaveMatrix(octave.get("xinf"));
+        assertEquals(Double.POSITIVE_INFINITY, xinf.get(1, 1));
+        assertEquals(Double.NEGATIVE_INFINITY, xinf.get(1, 2));
+        new OctaveScalar(octave.get("ok"));
+        octave.close();
+        stderr.close();
+        assertEquals("", stderr.toString()); // No warning when saving matrix with NaN/Inf
     }
 
 }

@@ -26,13 +26,11 @@ public abstract class OctaveType {
      *            name of variable
      * @throws IOException
      */
-    abstract public void toOctave(Writer writer, String name)
-            throws IOException;
+    abstract public void toOctave(Writer writer, String name) throws IOException;
 
     /**
      * @param name
-     * @return Returns a Reader from which the octave input version of this
-     *         object can be read.
+     * @return Returns a Reader from which the octave input version of this object can be read.
      * @throws OctaveException
      */
     public Reader octaveReader(String name) throws OctaveException {
@@ -43,8 +41,7 @@ public abstract class OctaveType {
         } catch (IOException e) {
             throw new OctaveException(e);
         }
-        ToOctaveWriter toOctaveWriter = new ToOctaveWriter(this, pipedWriter,
-                name);
+        ToOctaveWriter toOctaveWriter = new ToOctaveWriter(this, pipedWriter, name);
         toOctaveWriter.start();
         return pipedReader;
     }
@@ -62,8 +59,7 @@ public abstract class OctaveType {
          * @param pipedWriter
          * @param name
          */
-        public ToOctaveWriter(OctaveType octaveType, PipedWriter pipedWriter,
-                String name) {
+        public ToOctaveWriter(OctaveType octaveType, PipedWriter pipedWriter, String name) {
             this.octaveType = octaveType;
             this.pipedWriter = pipedWriter;
             this.name = name;
@@ -104,12 +100,11 @@ public abstract class OctaveType {
     }
 
     /**
-     * The text returned should be the part that defines the value of the
-     * variable, ie. what follows after the line "# name: ...".
+     * The text returned should be the part that defines the value of the variable, ie. what follows after the line "#
+     * name: ...".
      * 
-     * I don't use this function because I haven't found a way to use load from
-     * stdin. But if I could do that I would find this way to do it to be much
-     * nice than the use of toOctave(name).
+     * I don't use this function because I haven't found a way to use load from stdin. But if I could do that I would
+     * find this way to do it to be much nice than the use of toOctave(name).
      * 
      * @param writer
      * @throws OctaveException
@@ -136,6 +131,22 @@ public abstract class OctaveType {
         } catch (IOException e) {
             throw new OctaveException(e);
         }
+    }
+
+    /**
+     * This is almost the same as Double.parseDouble(), but it handles a few more versions of infinity
+     * 
+     * @param string
+     * @return The parsed Double
+     */
+    protected double parseDouble(String string) {
+        if ("Inf".equals(string)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        if ("-Inf".equals(string)) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        return Double.parseDouble(string);
     }
 
 }

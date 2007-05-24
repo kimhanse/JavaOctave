@@ -23,7 +23,7 @@ public class OctaveScalar extends OctaveType {
             if (!line.equals("# type: scalar"))
                 throw new OctaveException("Wrong type of variable");
             line = reader.readLine();
-            value = Double.parseDouble(line);
+            value = parseDouble(line);
             reader.close();
         } catch (IOException e) {
             throw new OctaveException(e);

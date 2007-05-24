@@ -37,11 +37,9 @@ public class OctaveMatrix extends OctaveType {
         this.rows = rows_;
         this.columns = columns_;
         if (rows_ < 0)
-            throw new IllegalArgumentException("rows less than zero. rows="
-                    + rows_);
+            throw new IllegalArgumentException("rows less than zero. rows=" + rows_);
         if (columns_ < 0)
-            throw new IllegalArgumentException(
-                    "columns less than zero. columns=" + columns_);
+            throw new IllegalArgumentException("columns less than zero. columns=" + columns_);
     }
 
     /**
@@ -64,18 +62,16 @@ public class OctaveMatrix extends OctaveType {
             // # type: matrix
             line = readerReadLine(reader);
             if (!line.equals("# type: matrix"))
-                throw new OctaveException("Wrong type of variable");
+                throw new OctaveException("Wrong type of variable, " + line);
             // # rows: 1
             line = readerReadLine(reader);
             if (!line.startsWith("# rows: "))
-                throw new OctaveException("Expected <# rows: > got <" + line
-                        + ">");
+                throw new OctaveException("Expected <# rows: > got <" + line + ">");
             rows = Integer.valueOf(line.substring(8));
             // # columns: 3
             line = readerReadLine(reader);
             if (!line.startsWith("# columns: "))
-                throw new OctaveException("Expected <# columns: > got <" + line
-                        + ">");
+                throw new OctaveException("Expected <# columns: > got <" + line + ">");
             columns = Integer.valueOf(line.substring(11));
             // 1 2 3
             data = new double[rows * columns];
@@ -83,10 +79,9 @@ public class OctaveMatrix extends OctaveType {
                 line = readerReadLine(reader);
                 String[] split = line.split(" ");
                 if (split.length != columns + 1)
-                    throw new OctaveException("Error in matrix-format: '"
-                            + line + "'");
+                    throw new OctaveException("Error in matrix-format: '" + line + "'");
                 for (int c = 1; c < split.length; c++) {
-                    set(r, c, Double.parseDouble(split[c]));
+                    set(r, c, parseDouble(split[c]));
                 }
             }
             reader.close();
@@ -104,8 +99,7 @@ public class OctaveMatrix extends OctaveType {
         if (row <= 0)
             throw new IndexOutOfBoundsException("row not positive, row=" + row);
         if (column <= 0)
-            throw new IndexOutOfBoundsException("column not positive, column="
-                    + column);
+            throw new IndexOutOfBoundsException("column not positive, column=" + column);
         if (row > rows || column > columns)
             resize(row, column);
         data[(row - 1) * columns + column - 1] = value;
@@ -120,8 +114,7 @@ public class OctaveMatrix extends OctaveType {
         if (row <= 0 || row > rows)
             throw new IndexOutOfBoundsException("row out of range, row=" + row);
         if (column <= 0 || column > columns)
-            throw new IndexOutOfBoundsException("column out of range, column="
-                    + column);
+            throw new IndexOutOfBoundsException("column out of range, column=" + column);
         return data[(row - 1) * columns + column - 1];
     }
 
@@ -129,8 +122,7 @@ public class OctaveMatrix extends OctaveType {
         int newRows = row > rows ? row : rows;
         int newColumns = column > columns ? column : columns;
         if (newColumns != columns && !(rows == 0 || newRows == 1)) {
-            throw new Error("Not implemented! (" + row + " " + rows + " "
-                    + column + " " + columns + ")");
+            throw new Error("Not implemented! (" + row + " " + rows + " " + column + " " + columns + ")");
             // TODO implement resize(int, int) for newColumns != columns
             // needs to reorder the data during the resize
         }
