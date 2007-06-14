@@ -1,15 +1,20 @@
 package dk.ange.octave.type;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
+
+import dk.ange.octave.OctaveException;
 
 /**
  * @author Kim Hansen
  */
 public class OctaveCell extends OctaveType {
 
-    private Vector<Vector<OctaveType>> data;
+    private static final OctaveType EMPTY_CELL = new OctaveMatrix(0, 0);
+
+    final private ArrayList<ArrayList<OctaveType>> data;
 
     private int rows;
 
@@ -19,7 +24,7 @@ public class OctaveCell extends OctaveType {
      * 
      */
     public OctaveCell() {
-        data = new Vector<Vector<OctaveType>>();
+        data = new ArrayList<ArrayList<OctaveType>>();
         rows = 0;
         columns = 0;
     }
@@ -28,11 +33,81 @@ public class OctaveCell extends OctaveType {
      * @param value
      */
     public OctaveCell(OctaveType value) {
-        data = new Vector<Vector<OctaveType>>();
-        data.add(new Vector<OctaveType>());
-        rows = 1;
-        data.get(0).add(value);
-        columns = 1;
+        this();
+        set(1, 1, value);
+    }
+
+    /**
+     * @param reader
+     * @throws OctaveException
+     */
+    public OctaveCell(BufferedReader reader) throws OctaveException {
+        this(reader, true);
+    }
+
+    /**
+     * @param reader
+     * @param close
+     *            whether to close the stream. Really should be true by default, but Java....
+     * @throws OctaveException
+     */
+    public OctaveCell(BufferedReader reader, boolean close) throws OctaveException {
+        this();
+        try {
+            String line;
+            String token;
+            line = readerReadLine(reader);
+            token = "# type: cell";
+            if (!line.equals(token)) {
+                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+            }
+
+            line = readerReadLine(reader);
+            token = "# rows: ";
+            if (!line.startsWith(token)) {
+                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+            }
+            int nrows = Integer.parseInt(line.substring(token.length()));
+
+            line = readerReadLine(reader);
+            token = "# columns: ";
+            if (!line.startsWith(token)) {
+                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+            }
+            int ncols = Integer.parseInt(line.substring(token.length()));
+            for (int col = 1; col <= ncols; col++) {
+                for (int row = 1; row <= nrows; row++) {
+                    line = readerReadLine(reader);
+                    token = "# name: <cell-element>";
+                    if (!line.equals(token)) {
+                        throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                    }
+                    OctaveType octaveType = OctaveType.readOctaveType(reader, false);
+                    set(row, col, octaveType);
+                }
+                line = readerReadLine(reader);
+                token = "";
+                if (!line.equals(token)) {
+                    throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                }
+            }
+            if (close) {
+                reader.close();
+            }
+
+            // Post conditions
+            if (rows != data.size()) {
+                throw new IllegalStateException("After read, number of rows doesn't match the number read");
+            }
+            for (ArrayList<OctaveType> row : data) {
+                if (columns != row.size()) {
+                    throw new IllegalStateException("After read, number of columns doesn't match the number read");
+                }
+            }
+        } catch (IOException e) {
+            throw new OctaveException(e);
+        }
+
     }
 
     /**
@@ -40,26 +115,49 @@ public class OctaveCell extends OctaveType {
      * @param columns
      */
     public OctaveCell(int rows, int columns) {
-        this.rows = rows;
-        this.columns = columns;
-        data = new Vector<Vector<OctaveType>>();
-        for (int r = 1; r <= rows; ++r)
-            data.add(new Vector<OctaveType>());
+        data = new ArrayList<ArrayList<OctaveType>>();
+        this.rows = 0;
+        this.columns = 0;
+        resize(rows, columns);
     }
 
-    // TODO Not implemented
-    @SuppressWarnings("unused")
-    private void set(int place, OctaveType value) {
-        // TODO This should have special actions if columns = 0 or 1
-        if (place < 1 || place > rows * columns)
-            throw new IndexOutOfBoundsException();
-        // place-1 = rows*(col-1) + row-1
-        // row-1 = (place-1) mod rows
-        // col-1 = (place-1) div rows
-        int row = ((place - 1) % rows) + 1;
-        int column = ((place - 1) / rows) + 1;
-        // TODO OctaveCell.set(int place, OctaveType value) is not implemented
-        throw new Error("Not implemented! " + value + row + column);
+    private OctaveCell(int rows, int columns, ArrayList<ArrayList<OctaveType>> data) {
+        this.rows = rows;
+        this.columns = columns;
+        this.data = data;
+
+    }
+
+    private void resize(int newRows, int newColumns) {
+        while (newRows > rows) {
+            ArrayList<OctaveType> newrow = new ArrayList<OctaveType>();
+            data.add(newrow);
+            for (int i = 0; i < columns; i++) {
+                newrow.add(EMPTY_CELL);
+            }
+            rows++;
+        }
+        while (newColumns > columns) {
+            for (ArrayList<OctaveType> rowData : data) {
+                rowData.add(EMPTY_CELL);
+            }
+            columns++;
+        }
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @return (shallow copyof ) value for row and column. Empty cells are 0x0 matrixes.
+     */
+    public OctaveType get(final int row, final int column) {
+        if (row < 1 || row > rows) {
+            throw new IndexOutOfBoundsException("row was " + row + " and must be between 1 and " + rows);
+        }
+        if (column < 1 || column > columns) {
+            throw new IndexOutOfBoundsException("column was " + column + " and must be between 1 and " + columns);
+        }
+        return OctaveType.copy(data.get(row - 1).get(column - 1));
     }
 
     /**
@@ -67,44 +165,19 @@ public class OctaveCell extends OctaveType {
      * @param column
      * @param value
      */
-    public void set(int row, int column, OctaveType value) {
-        // TODO: Check row, column > 0
-        if (row > rows) {
-            for (int newrow = rows + 1; newrow <= row; ++newrow) {
-                data.add(new Vector<OctaveType>());
-            }
-            rows = row;
+    public void set(final int row, final int column, final OctaveType value) {
+        if (row < 1) {
+            throw new IllegalArgumentException("row cannot be less or equal to 0");
         }
-        if (column > columns)
-            columns = column;
-        Vector<OctaveType> rowData = data.get(row - 1);
-        if (column > rowData.size())
-            rowData.setSize(column);
-        rowData.set(column - 1, value);
-    }
+        if (column < 1) {
+            throw new IllegalArgumentException("column cannot be less or equal to 0");
+        }
 
-    @Override
-    public void toOctave(Writer writer, String name) throws IOException {
-        // FIXME This will break with nested cells
-        String tmp_var_name = "octave_java_tmp_cell";
-        boolean tmp_var_used = false;
-        writer.write(name + "=cell(" + rows + ',' + columns + ");\n");
-        for (int r = 1; r <= rows; ++r) {
-            Vector<OctaveType> row = data.get(r - 1);
-            for (int c = 1; c <= row.size(); c++) {
-                OctaveType d = row.get(c - 1);
-                if (d == null)
-                    continue;
-                writer.write("clear " + tmp_var_name + ";\n");
-                d.toOctave(writer, tmp_var_name);
-                tmp_var_used = true;
-                writer.write(name + '{' + r + ',' + c + "}=" + tmp_var_name
-                        + ";\n");
-            }
-        }
-        if (tmp_var_used) {
-            writer.write("clear " + tmp_var_name + ";\n");
-        }
+        // Expand if needed
+        resize(Math.max(row, rows), Math.max(column, columns));
+
+        // Finally, set value
+        data.get(row - 1).set(column - 1, value);
     }
 
     /**
@@ -120,5 +193,59 @@ public class OctaveCell extends OctaveType {
     public int getColumnDimension() {
         return columns;
     }
+
+    @Override
+    public void save(String name, Writer writer) throws IOException {
+        writer.write("# name: " + name + "\n# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
+        for (ArrayList<OctaveType> row : data) {
+            for (OctaveType value : row) {
+                value.save("<cell-element>", writer);
+            }
+            writer.write("\n");
+        }
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see dk.ange.octave.type.OctaveType#makecopy()
+     */
+    @Override
+    public OctaveCell makecopy() {
+        return new OctaveCell(rows, columns, data);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OctaveCell) {
+            OctaveCell cell = (OctaveCell) obj;
+            if (cell.rows != rows || cell.columns != columns) {
+                return false;
+            }
+            for (int row=0; row<rows; row++) {
+                ArrayList<OctaveType> cellrow = cell.data.get(row);
+                ArrayList<OctaveType> thisrow = data.get(row);
+                for (int col=0; col<columns; col++) {
+                    OctaveType thisvalue = thisrow.get(col);
+                    OctaveType cellvalue = cellrow.get(col);
+                    if (thisvalue != null) {
+                        if (!thisvalue.equals(cellvalue)) {
+                            return false;
+                        }
+                    } else {
+                        if (cellvalue != null) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
 
 }

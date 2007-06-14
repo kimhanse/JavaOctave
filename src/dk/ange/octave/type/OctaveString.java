@@ -21,18 +21,35 @@ public class OctaveString extends OctaveType {
      * @throws OctaveException
      */
     public OctaveString(BufferedReader reader) throws OctaveException {
-        String line;
-        line = readerReadLine(reader);
-        if (!line.equals("# type: string"))
-            throw new OctaveException("Wrong type of variable");
-        line = readerReadLine(reader);
-        if (!line.equals("# elements: 1"))
-            throw new OctaveException(
-                    "Only implementet for single-line strings '" + line + "'");
-        line = readerReadLine(reader);
-        if (!line.startsWith("# length: ")) // TODO use length for checking
-            throw new OctaveException("Parse error in String");
-        value = readerReadLine(reader);
+        this(reader, true);
+    }
+
+    /**
+     * @param reader
+     * @param close
+     *            whether to close the stream. Really should be true by default, but Java....
+     * @throws OctaveException
+     */
+    public OctaveString(BufferedReader reader, boolean close) throws OctaveException {
+        try {
+            String line;
+            line = readerReadLine(reader);
+            if (!line.equals("# type: string"))
+                throw new OctaveException("Wrong type of variable");
+            line = readerReadLine(reader);
+            if (!line.equals("# elements: 1"))
+                throw new OctaveException("Only implementet for single-line strings '" + line + "'");
+            line = readerReadLine(reader);
+            if (!line.startsWith("# length: ")) // TODO use length for checking
+                throw new OctaveException("Parse error in String");
+            value = readerReadLine(reader);
+
+            if (close) {
+                reader.close();
+            }
+        } catch (IOException e) {
+            throw new OctaveException(e);
+        }
     }
 
     /**
@@ -43,8 +60,9 @@ public class OctaveString extends OctaveType {
     }
 
     @Override
-    public void toOctave(Writer writer, String name) throws IOException {
-        writer.write(name + "=\"" + value + "\";\n");
+    public void save(String name, Writer writer) throws IOException {
+        writer.write("# name: " + name + "\n# type: string\n# elements: 1\n# length: " + value.length() + "\n" + value
+                + "\n\n");
     }
 
     @Override
@@ -54,6 +72,11 @@ public class OctaveString extends OctaveType {
         }
         OctaveString that = (OctaveString) thatObject;
         return this.value.equals(that.value);
+    }
+
+    @Override
+    public OctaveString makecopy() {
+        return new OctaveString(value);
     }
 
 }

@@ -17,7 +17,7 @@ public class TestOctaveScalar extends TestCase {
      */
     public void testToString() throws Exception {
         OctaveType integer = new OctaveScalar(42);
-        Assert.assertEquals(integer.toString(), "ans=42.0;\n");
+        Assert.assertEquals(integer.toString(), "# name: ans\n# type: scalar\n42.0\n\n");
     }
 
     /**
@@ -25,7 +25,7 @@ public class TestOctaveScalar extends TestCase {
      */
     public void testToOctave() throws Exception {
         OctaveType integer = new OctaveScalar(43);
-        Assert.assertEquals(integer.toOctave("tre"), "tre=43.0;\n");
+        Assert.assertEquals(integer.toText("tre"), "# name: tre\n# type: scalar\n43.0\n\n");
     }
 
     /**

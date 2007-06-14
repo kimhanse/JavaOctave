@@ -1,52 +1,72 @@
 package dk.ange.octave.type;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+
+import dk.ange.octave.OctaveException;
+
 
 /**
- * 3d matrix class created as a list of 2d matrices
+ * 3d matrix class. It's just a convenience wrapper around OctaveNdMatrix
  */
-public class Octave3dMatrix extends OctaveType {
+public class Octave3dMatrix extends OctaveNdMatrix {
 
-    private List<OctaveMatrix> data;
-
-    private int rows;
-
-    private int columns;
-
-    private int depth;
-
+    /**
+     * @return no of rows in matrix
+     */
+    public int rows() {
+        return size[0];
+    }
+    
+    /**
+     * @return no of rows in matrix
+     */
+    public int columns() {
+        return size[1];
+    }
+    
+    /**
+     * @return no of rows in matrix
+     */
+    public int depths() {
+        return size[2];
+    }    
+    
     /**
      * @param rows
      * @param columns
      * @param depth
      */
     public Octave3dMatrix(int rows, int columns, int depth) {
-        init(rows, columns, depth);
-        data = new ArrayList<OctaveMatrix>(depth);
-        for (int i = 1; i <= depth; ++i) {
-            data.add(new OctaveMatrix(rows, columns));
-        }
+        super(rows, columns, depth);
     }
-
-    private void init(int rows_, int columns_, int depth_)
-            throws IllegalArgumentException {
-        if (rows_ < 0)
-            throw new IllegalArgumentException("rows in size less than zero. ="
-                    + rows_);
-        if (columns_ < 0)
-            throw new IllegalArgumentException(
-                    "columns in size less than zero. =" + columns_);
-        if (depth_ < 0)
-            throw new IllegalArgumentException("depth less than zero. ="
-                    + depth_);
-        this.rows = rows_;
-        this.columns = columns_;
-        this.depth = depth_;
+    
+    /**
+     * @param data 
+     * @param rows
+     * @param columns
+     * @param depth
+     */
+    public Octave3dMatrix(double[] data, int rows, int columns, int depth) {
+        super(data, rows, columns, depth);
     }
-
+    
+    /**
+     * @param reader
+     * @param close whether to close the stream. Really should be true by default, but Java.... 
+     * @throws OctaveException
+     */
+    public Octave3dMatrix(BufferedReader reader, boolean close) throws OctaveException {
+        super(reader, close);
+    }
+    
+    /**
+     * @param reader
+     * @throws OctaveException
+     */
+    public Octave3dMatrix(BufferedReader reader) throws OctaveException {
+        this(reader, true);
+    }
+    
     /**
      * @param value
      * @param row
@@ -54,18 +74,27 @@ public class Octave3dMatrix extends OctaveType {
      * @param depth
      */
     public void set(double value, int row, int column, int depth) {
-        if (column > columns)
+        if (column > columns())
             throw new IllegalArgumentException("column > columns");
-        if (row > rows)
+        if (row > rows())
             throw new IllegalArgumentException("row > rows");
-        data.get(depth - 1).set(row, column, value);
+        if (depth > depths())
+            throw new IllegalArgumentException("row > rows");
+        super.set(value, row, column, depth);
     }
 
+    /* (non-Javadoc)
+     * @see dk.ange.octave.type.OctaveType#makecopy()
+     */
     @Override
-    public void toOctave(Writer writer, String name) throws IOException {
-        for (int i = 1; i <= depth; ++i) {
-            data.get(i - 1).toOctave(writer, name + "(:,:," + i + ")");
-        }
+    public Octave3dMatrix makecopy() {
+        return new Octave3dMatrix(data, rows(), columns(), depths());
+    }
+    
+    double get(int row, int column, int depth) {
+        return super.get(row, column,depth);
     }
 
+    
+    
 }

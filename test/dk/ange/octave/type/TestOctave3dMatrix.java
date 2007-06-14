@@ -14,7 +14,8 @@ public class TestOctave3dMatrix extends TestCase {
      */
     public void testConstructor() throws Exception {
         Octave3dMatrix matrix = new Octave3dMatrix(0, 0, 0);
-        Assert.assertEquals("", matrix.toOctave("matrix3d"));
+        
+        Assert.assertEquals("# name: matrix3d\n# type: matrix\n# ndims: 3\n 0 0 0\n\n", matrix.toText("matrix3d"));
     }
 
     /**
@@ -23,30 +24,34 @@ public class TestOctave3dMatrix extends TestCase {
     public void testConstructorIntIntInt() throws Exception {
         Octave3dMatrix matrix = new Octave3dMatrix(3, 4, 2);
         Assert.assertEquals("" //
-                + "matrix3d(:,:,1)=[\n" //
-                + " 0.0 0.0 0.0 0.0\n" // 
-                + " 0.0 0.0 0.0 0.0\n" //
-                + " 0.0 0.0 0.0 0.0\n" //
-                + "];\n" //
-                + "matrix3d(:,:,2)=[\n" //
-                + " 0.0 0.0 0.0 0.0\n" //
-                + " 0.0 0.0 0.0 0.0\n" //
-                + " 0.0 0.0 0.0 0.0\n" //
-                + "];\n"//
-                + "", matrix.toOctave("matrix3d"));
+                + "# name: matrix3d\n" //
+                + "# type: matrix\n" //
+                + "# ndims: 3\n" //
+                + " 3 4 2\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + "\n", matrix.toText("matrix3d"));
         matrix.set(42.0, 1, 3, 2);
         Assert.assertEquals("" //
-                + "matrix3d(:,:,1)=[\n" //
-                + " 0.0 0.0 0.0 0.0\n" // 
-                + " 0.0 0.0 0.0 0.0\n" //
-                + " 0.0 0.0 0.0 0.0\n" //
-                + "];\n" //
-                + "matrix3d(:,:,2)=[\n" //
-                + " 0.0 0.0 42.0 0.0\n" //
-                + " 0.0 0.0 0.0 0.0\n" //
-                + " 0.0 0.0 0.0 0.0\n" //
-                + "];\n"//
-                + "", matrix.toOctave("matrix3d"));
+                + "# name: matrix3d\n" //
+                + "# type: matrix\n" //
+                + "# ndims: 3\n" //
+                + " 3 4 2\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + " 42.0\n 0.0\n 0.0\n" //
+                + " 0.0\n 0.0\n 0.0\n" //
+                + "\n", matrix.toText("matrix3d"));
     }
 
     /**
@@ -54,18 +59,25 @@ public class TestOctave3dMatrix extends TestCase {
      */
     public void testOctave() throws Exception {
         Octave3dMatrix matrix3d = new Octave3dMatrix(3, 4, 2);
+
         matrix3d.set(42.0, 1, 3, 2);
         matrix3d.set(-1.0, 3, 1, 1);
         Octave octave = new Octave();
         octave.set("matrix3d", matrix3d);
         octave.execute("x1 = matrix3d(:,:,1);");
         octave.execute("x2 = matrix3d(:,:,2);");
+        octave.execute("x3 = matrix3d(:,3,:);");
+        octave.execute("x4 = matrix3d(3,:,:);");
         OctaveMatrix x1 = new OctaveMatrix(octave.get("x1"));
         OctaveMatrix x2 = new OctaveMatrix(octave.get("x2"));
+        Octave3dMatrix x3 = new Octave3dMatrix(octave.get("x3"));
+        Octave3dMatrix x4 = new Octave3dMatrix(octave.get("x4"));
         assertEquals(0.0, x1.get(1, 3));
         assertEquals(-1.0, x1.get(3, 1));
         assertEquals(42.0, x2.get(1, 3));
         assertEquals(0.0, x2.get(3, 1));
+        assertEquals(42.0, x3.get(1,1,2));
+        assertEquals(-1.0, x4.get(1,1,1));
         octave.close();
     }
 }

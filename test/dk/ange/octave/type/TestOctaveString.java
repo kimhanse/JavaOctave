@@ -14,15 +14,15 @@ public class TestOctaveString extends TestCase {
      */
     public void testToString() throws Exception {
         OctaveType string = new OctaveString("tekst");
-        Assert.assertEquals("ans=\"tekst\";\n", string.toString());
+        Assert.assertEquals("# name: ans\n# type: string\n# elements: 1\n# length: 5\ntekst\n\n", string.toString());
     }
 
     /**
      * @throws Exception
      */
     public void testToOctave() throws Exception {
-        OctaveType string = new OctaveString("tekst");
-        Assert.assertEquals("tre=\"tekst\";\n", string.toOctave("tre"));
+        OctaveType string = new OctaveString("mytekst");
+        Assert.assertEquals("# name: tre\n# type: string\n# elements: 1\n# length: 7\nmytekst\n\n", string.toText("tre"));
     }
 
     /**

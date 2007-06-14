@@ -18,13 +18,27 @@ public class OctaveScalar extends OctaveType {
      * @throws OctaveException
      */
     public OctaveScalar(BufferedReader reader) throws OctaveException {
+        this(reader, true);
+    }
+
+    /**
+     * @param reader
+     * @param close
+     *            whether to close the stream. Really should be true by default, but Java....
+     * @throws OctaveException
+     */
+    public OctaveScalar(BufferedReader reader, boolean close) throws OctaveException {
         try {
             String line = reader.readLine();
-            if (!line.equals("# type: scalar"))
-                throw new OctaveException("Wrong type of variable");
+            String token = "# type: scalar";
+            if (!line.equals(token)) {
+                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">\n");
+            }
             line = reader.readLine();
             value = parseDouble(line);
-            reader.close();
+            if (close) {
+                reader.close();
+            }
         } catch (IOException e) {
             throw new OctaveException(e);
         }
@@ -35,11 +49,6 @@ public class OctaveScalar extends OctaveType {
      */
     public OctaveScalar(double value) {
         this.value = value;
-    }
-
-    @Override
-    public void toOctave(Writer writer, String name) throws IOException {
-        writer.write(name + '=' + Double.toString(value) + ";\n");
     }
 
     @Override
@@ -56,6 +65,25 @@ public class OctaveScalar extends OctaveType {
      */
     public double getDouble() {
         return value;
+    }
+
+    @Override
+    public void save(String name, Writer writer) throws IOException {
+        writer.write("# name: " + name + "\n# type: scalar\n" + value + "\n\n");
+    }
+
+    @Override
+    public OctaveScalar makecopy() {
+        return new OctaveScalar(value);
+    }
+
+    /**
+     * Sets value
+     * 
+     * @param value
+     */
+    public void set(double value) {
+        this.value = value;
     }
 
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.HashMap;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -48,15 +49,22 @@ public class TestOctave extends TestCase {
      */
     public void testExecute() throws Exception {
         Octave octave = new Octave();
+        HashMap<String, OctaveType> typelist = new HashMap<String, OctaveType>();
+        OctaveType Y = new OctaveScalar(2);
+        typelist.put("y", Y);
         OctaveType X = new OctaveScalar(42);
+        typelist.put("x", X);
+        OctaveType Z = new OctaveScalar(4);
+        typelist.put("z", Z);
+       
 
-        octave.set("x", X);
-        double x = new OctaveScalar(octave.get("x")).getDouble();
-        Assert.assertEquals(42.0, x, 0.0);
+        octave.set(typelist);
+        OctaveScalar x = new OctaveScalar(octave.get("x"));
+        Assert.assertEquals(42.0, x.getDouble(), 0.0);
 
         octave.execute("x = x + 10;");
-        x = new OctaveScalar(octave.get("x")).getDouble();
-        Assert.assertEquals(52.0, x, 0.0);
+        x = new OctaveScalar(octave.get("x"));
+        Assert.assertEquals(52.0, x.getDouble(), 0.0);
         octave.close();
     }
 

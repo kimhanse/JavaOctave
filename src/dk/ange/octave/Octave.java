@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
@@ -231,14 +233,24 @@ public final class Octave {
     }
 
     /**
+     * Convenience overload
+     * 
      * @param name
      * @param value
      * @throws OctaveException
      */
     public void set(String name, OctaveType value) throws OctaveException {
+        set(Collections.singletonMap(name, value));
+    }
+
+    /**
+     * @param values
+     * @throws OctaveException
+     */
+    public void set(Map<String, OctaveType> values) throws OctaveException {
         assert check();
-        Reader resultReader = executeReader(value.octaveReader(name));
         try {
+            Reader resultReader = executeReader(OctaveType.octaveReader(values));
             char[] cbuf = new char[BUFFERSIZE];
             int len = resultReader.read(cbuf);
             if (len != -1) {
@@ -267,13 +279,21 @@ public final class Octave {
         try {
             String line = processReader.readLine();
             if (line == null || !line.startsWith("# Created by Octave 2.9"))
-                throw new OctaveException("huh? " + line);
+                throw new OctaveException("Unsupported version of octave " + line);
             line = processReader.readLine();
-            if (line == null || !line.equals("# name: " + name))
-                if (isSpacer(line))
+            String token = "# name: ";
+            if (!line.startsWith(token)) {
+                if (isSpacer(line)) {
                     throw new OctaveException("no such variable '" + name + "'");
-                else
-                    throw new OctaveException("huh?? " + line);
+                } else {
+                    throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                }
+            }
+            String readname = line.substring(token.length());
+            if (!name.equals(readname)) {
+                throw new OctaveException("Expected variable named \"" + name + "\" but got one named \"" + readname
+                        + "\"");
+            }
         } catch (IOException e) {
             OctaveException octaveException = new OctaveException(e);
             if (getExecuteState() == ExecuteState.DESTROYED) {

@@ -1,48 +1,129 @@
 package dk.ange.octave.type;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import dk.ange.octave.OctaveException;
+
 /**
  * @author Kim Hansen
+ * @author Esben Mose Hansen
  */
 public class OctaveStruct extends OctaveType {
 
-    private Map<String, OctaveType> data;
+    private Map<String, OctaveType> data = new HashMap<String, OctaveType>();
 
     /**
-     * 
      */
     public OctaveStruct() {
-        data = new HashMap<String, OctaveType>();
+        // Stupid warning suppression
+    }
+
+    /**
+     * @param reader
+     * @throws OctaveException
+     */
+    public OctaveStruct(BufferedReader reader) throws OctaveException {
+        this(reader,true);
+    }
+
+    /**
+     * @param reader
+       * @param close whether to close the stream. Really should be true by default, but Java.... 
+   * @throws OctaveException
+     */
+    public OctaveStruct(BufferedReader reader, boolean close) throws OctaveException {
+        try {
+            String line;
+            final String TYPE_STRUCT = "# type: struct";
+            final String TYPE_GLOBAL_STRUCT ="# type: global struct"; 
+            line = readerReadLine(reader);
+            if (!line.equals(TYPE_STRUCT) && !line.equals(TYPE_GLOBAL_STRUCT)) {
+                throw new OctaveException("Variable was not a struct or global struct, " + line);
+            }
+            // # length: 4
+            line = readerReadLine(reader);
+
+            final String LENGTH = "# length: "; 
+            if (!line.startsWith(LENGTH)) {
+                throw new OctaveException("Expected <"+LENGTH+"> got <" + line + ">");
+            }
+            int length = Integer.valueOf(line.substring(LENGTH.length())); // only used during conversion
+
+            for (int i=0; i<length; i++) {
+                // # name: elemmatrix
+                final String NAME = "# name: ";
+                line = readerReadLine(reader);
+                if (!line.startsWith(NAME)) {
+                    throw new OctaveException("Expected <"+NAME+"> got <" + line + ">");
+                }
+                String subname = line.substring(NAME.length());
+                OctaveCell cell = new OctaveCell(reader, false);
+                // If the cell is a 1x1, move up the value
+                if (cell.getRowDimension() == 1 && cell.getColumnDimension() == 1) {
+                    OctaveType value = cell.get(1, 1);
+                    data.put(subname, value);
+                } else {
+                    data.put(subname, cell);
+                }
+            }
+            if (close) {
+                reader.close();
+            }
+        } catch (IOException e) {
+            throw new OctaveException(e);
+        }
+    }
+
+    private OctaveStruct(Map<String, OctaveType> data) {
+        this.data = data;
+    }
+
+    /**
+     * @param name 
+     * @param value
+     */
+    public void set(String name, OctaveType value) {
+        data.put(name, value);
     }
 
     @Override
-    public void toOctave(Writer writer, String name) throws IOException {
-        // FIXME This will break with nested structs
-        String tmp_var_name = "octave_java_tmp_struct";
-        boolean tmp_var_used = false;
-        writer.write(name + "=struct();\n");
-        for (Map.Entry<String, OctaveType> e : data.entrySet()) {
-            writer.write("clear " + tmp_var_name + ";\n");
-            e.getValue().toOctave(writer, tmp_var_name);
-            tmp_var_used = true;
-            writer.write(name + '.' + e.getKey() + "=" + tmp_var_name + ";\n");
+    public void save(String name, Writer writer) throws IOException {
+        writer.write("# name: "+name+"\n# type: struct\n# length: "+data.size()+"\n");
+        for (Map.Entry<String,OctaveType> entry: data.entrySet()) {
+            String subname = entry.getKey();
+            OctaveType value = entry.getValue();
+            writer.write("# name: "+subname+"\n# type: cell\n# rows: 1\n# columns: 1\n");
+             value.save("<cell-element>", writer);
+        }
 
-        }
-        if (tmp_var_used) {
-            writer.write("clear " + tmp_var_name + ";\n");
-        }
     }
-
+    
     /**
      * @param key
-     * @param value
+     * @return (shallow copy of) value for this key, or null if key isn't there.
      */
-    public void set(String key, OctaveType value) {
-        data.put(key, value);
+    public OctaveType get(String key) {
+        return OctaveType.copy(data.get(key));
     }
 
+    @Override
+    public OctaveStruct makecopy() {
+        return new OctaveStruct(data);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OctaveStruct) {
+            OctaveStruct struct = (OctaveStruct) obj;
+            return data.equals(struct.data);
+            
+        }
+        return false;
+    }
+
+    
 }
