@@ -173,12 +173,12 @@ public class TestOctaveMatrix extends TestCase {
         octave.execute("slicerow=in(2,:); slicecol=in(:,2);");
         OctaveMatrix slicerow = new OctaveMatrix(octave.get("slicerow"));
         OctaveMatrix slicecol = new OctaveMatrix(octave.get("slicecol"));
-        assertEquals(2.0, slicerow.get(1,1));
-        assertEquals(4.0, slicerow.get(1,2));
-        assertEquals(6.0,slicerow.get(1,3));
-        assertEquals(3.0,slicecol.get(1,1));
-        assertEquals(4.0,slicecol.get(2,1));
-        
+        assertEquals(2.0, slicerow.get(1, 1));
+        assertEquals(4.0, slicerow.get(1, 2));
+        assertEquals(6.0, slicerow.get(1, 3));
+        assertEquals(3.0, slicecol.get(1, 1));
+        assertEquals(4.0, slicecol.get(2, 1));
+
     }
 
     /**
@@ -193,10 +193,10 @@ public class TestOctaveMatrix extends TestCase {
             matrix.set(4.2, 30, pos);
         }
         long timeused = System.currentTimeMillis() - t;
-        if (timeused>500) {
-            fail("Performance test didn't finish in 500ms (used "+timeused+"ms)");
+        if (timeused > 500) {
+            fail("Performance test didn't finish in 500ms (used " + timeused + "ms)");
         }
-        
+
         matrix = new OctaveMatrix(0, 30);
         t = System.currentTimeMillis();
         // 700 is just some random number
@@ -205,8 +205,8 @@ public class TestOctaveMatrix extends TestCase {
             matrix.set(4.2, pos, 30);
         }
         timeused = System.currentTimeMillis() - t;
-        if (timeused>500) {
-            fail("Performance test didn't finish in 500ms (used "+timeused+"ms)");
+        if (timeused > 500) {
+            fail("Performance test didn't finish in 500ms (used " + timeused + "ms)");
         }
     }
 

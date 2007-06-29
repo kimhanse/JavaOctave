@@ -14,7 +14,7 @@ public class TestOctave3dMatrix extends TestCase {
      */
     public void testConstructor() throws Exception {
         Octave3dMatrix matrix = new Octave3dMatrix(0, 0, 0);
-        
+
         Assert.assertEquals("# name: matrix3d\n# type: matrix\n# ndims: 3\n 0 0 0\n\n", matrix.toText("matrix3d"));
     }
 
@@ -76,8 +76,8 @@ public class TestOctave3dMatrix extends TestCase {
         assertEquals(-1.0, x1.get(3, 1));
         assertEquals(42.0, x2.get(1, 3));
         assertEquals(0.0, x2.get(3, 1));
-        assertEquals(42.0, x3.get(1,1,2));
-        assertEquals(-1.0, x4.get(1,1,1));
+        assertEquals(42.0, x3.get(1, 1, 2));
+        assertEquals(-1.0, x4.get(1, 1, 1));
         octave.close();
     }
 }

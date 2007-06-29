@@ -22,7 +22,8 @@ public class TestOctaveString extends TestCase {
      */
     public void testToOctave() throws Exception {
         OctaveType string = new OctaveString("mytekst");
-        Assert.assertEquals("# name: tre\n# type: string\n# elements: 1\n# length: 7\nmytekst\n\n", string.toText("tre"));
+        Assert.assertEquals("# name: tre\n# type: string\n# elements: 1\n# length: 7\nmytekst\n\n", string
+                .toText("tre"));
     }
 
     /**

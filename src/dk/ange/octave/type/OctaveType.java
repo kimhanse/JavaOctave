@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
@@ -16,7 +17,7 @@ import dk.ange.octave.OctaveException;
  * 
  * Common interface for the octave types.
  */
-public abstract class OctaveType {
+public abstract class OctaveType implements Serializable {
 
     /**
      * @param values

@@ -56,7 +56,6 @@ public class TestOctave extends TestCase {
         typelist.put("x", X);
         OctaveType Z = new OctaveScalar(4);
         typelist.put("z", Z);
-       
 
         octave.set(typelist);
         OctaveScalar x = new OctaveScalar(octave.get("x"));

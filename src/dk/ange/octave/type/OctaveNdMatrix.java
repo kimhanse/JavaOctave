@@ -32,10 +32,11 @@ public class OctaveNdMatrix extends OctaveType {
     public OctaveNdMatrix(BufferedReader reader) throws OctaveException {
         this(reader, true);
     }
-    
+
     /**
      * @param reader
-     * @param close whether to close the stream. Really should be true by default, but Java.... 
+     * @param close
+     *            whether to close the stream. Really should be true by default, but Java....
      * @throws OctaveException
      */
     public OctaveNdMatrix(BufferedReader reader, boolean close) throws OctaveException {
@@ -88,7 +89,8 @@ public class OctaveNdMatrix extends OctaveType {
         line = readerReadLine(reader);
         String[] split = line.substring(1).split(" ");
         if (split.length != ndims) {
-            throw new OctaveException("Expected "+ndims+" dimesion, but got "+(split.length)+" (line was <"+line+">)");
+            throw new OctaveException("Expected " + ndims + " dimesion, but got " + (split.length) + " (line was <"
+                    + line + ">)");
         }
         size = new int[split.length];
         for (int dim = 0; dim < split.length; dim++) {
@@ -166,7 +168,7 @@ public class OctaveNdMatrix extends OctaveType {
     private void init(int... size_) throws IllegalArgumentException {
         if (size_.length == 0)
             throw new IllegalArgumentException("no size");
-        if (size_.length <2) {
+        if (size_.length < 2) {
             throw new IllegalArgumentException("size must have a least 2 dimenstions");
         }
         for (int s : size_) {
@@ -183,7 +185,8 @@ public class OctaveNdMatrix extends OctaveType {
     public OctaveNdMatrix(double[] data, int... size) {
         init(size);
         if (product(size) != data.length)
-            throw new IllegalArgumentException("length of data doesn't fit with size");
+            throw new IllegalArgumentException("length of data(" + data.length + ") doesn't fit with size(" + size
+                    + ")");
         this.data = data;
     }
 
@@ -231,11 +234,6 @@ public class OctaveNdMatrix extends OctaveType {
         writer.write("\n\n");
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see dk.ange.octave.type.OctaveType#makecopy()
-     */
     @Override
     public OctaveNdMatrix makecopy() {
         return new OctaveNdMatrix(data, size);
@@ -277,54 +275,54 @@ public class OctaveNdMatrix extends OctaveType {
         }
     }
 
-    private  void resize(int... pos) {
+    private void resize(int... pos) {
         if (size.length != pos.length) {
             throw new UnsupportedOperationException("Change in number of dimenstions not supported");
         }
         // Resize from the smallest dimension. This is not the optimal way to do it,
         // but it works.
-        int smallest_dim=0;
+        int smallest_dim = 0;
         int[] newsize = new int[size.length];
-        System.arraycopy(size, 0, newsize, 0,size.length);
-        for (;smallest_dim<size.length ; smallest_dim++) {
+        System.arraycopy(size, 0, newsize, 0, size.length);
+        for (; smallest_dim < size.length; smallest_dim++) {
             if (pos[smallest_dim] > size[smallest_dim]) {
                 newsize[smallest_dim] = pos[smallest_dim];
                 resizework(smallest_dim, newsize);
             }
         }
-        
+
     }
 
     private void resizework(int smallest_dim, int[] pos) {
         // Calculate blocksize
         int blocksize = 1;
-        for (int dim=0; dim<smallest_dim+1; dim++) {
+        for (int dim = 0; dim < smallest_dim + 1; dim++) {
             blocksize *= size[dim];
         }
-        
+
         // Calculate new dimensions
         int[] newsize = new int[size.length];
-        for (int dim=0; dim<newsize.length; dim++) {
+        for (int dim = 0; dim < newsize.length; dim++) {
             newsize[dim] = Math.max(pos[dim], size[dim]);
         }
-        
+
         // Calculate target stride
         int stride = 1;
-        for (int dim=0; dim<smallest_dim+1; dim++) {
+        for (int dim = 0; dim < smallest_dim + 1; dim++) {
             stride *= newsize[dim];
         }
-        
+
         // Allocate new data array if neccessary
         int neededSize = product(newsize);
-        if (data.length<neededSize) {
-            double[] newdata = new double[neededSize*2];
+        if (data.length < neededSize) {
+            double[] newdata = new double[neededSize * 2];
             // Move data into new array
-            int src_offset=0;
-            for (int dest_offset=0;  dest_offset<neededSize; dest_offset+=stride) {
+            int src_offset = 0;
+            for (int dest_offset = 0; dest_offset < neededSize; dest_offset += stride) {
                 System.arraycopy(data, src_offset, newdata, dest_offset, blocksize);
-                src_offset+=blocksize;
+                src_offset += blocksize;
             }
-            
+
             // Sanity check
             if (src_offset != product(size)) {
                 throw new IllegalStateException("Failed to copy all data in resize");
@@ -332,22 +330,22 @@ public class OctaveNdMatrix extends OctaveType {
 
             // Set data
             data = newdata;
-            
+
         } else {
             // Move around the data
-            int src_offset = product(size)-blocksize;
-            int dest_offset = neededSize -stride;
-            while (src_offset>0) {
+            int src_offset = product(size) - blocksize;
+            int dest_offset = neededSize - stride;
+            while (src_offset > 0) {
                 System.arraycopy(data, src_offset, data, dest_offset, blocksize);
-                Arrays.fill(data, dest_offset+blocksize, dest_offset+stride, 0.0);
-                src_offset-=blocksize;
-                dest_offset-=stride;
+                Arrays.fill(data, dest_offset + blocksize, dest_offset + stride, 0.0);
+                src_offset -= blocksize;
+                dest_offset -= stride;
             }
         }
-        
+
         // set new size
         size = newsize;
-                
+
     }
 
 }

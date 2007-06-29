@@ -3,12 +3,11 @@ package dk.ange.octave;
 /**
  * @author Kim Hansen
  * 
- * Exception from the Octave interface. Most likely caused by the octave process
- * exiting because of a timeout, out of memory error or programming error.
+ * Exception from the Octave interface. Most likely caused by the octave process exiting because of a timeout, out of
+ * memory error or programming error.
  * 
- * Can also be caused by an OctaveType constructor when the octave variable has
- * the wrong type. This error might be moved to a subclass called
- * OctaveTypeException.
+ * Can also be caused by an OctaveType constructor when the octave variable has the wrong type. This error might be
+ * moved to a subclass called OctaveTypeException.
  */
 public class OctaveException extends Exception {
 
@@ -44,9 +43,8 @@ public class OctaveException extends Exception {
     }
 
     /**
-     * Set to true on exceptions thrown from an Octave object when the reason
-     * for the exception is that the object has been asked to destroy its octave
-     * process.
+     * Set to true on exceptions thrown from an Octave object when the reason for the exception is that the object has
+     * been asked to destroy its octave process.
      */
     private boolean destroyed = false;
 

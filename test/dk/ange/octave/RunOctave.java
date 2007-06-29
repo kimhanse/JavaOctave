@@ -19,14 +19,11 @@ public class RunOctave {
         try {
             octave.set("a", new OctaveScalar(42));
             octave.execute("a");
-            System.out.println("Java: a = "
-                    + new OctaveScalar(octave.get("a")).getDouble());
+            System.out.println("Java: a = " + new OctaveScalar(octave.get("a")).getDouble());
             octave.execute("a=a+10");
-            System.out.println("Java: a = "
-                    + new OctaveScalar(octave.get("a")).getDouble());
+            System.out.println("Java: a = " + new OctaveScalar(octave.get("a")).getDouble());
 
-            Reader outputReader = octave.executeReader(new StringReader(
-                    "a\na=a+10;\na"));
+            Reader outputReader = octave.executeReader(new StringReader("a\na=a+10;\na"));
             while (true) {
                 int c = outputReader.read();
                 if (c == -1)

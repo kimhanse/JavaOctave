@@ -206,11 +206,6 @@ public class OctaveCell extends OctaveType {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see dk.ange.octave.type.OctaveType#makecopy()
-     */
     @Override
     public OctaveCell makecopy() {
         return new OctaveCell(rows, columns, data);
@@ -223,10 +218,10 @@ public class OctaveCell extends OctaveType {
             if (cell.rows != rows || cell.columns != columns) {
                 return false;
             }
-            for (int row=0; row<rows; row++) {
+            for (int row = 0; row < rows; row++) {
                 ArrayList<OctaveType> cellrow = cell.data.get(row);
                 ArrayList<OctaveType> thisrow = data.get(row);
-                for (int col=0; col<columns; col++) {
+                for (int col = 0; col < columns; col++) {
                     OctaveType thisvalue = thisrow.get(col);
                     OctaveType cellvalue = cellrow.get(col);
                     if (thisvalue != null) {
@@ -245,7 +240,5 @@ public class OctaveCell extends OctaveType {
             return false;
         }
     }
-    
-    
 
 }

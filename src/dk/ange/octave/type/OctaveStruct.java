@@ -27,19 +27,20 @@ public class OctaveStruct extends OctaveType {
      * @throws OctaveException
      */
     public OctaveStruct(BufferedReader reader) throws OctaveException {
-        this(reader,true);
+        this(reader, true);
     }
 
     /**
      * @param reader
-       * @param close whether to close the stream. Really should be true by default, but Java.... 
-   * @throws OctaveException
+     * @param close
+     *            whether to close the stream. Really should be true by default, but Java....
+     * @throws OctaveException
      */
     public OctaveStruct(BufferedReader reader, boolean close) throws OctaveException {
         try {
             String line;
             final String TYPE_STRUCT = "# type: struct";
-            final String TYPE_GLOBAL_STRUCT ="# type: global struct"; 
+            final String TYPE_GLOBAL_STRUCT = "# type: global struct";
             line = readerReadLine(reader);
             if (!line.equals(TYPE_STRUCT) && !line.equals(TYPE_GLOBAL_STRUCT)) {
                 throw new OctaveException("Variable was not a struct or global struct, " + line);
@@ -47,18 +48,18 @@ public class OctaveStruct extends OctaveType {
             // # length: 4
             line = readerReadLine(reader);
 
-            final String LENGTH = "# length: "; 
+            final String LENGTH = "# length: ";
             if (!line.startsWith(LENGTH)) {
-                throw new OctaveException("Expected <"+LENGTH+"> got <" + line + ">");
+                throw new OctaveException("Expected <" + LENGTH + "> got <" + line + ">");
             }
             int length = Integer.valueOf(line.substring(LENGTH.length())); // only used during conversion
 
-            for (int i=0; i<length; i++) {
+            for (int i = 0; i < length; i++) {
                 // # name: elemmatrix
                 final String NAME = "# name: ";
                 line = readerReadLine(reader);
                 if (!line.startsWith(NAME)) {
-                    throw new OctaveException("Expected <"+NAME+"> got <" + line + ">");
+                    throw new OctaveException("Expected <" + NAME + "> got <" + line + ">");
                 }
                 String subname = line.substring(NAME.length());
                 OctaveCell cell = new OctaveCell(reader, false);
@@ -83,7 +84,7 @@ public class OctaveStruct extends OctaveType {
     }
 
     /**
-     * @param name 
+     * @param name
      * @param value
      */
     public void set(String name, OctaveType value) {
@@ -92,16 +93,16 @@ public class OctaveStruct extends OctaveType {
 
     @Override
     public void save(String name, Writer writer) throws IOException {
-        writer.write("# name: "+name+"\n# type: struct\n# length: "+data.size()+"\n");
-        for (Map.Entry<String,OctaveType> entry: data.entrySet()) {
+        writer.write("# name: " + name + "\n# type: struct\n# length: " + data.size() + "\n");
+        for (Map.Entry<String, OctaveType> entry : data.entrySet()) {
             String subname = entry.getKey();
             OctaveType value = entry.getValue();
-            writer.write("# name: "+subname+"\n# type: cell\n# rows: 1\n# columns: 1\n");
-             value.save("<cell-element>", writer);
+            writer.write("# name: " + subname + "\n# type: cell\n# rows: 1\n# columns: 1\n");
+            value.save("<cell-element>", writer);
         }
 
     }
-    
+
     /**
      * @param key
      * @return (shallow copy of) value for this key, or null if key isn't there.
@@ -120,10 +121,9 @@ public class OctaveStruct extends OctaveType {
         if (obj instanceof OctaveStruct) {
             OctaveStruct struct = (OctaveStruct) obj;
             return data.equals(struct.data);
-            
+
         }
         return false;
     }
 
-    
 }

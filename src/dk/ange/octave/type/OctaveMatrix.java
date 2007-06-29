@@ -16,7 +16,6 @@ public class OctaveMatrix extends OctaveNdMatrix {
         this(0, 0);
     }
 
-   
     /**
      * @param rows
      * @param columns
@@ -24,7 +23,7 @@ public class OctaveMatrix extends OctaveNdMatrix {
     public OctaveMatrix(int rows, int columns) {
         super(rows, columns);
     }
-    
+
     /**
      * @param data
      * @param rows
@@ -36,13 +35,14 @@ public class OctaveMatrix extends OctaveNdMatrix {
 
     /**
      * @param reader
-     * @param close whether to close the stream. Really should be true by default, but Java.... 
+     * @param close
+     *            whether to close the stream.
      * @throws OctaveException
      */
     public OctaveMatrix(BufferedReader reader, boolean close) throws OctaveException {
         super(reader, close);
     }
-    
+
     /**
      * @param reader
      * @throws OctaveException
@@ -50,7 +50,6 @@ public class OctaveMatrix extends OctaveNdMatrix {
     public OctaveMatrix(BufferedReader reader) throws OctaveException {
         this(reader, true);
     }
-    
 
     /**
      * @param value
@@ -88,12 +87,9 @@ public class OctaveMatrix extends OctaveNdMatrix {
         return data[(column - 1) * rows() + row - 1];
     }
 
-    /* (non-Javadoc)
-     * @see dk.ange.octave.type.OctaveType#makecopy()
-     */
     @Override
     public OctaveMatrix makecopy() {
         return new OctaveMatrix(data, rows(), columns());
-    }    
+    }
 
 }

@@ -1,8 +1,8 @@
 package dk.ange.octave.type;
 
-import dk.ange.octave.Octave;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import dk.ange.octave.Octave;
 
 /**
  * @author Kim Hansen
@@ -65,7 +65,7 @@ public class TestOctaveStruct extends TestCase {
         OctaveStruct nested_struct = new OctaveStruct();
         nested_struct.set("string", new OctaveString("a cheese called Horace"));
         struct.set("mynestedstruct", nested_struct);
-        
+
         Octave octave = new Octave();
         octave.set("mystruct", struct);
         OctaveStruct mystruct_copy = new OctaveStruct(octave.get("mystruct"));
@@ -78,9 +78,9 @@ public class TestOctaveStruct extends TestCase {
     public void testOctaveGetCopy() throws Exception {
         OctaveStruct struct = new OctaveStruct();
         struct.set("scalar", new OctaveScalar(42));
-        OctaveScalar scalar =  (OctaveScalar)struct.get("scalar");
+        OctaveScalar scalar = (OctaveScalar) struct.get("scalar");
         scalar.set(10);
         assertEquals(scalar.getDouble(), 10.0);
-        assertEquals(((OctaveScalar)struct.get("scalar")).getDouble(), 42.0);
+        assertEquals(((OctaveScalar) struct.get("scalar")).getDouble(), 42.0);
     }
 }

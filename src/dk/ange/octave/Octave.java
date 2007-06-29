@@ -28,8 +28,8 @@ public final class Octave {
 
     private static final Log log = LogFactory.getLog(Octave.class);
 
-    private static final String[] CMD_ARRAY = { "octave", "--no-history", "--no-init-file", "--no-line-editing",
-            "--no-site-file", "--silent" };
+    private static final String[] CMD_ARRAY =
+            { "octave", "--no-history", "--no-init-file", "--no-line-editing", "--no-site-file", "--silent" };
 
     private static final int BUFFERSIZE = 8192;
 
@@ -102,8 +102,8 @@ public final class Octave {
         if (stdinLog == null) {
             processWriter = new OutputStreamWriter(process.getOutputStream());
         } else {
-            processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
-                    new OutputStreamWriter(process.getOutputStream()));
+            processWriter =
+                    new TeeWriter(new NoCloseWriter(stdinLog), new OutputStreamWriter(process.getOutputStream()));
         }
         // Setup octave process
         // readSetup();
@@ -374,8 +374,8 @@ public final class Octave {
     synchronized void setExecuteState(ExecuteState executeState) throws OctaveException {
         // Throw exception with isDestroyed if state changes from DESTROYED
         if (this.executeState == ExecuteState.DESTROYED) {
-            OctaveException octaveException = new OctaveException("setExecuteState Error: " + this.executeState
-                    + " -> " + executeState);
+            OctaveException octaveException =
+                    new OctaveException("setExecuteState Error: " + this.executeState + " -> " + executeState);
             octaveException.setDestroyed(true);
             throw octaveException;
         }
