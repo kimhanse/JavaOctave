@@ -7,6 +7,7 @@ import dk.ange.octave.OctaveException;
 /**
  * @author Kim Hansen
  */
+@Deprecated
 public class OctaveMatrix extends OctaveNdMatrix {
 
     /**
@@ -58,20 +59,6 @@ public class OctaveMatrix extends OctaveNdMatrix {
      */
     public void set(double value, int row, int column) {
         super.set(value, row, column);
-    }
-
-    /**
-     * @return columns in matrix
-     */
-    public int columns() {
-        return size[1];
-    }
-
-    /**
-     * @return rows in matrix
-     */
-    public int rows() {
-        return size[0];
     }
 
     /**

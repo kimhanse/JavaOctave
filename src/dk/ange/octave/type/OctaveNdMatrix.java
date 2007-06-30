@@ -1,6 +1,3 @@
-/**
- * NOT DONE YET, use Octave3dMatrix
- */
 package dk.ange.octave.type;
 
 import java.io.BufferedReader;
@@ -184,9 +181,27 @@ public class OctaveNdMatrix extends OctaveType {
      */
     public OctaveNdMatrix(double[] data, int... size) {
         init(size);
-        if (product(size) != data.length)
-            throw new IllegalArgumentException("length of data(" + data.length + ") doesn't fit with size(" + size
-                    + ")");
+        if (product(size) != data.length) {
+            StringBuilder text = new StringBuilder();
+            text.append("length of data(");
+            text.append(data.length);
+            text.append(") doesn't fit with size(");
+
+            text.append("[");
+            boolean first = true;
+            for (final int i : size) {
+                if (first) {
+                    first = false;
+                } else {
+                    text.append(", ");
+                }
+                text.append(i);
+            }
+            text.append("]");
+
+            text.append(")");
+            throw new IllegalArgumentException(text.toString());
+        }
         this.data = data;
     }
 
@@ -346,6 +361,20 @@ public class OctaveNdMatrix extends OctaveType {
         // set new size
         size = newsize;
 
+    }
+
+    /**
+     * @return columns in matrix
+     */
+    public int columns() {
+        return size[1];
+    }
+
+    /**
+     * @return rows in matrix
+     */
+    public int rows() {
+        return size[0];
     }
 
 }

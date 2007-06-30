@@ -12,7 +12,7 @@ import dk.ange.octave.OctaveException;
  */
 public class OctaveCell extends OctaveType {
 
-    private static final OctaveType EMPTY_CELL = new OctaveMatrix(0, 0);
+    private static final OctaveType EMPTY_CELL = new OctaveNdMatrix(0, 0);
 
     final private ArrayList<ArrayList<OctaveType>> data;
 

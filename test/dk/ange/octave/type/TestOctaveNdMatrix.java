@@ -137,7 +137,7 @@ public class TestOctaveNdMatrix extends TestCase {
         TreeMap<String, OctaveType> vars = new TreeMap<String, OctaveType>();
         double[] bigdata = new double[2 * 3 * 4];
         for (int idx = 0; idx < bigdata.length; idx++) {
-            bigdata[idx] = idx +1.0;
+            bigdata[idx] = idx + 1.0;
         }
         double[] data2d = { 1.0, 2.0, 3.0, 5.0, 8.0, 13.0 };
         double[] datascalar = { 42.0 };
@@ -173,7 +173,7 @@ public class TestOctaveNdMatrix extends TestCase {
                 "# name: matrixscalar\n" + //
                 "# type: matrix\n" + //
                 "# rows: 1\n" + //
-                "# columns: 1\n" +//
+                "# columns: 1\n" + //
                 " 42.0\n\n" //
         , matrixscalar.toText("matrixscalar"));
 
@@ -218,34 +218,32 @@ public class TestOctaveNdMatrix extends TestCase {
         , bigmatrix.toText("bigmatrix"));
         octave.close();
     }
-    
+
     /**
      * @throws Exception
      *             matrixzero doesn't work because of bug in octave
      */
     public void testGrowth() throws Exception {
-        OctaveNdMatrix matrix = new OctaveNdMatrix(3,3,3,3);
-        matrix.set(42.0,2,2,2,2);
-        matrix.set(1.0,3,2,2,2);
-        matrix.set(2.0,2,3,2,2);
-        matrix.set(3.0,2,2,3,2);
-        matrix.set(4.0,2,2,2,3);
-        assertEquals(42.0, matrix.get(2,2,2,2));
-        assertEquals(1.0, matrix.get(3,2,2,2));
-        assertEquals(2.0, matrix.get(2,3,2,2));
-        assertEquals(3.0, matrix.get(2,2,3,2));
-        assertEquals(4.0, matrix.get(2,2,2,3));
-        
-        matrix.set(Math.PI, 4,5,7,6);
-        assertEquals(42.0, matrix.get(2,2,2,2));
-        assertEquals(1.0, matrix.get(3,2,2,2));
-        assertEquals(2.0, matrix.get(2,3,2,2));
-        assertEquals(3.0, matrix.get(2,2,3,2));
-        assertEquals(4.0, matrix.get(2,2,2,3));
-        assertEquals(Math.PI, matrix.get(4,5,7,6));
-        
-        
+        OctaveNdMatrix matrix = new OctaveNdMatrix(3, 3, 3, 3);
+        matrix.set(42.0, 2, 2, 2, 2);
+        matrix.set(1.0, 3, 2, 2, 2);
+        matrix.set(2.0, 2, 3, 2, 2);
+        matrix.set(3.0, 2, 2, 3, 2);
+        matrix.set(4.0, 2, 2, 2, 3);
+        assertEquals(42.0, matrix.get(2, 2, 2, 2));
+        assertEquals(1.0, matrix.get(3, 2, 2, 2));
+        assertEquals(2.0, matrix.get(2, 3, 2, 2));
+        assertEquals(3.0, matrix.get(2, 2, 3, 2));
+        assertEquals(4.0, matrix.get(2, 2, 2, 3));
+
+        matrix.set(Math.PI, 4, 5, 7, 6);
+        assertEquals(42.0, matrix.get(2, 2, 2, 2));
+        assertEquals(1.0, matrix.get(3, 2, 2, 2));
+        assertEquals(2.0, matrix.get(2, 3, 2, 2));
+        assertEquals(3.0, matrix.get(2, 2, 3, 2));
+        assertEquals(4.0, matrix.get(2, 2, 2, 3));
+        assertEquals(Math.PI, matrix.get(4, 5, 7, 6));
+
     }
-    
 
 }

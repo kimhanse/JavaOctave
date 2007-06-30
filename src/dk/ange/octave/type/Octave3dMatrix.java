@@ -6,22 +6,11 @@ import dk.ange.octave.OctaveException;
 
 /**
  * 3d matrix class. It's just a convenience wrapper around OctaveNdMatrix
+ * 
+ * @deprecated Just use OctaveNdMatrix
  */
+@Deprecated
 public class Octave3dMatrix extends OctaveNdMatrix {
-
-    /**
-     * @return no of rows in matrix
-     */
-    public int rows() {
-        return size[0];
-    }
-
-    /**
-     * @return no of rows in matrix
-     */
-    public int columns() {
-        return size[1];
-    }
 
     /**
      * @return no of rows in matrix

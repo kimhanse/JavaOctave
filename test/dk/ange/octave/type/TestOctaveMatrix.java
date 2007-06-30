@@ -10,6 +10,7 @@ import dk.ange.octave.Octave;
 /**
  * @author Kim Hansen
  */
+@SuppressWarnings("deprecation")
 public class TestOctaveMatrix extends TestCase {
 
     /**

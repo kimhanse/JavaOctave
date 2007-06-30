@@ -183,7 +183,7 @@ public abstract class OctaveType implements Serializable {
         if ("struct".equals(type)) {
             rv = new OctaveStruct(reader, close);
         } else if ("matrix".equals(type)) {
-            rv = new OctaveMatrix(reader, close);
+            rv = new OctaveNdMatrix(reader, close);
         } else if ("scalar".equals(type)) {
             rv = new OctaveScalar(reader, close);
         } else if ("string".equals(type)) {
