@@ -15,7 +15,6 @@ public class TestOctaveStruct extends TestCase {
     public void testConstructor() throws Exception {
         OctaveType struct = new OctaveStruct();
         Assert.assertEquals("# name: mystruct\n# type: struct\n# length: 0\n", struct.toText("mystruct"));
-
     }
 
     /**
@@ -83,4 +82,55 @@ public class TestOctaveStruct extends TestCase {
         assertEquals(scalar.getDouble(), 10.0);
         assertEquals(((OctaveScalar) struct.get("scalar")).getDouble(), 42.0);
     }
+
+    /**
+     * Test
+     * @throws Exception
+     */
+    public void testMatices() throws Exception {
+        Octave octave = new Octave();
+        octave.execute("s = struct();");
+        final int[] i123 = { 1, 2, 3 };
+        for (int i : i123) {
+            octave.execute(setMatrix(i));
+            for (int j : i123) {
+                octave.execute(setMatrix(i, j));
+                for (int k : i123) {
+                    octave.execute(setMatrix(i, j, k));
+                    for (int l : i123) {
+                        octave.execute(setMatrix(i, j, k, l));
+                    }
+                }
+            }
+        }
+        OctaveStruct s1 = new OctaveStruct(octave.get("s"));
+        octave.set("s1", s1);
+        octave.execute("t = 1.0*isequal(s, s1);"); // "1.0*" is a typecast from bool to scalar
+        OctaveScalar t = new OctaveScalar(octave.get("t"));
+        assertEquals(1.0, t.getDouble());
+        OctaveStruct s2 = new OctaveStruct(octave.get("s1"));
+        assertEquals(s1, s2);
+        octave.close();
+    }
+
+    private String setMatrix(int... sizes) {
+        StringBuilder b = new StringBuilder();
+        b.append("s.x");
+        for (int s : sizes) {
+            b.append(Integer.toString(s));
+        }
+        b.append(" = zeros(");
+        boolean first = true;
+        for (int s : sizes) {
+            if (first) {
+                first = false;
+            } else {
+                b.append(", ");
+            }
+            b.append(Integer.toString(s));
+        }
+        b.append(");");
+        return b.toString();
+    }
+
 }
