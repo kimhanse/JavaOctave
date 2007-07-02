@@ -119,7 +119,7 @@ public class TestOctaveStruct extends TestCase {
         for (int s : sizes) {
             b.append(Integer.toString(s));
         }
-        b.append(" = zeros(");
+        b.append(" = round(1000*rand(");
         boolean first = true;
         for (int s : sizes) {
             if (first) {
@@ -129,7 +129,7 @@ public class TestOctaveStruct extends TestCase {
             }
             b.append(Integer.toString(s));
         }
-        b.append(");");
+        b.append("))/1000;");
         return b.toString();
     }
 
