@@ -245,4 +245,30 @@ public class TestOctaveNdMatrix extends TestCase {
         assertEquals(Math.PI, matrix.get(4, 5, 7, 6));
     }
 
+    /**
+     * Test
+     * 
+     * @throws Exception
+     */
+    public void testScalar() throws Exception {
+        final Octave octave = new Octave();
+        octave.execute("s.one=1;");
+        octave.execute("s.two=[2 3];");
+
+        final OctaveStruct cell = new OctaveStruct(octave.get("s"));
+
+        final OctaveNdMatrix two = (OctaveNdMatrix) cell.get("two");
+        assertEquals(1, two.rows());
+        assertEquals(2, two.columns());
+        assertEquals(2d, two.get(1, 1));
+        assertEquals(3d, two.get(1, 2));
+
+        final OctaveNdMatrix one = (OctaveNdMatrix) cell.get("one");
+        assertEquals(1, one.rows());
+        assertEquals(1, one.columns());
+        assertEquals(1d, one.get(1, 1));
+
+        octave.close();
+    }
+
 }

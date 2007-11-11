@@ -9,7 +9,7 @@ import dk.ange.octave.OctaveException;
 /**
  * @author Kim Hansen
  */
-public class OctaveScalar extends OctaveType {
+public class OctaveScalar extends OctaveNdMatrix {
 
     private static final long serialVersionUID = 2221234552189760358L;
 
@@ -30,6 +30,7 @@ public class OctaveScalar extends OctaveType {
      * @throws OctaveException
      */
     public OctaveScalar(final BufferedReader reader, final boolean close) throws OctaveException {
+        super(1, 1);
         try {
             String line = reader.readLine();
             final String token = "# type: scalar";
@@ -50,6 +51,7 @@ public class OctaveScalar extends OctaveType {
      * @param value
      */
     public OctaveScalar(final double value) {
+        super(1, 1);
         this.value = value;
     }
 
@@ -67,6 +69,27 @@ public class OctaveScalar extends OctaveType {
      */
     public double getDouble() {
         return value;
+    }
+
+    @Override
+    public double get(int... pos) {
+        if (pos2ind(pos) != 0) {
+            throw new IllegalArgumentException("Can only access pos 0 for OctaveScalar");
+        }
+        return value;
+    }
+
+    @Override
+    public void set(double value, int... pos) {
+        if (pos2ind(pos) != 0) {
+            throw new IllegalArgumentException("Can only access pos 0 for OctaveScalar");
+        }
+        this.value = value;
+    }
+
+    @Override
+    public double[] getData() {
+        throw new UnsupportedOperationException("Not possible for OctaveScalar");
     }
 
     @Override
