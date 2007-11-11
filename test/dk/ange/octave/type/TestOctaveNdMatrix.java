@@ -15,7 +15,7 @@ public class TestOctaveNdMatrix extends TestCase {
      * @throws Exception
      */
     public void testGetAndSet() throws Exception {
-        OctaveNdMatrix matrix = new OctaveNdMatrix(3, 6, 5, 4);
+        final OctaveNdMatrix matrix = new OctaveNdMatrix(3, 6, 5, 4);
         matrix.set(2.0, 2, 5, 2, 3);
         for (int row = 1; row <= 3; row++) {
             for (int column = 1; column <= 6; column++) {
@@ -33,19 +33,19 @@ public class TestOctaveNdMatrix extends TestCase {
         try {
             matrix.get(2, 3, 1, 0);
             fail("Attempt to get with a position that includes a 0 should fail");
-        } catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
             // ok
         }
         try {
             matrix.get(2, 3, 10, 3);
-            fail("Attempt to get with a position that includes exceeds range should fail");
-        } catch (IndexOutOfBoundsException e) {
+            fail("Attempt to get with a position that exceeds range should fail");
+        } catch (final IndexOutOfBoundsException e) {
             // ok
         }
         try {
             matrix.get(2, 3, 2, 3, 4);
-            fail("Attempt to get with a position that includes exceeds dimensions should fail");
-        } catch (IndexOutOfBoundsException e) {
+            fail("Attempt to get with a position that exceeds dimensions should fail");
+        } catch (final IndexOutOfBoundsException e) {
             // ok
         }
 
@@ -55,20 +55,20 @@ public class TestOctaveNdMatrix extends TestCase {
      * @throws Exception
      */
     public void testSizeConstructor() throws Exception {
-        OctaveNdMatrix matrix = new OctaveNdMatrix(3, 6, 5, 4);
+        final OctaveNdMatrix matrix = new OctaveNdMatrix(3, 6, 5, 4);
         assertEquals(matrix.getSize().length, 4);
         assertEquals(matrix.getSize()[0], 3);
         assertEquals(matrix.getSize()[1], 6);
         assertEquals(matrix.getSize()[2], 5);
         assertEquals(matrix.getSize()[3], 4);
 
-        OctaveNdMatrix matrixEmpty = new OctaveNdMatrix(0, 0);
+        final OctaveNdMatrix matrixEmpty = new OctaveNdMatrix(0, 0);
         assertEquals(matrixEmpty.getData().length, 0);
 
         try {
             new OctaveNdMatrix(1);
             fail("OctaveNdMatrixes does not support less than one dimension. ");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             // OK
         }
     }
@@ -77,11 +77,11 @@ public class TestOctaveNdMatrix extends TestCase {
      * @throws Exception
      */
     public void testDataSizeConstructor() throws Exception {
-        double[] data = new double[2 * 3 * 4];
+        final double[] data = new double[2 * 3 * 4];
         for (int idx = 0; idx < data.length; idx++) {
             data[idx] = idx + 1.0;
         }
-        OctaveNdMatrix matrix = new OctaveNdMatrix(data, 2, 3, 4);
+        final OctaveNdMatrix matrix = new OctaveNdMatrix(data, 2, 3, 4);
         double d = 1.0;
         for (int depth = 1; depth <= 4; depth++) {
             for (int column = 1; column <= 3; column++) {
@@ -95,14 +95,14 @@ public class TestOctaveNdMatrix extends TestCase {
         try {
             new OctaveNdMatrix(data, 2, 2, 4);
             fail("data and dimenstion must match");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             // ok
         }
 
         try {
             new OctaveNdMatrix(data, 2, 3, 5);
             fail("data and dimenstion must match");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             // ok
         }
     }
@@ -111,11 +111,11 @@ public class TestOctaveNdMatrix extends TestCase {
      * @throws Exception
      */
     public void testMakeCopy() throws Exception {
-        double[] data = new double[2 * 3 * 4];
+        final double[] data = new double[2 * 3 * 4];
         for (int idx = 0; idx < data.length; idx++) {
             data[idx] = idx + 1.0;
         }
-        OctaveNdMatrix matrix = (new OctaveNdMatrix(data, 2, 3, 4)).makecopy();
+        final OctaveNdMatrix matrix = (new OctaveNdMatrix(data, 2, 3, 4)).makecopy();
         double d = 1.0;
         for (int depth = 1; depth <= 4; depth++) {
             for (int column = 1; column <= 3; column++) {
@@ -133,14 +133,14 @@ public class TestOctaveNdMatrix extends TestCase {
      *             matrixzero doesn't work because of bug in octave
      */
     public void testSetAndGetOctave() throws Exception {
-        Octave octave = new Octave();
-        TreeMap<String, OctaveType> vars = new TreeMap<String, OctaveType>();
-        double[] bigdata = new double[2 * 3 * 4];
+        final Octave octave = new Octave();
+        final TreeMap<String, OctaveType> vars = new TreeMap<String, OctaveType>();
+        final double[] bigdata = new double[2 * 3 * 4];
         for (int idx = 0; idx < bigdata.length; idx++) {
             bigdata[idx] = idx + 1.0;
         }
-        double[] data2d = { 1.0, 2.0, 3.0, 5.0, 8.0, 13.0 };
-        double[] datascalar = { 42.0 };
+        final double[] data2d = { 1.0, 2.0, 3.0, 5.0, 8.0, 13.0 };
+        final double[] datascalar = { 42.0 };
         vars.put("bigmatrix", new OctaveNdMatrix(bigdata, 1, 2, 3, 4));
         vars.put("matrix2d", new OctaveNdMatrix(data2d, 2, 3));
         vars.put("matrixscalar", new OctaveNdMatrix(datascalar, 1, 1));
@@ -148,10 +148,10 @@ public class TestOctaveNdMatrix extends TestCase {
         vars.put("matrixzero2d", new OctaveNdMatrix(0, 0));
         octave.set(vars);
         // OctaveNdMatrix matrixzero = new OctaveNdMatrix(octave.get("matrixzero"));
-        OctaveNdMatrix matrix2d = new OctaveNdMatrix(octave.get("matrix2d"));
-        OctaveNdMatrix bigmatrix = new OctaveNdMatrix(octave.get("bigmatrix"));
-        OctaveNdMatrix matrixzero2d = new OctaveNdMatrix(octave.get("matrixzero2d"));
-        OctaveNdMatrix matrixscalar = new OctaveNdMatrix(octave.get("matrixscalar"));
+        final OctaveNdMatrix matrix2d = new OctaveNdMatrix(octave.get("matrix2d"));
+        final OctaveNdMatrix bigmatrix = new OctaveNdMatrix(octave.get("bigmatrix"));
+        final OctaveNdMatrix matrixzero2d = new OctaveNdMatrix(octave.get("matrixzero2d"));
+        final OctaveNdMatrix matrixscalar = new OctaveNdMatrix(octave.get("matrixscalar"));
         // assertEquals(matrixzero, vars.get("matrixzero"));
         assertEquals(matrixzero2d, vars.get("matrixzero2d"));
         assertEquals(matrixscalar, vars.get("matrixscalar"));
@@ -224,7 +224,7 @@ public class TestOctaveNdMatrix extends TestCase {
      *             matrixzero doesn't work because of bug in octave
      */
     public void testGrowth() throws Exception {
-        OctaveNdMatrix matrix = new OctaveNdMatrix(3, 3, 3, 3);
+        final OctaveNdMatrix matrix = new OctaveNdMatrix(3, 3, 3, 3);
         matrix.set(42.0, 2, 2, 2, 2);
         matrix.set(1.0, 3, 2, 2, 2);
         matrix.set(2.0, 2, 3, 2, 2);
@@ -243,7 +243,6 @@ public class TestOctaveNdMatrix extends TestCase {
         assertEquals(3.0, matrix.get(2, 2, 3, 2));
         assertEquals(4.0, matrix.get(2, 2, 2, 3));
         assertEquals(Math.PI, matrix.get(4, 5, 7, 6));
-
     }
 
 }

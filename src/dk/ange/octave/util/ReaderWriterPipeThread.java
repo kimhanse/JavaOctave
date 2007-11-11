@@ -29,7 +29,7 @@ public class ReaderWriterPipeThread extends Thread {
      * @param reader
      * @param writer
      */
-    public ReaderWriterPipeThread(Reader reader, Writer writer) {
+    public ReaderWriterPipeThread(final Reader reader, final Writer writer) {
         this.reader = reader;
         this.writer = writer;
     }
@@ -41,16 +41,17 @@ public class ReaderWriterPipeThread extends Thread {
             final int len;
             try {
                 len = reader.read(b);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Error when reading from reader", e);
                 return;
             }
-            if (len == -1) // eof
+            if (len == -1) {
                 break;
+            }
             try {
                 writer.write(b, 0, len);
                 writer.flush();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Error when writing to writer", e);
                 return;
             }
@@ -58,7 +59,7 @@ public class ReaderWriterPipeThread extends Thread {
         try {
             reader.close();
             // Don't close writer, other programs might use it
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.info("Error when closing reader", e);
             return;
         }

@@ -24,15 +24,15 @@ public abstract class OctaveType implements Serializable {
      * @return Returns a Reader from which the octave input version of values can be read.
      * @throws OctaveException
      */
-    static public Reader octaveReader(Map<String, OctaveType> values) throws OctaveException {
-        PipedReader pipedReader = new PipedReader();
-        PipedWriter pipedWriter = new PipedWriter();
+    static public Reader octaveReader(final Map<String, OctaveType> values) throws OctaveException {
+        final PipedReader pipedReader = new PipedReader();
+        final PipedWriter pipedWriter = new PipedWriter();
         try {
             pipedWriter.connect(pipedReader);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
-        ToOctaveMultiWriter toOctaveWriter = new ToOctaveMultiWriter(values, pipedWriter);
+        final ToOctaveMultiWriter toOctaveWriter = new ToOctaveMultiWriter(values, pipedWriter);
         toOctaveWriter.start();
         return pipedReader;
     }
@@ -47,7 +47,7 @@ public abstract class OctaveType implements Serializable {
          * @param octaveTypes
          * @param pipedWriter
          */
-        public ToOctaveMultiWriter(Map<String, OctaveType> octaveTypes, PipedWriter pipedWriter) {
+        public ToOctaveMultiWriter(final Map<String, OctaveType> octaveTypes, final PipedWriter pipedWriter) {
             this.octaveTypes = octaveTypes;
             this.pipedWriter = pipedWriter;
         }
@@ -58,13 +58,13 @@ public abstract class OctaveType implements Serializable {
                 // Enter octave in "read data from input mode"
                 pipedWriter.write("load(\"-text\", \"-\")\n");
                 // Push the data into octave
-                for (Map.Entry<String, OctaveType> entry : octaveTypes.entrySet()) {
+                for (final Map.Entry<String, OctaveType> entry : octaveTypes.entrySet()) {
                     entry.getValue().save(entry.getKey(), pipedWriter);
                 }
                 // Exit octave from read data mode
                 pipedWriter.write("# name: \n");
                 pipedWriter.close();
-            } catch (IOException e1) {
+            } catch (final IOException e1) {
                 e1.printStackTrace();
             }
         }
@@ -75,7 +75,7 @@ public abstract class OctaveType implements Serializable {
     public String toString() {
         try {
             return toText("ans");
-        } catch (OctaveException e) {
+        } catch (final OctaveException e) {
             e.printStackTrace();
             return "[invalid octavetype: " + e.getMessage() + "]";
         }
@@ -86,11 +86,11 @@ public abstract class OctaveType implements Serializable {
      * @return Text to feed to 'load -text -' to define the variable
      * @throws OctaveException
      */
-    public String toText(String name) throws OctaveException {
-        StringWriter writer = new StringWriter();
+    public String toText(final String name) throws OctaveException {
+        final StringWriter writer = new StringWriter();
         try {
             save(name, writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
         return writer.getBuffer().toString();
@@ -104,13 +104,14 @@ public abstract class OctaveType implements Serializable {
      * @return next line from reader
      * @throws OctaveException
      */
-    static String readerReadLine(BufferedReader reader) throws OctaveException {
+    static String readerReadLine(final BufferedReader reader) throws OctaveException {
         try {
-            String line = reader.readLine();
-            if (line == null)
+            final String line = reader.readLine();
+            if (line == null) {
                 throw new OctaveException("Pipe to octave-process broken");
+            }
             return line;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
     }
@@ -124,16 +125,16 @@ public abstract class OctaveType implements Serializable {
      * @throws OctaveException
      *             Note: The line to be read must be less than 1000 characters.
      */
-    static String readerPeekLine(BufferedReader reader) throws OctaveException {
+    static String readerPeekLine(final BufferedReader reader) throws OctaveException {
         try {
             reader.mark(1000);
-            String line = reader.readLine();
+            final String line = reader.readLine();
             reader.reset();
             if (line == null) {
                 throw new OctaveException("Pipe to octave-process broken");
             }
             return line;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
     }
@@ -144,7 +145,7 @@ public abstract class OctaveType implements Serializable {
      * @param string
      * @return The parsed Double
      */
-    protected double parseDouble(String string) {
+    protected double parseDouble(final String string) {
         if ("Inf".equals(string)) {
             return Double.POSITIVE_INFINITY;
         }
@@ -160,7 +161,7 @@ public abstract class OctaveType implements Serializable {
      * @throws OctaveException
      *             if read failed.
      */
-    static public OctaveType readOctaveType(BufferedReader reader) throws OctaveException {
+    static public OctaveType readOctaveType(final BufferedReader reader) throws OctaveException {
         return readOctaveType(reader, true);
     }
 
@@ -172,13 +173,13 @@ public abstract class OctaveType implements Serializable {
      * @throws OctaveException
      *             if read failed.
      */
-    static public OctaveType readOctaveType(BufferedReader reader, boolean close) throws OctaveException {
-        String line = readerPeekLine(reader);
+    static public OctaveType readOctaveType(final BufferedReader reader, final boolean close) throws OctaveException {
+        final String line = readerPeekLine(reader);
         final String TYPE = "# type: ";
         if (!line.startsWith(TYPE)) {
             throw new OctaveException("Expected <" + TYPE + "> got <" + line + ">");
         }
-        String type = line.substring(TYPE.length());
+        final String type = line.substring(TYPE.length());
         final OctaveType rv;
         if ("struct".equals(type)) {
             rv = new OctaveStruct(reader, close);
@@ -210,7 +211,7 @@ public abstract class OctaveType implements Serializable {
      * @param type
      * @return a (shallow) copy of type, or null or type is null
      */
-    public static OctaveType copy(OctaveType type) {
+    public static OctaveType copy(final OctaveType type) {
         return (type != null) ? type.makecopy() : null;
     }
 

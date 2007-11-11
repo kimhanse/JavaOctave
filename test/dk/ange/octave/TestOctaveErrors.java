@@ -14,14 +14,14 @@ public class TestOctaveErrors extends TestCase {
      * @throws Exception
      */
     public void testError() throws Exception {
-        StringWriter stdout = new StringWriter();
-        StringWriter stderr = new StringWriter();
+        final StringWriter stdout = new StringWriter();
+        final StringWriter stderr = new StringWriter();
         try {
-            Octave octave = new Octave(null, new PrintWriter(stdout), stderr);
+            final Octave octave = new Octave(null, new PrintWriter(stdout), stderr);
             octave.execute("error('testError()');");
             fail("error in octave should cause execute() to throw an exception");
             octave.close();
-        } catch (OctaveException e) {
+        } catch (final OctaveException e) {
             // ok
         }
         stdout.close();
@@ -36,7 +36,7 @@ public class TestOctaveErrors extends TestCase {
      * @throws Exception
      */
     public void testOk() throws Exception {
-        Octave octave = new Octave();
+        final Octave octave = new Octave();
         octave.execute("ok=1;");
         octave.close();
     }

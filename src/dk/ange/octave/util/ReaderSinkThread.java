@@ -25,7 +25,7 @@ public class ReaderSinkThread extends Thread {
      * 
      * @param reader
      */
-    public ReaderSinkThread(Reader reader) {
+    public ReaderSinkThread(final Reader reader) {
         this.reader = reader;
     }
 
@@ -36,16 +36,17 @@ public class ReaderSinkThread extends Thread {
             int len;
             try {
                 len = reader.read(b);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Error when reading from reader", e);
                 return;
             }
-            if (len == -1) // eof
+            if (len == -1) {
                 break;
+            }
         }
         try {
             reader.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.info("Error when closing reader", e);
             return;
         }

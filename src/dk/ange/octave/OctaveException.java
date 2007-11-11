@@ -23,7 +23,7 @@ public class OctaveException extends Exception {
     /**
      * @param message
      */
-    public OctaveException(String message) {
+    public OctaveException(final String message) {
         super(message);
     }
 
@@ -31,14 +31,14 @@ public class OctaveException extends Exception {
      * @param message
      * @param cause
      */
-    public OctaveException(String message, Throwable cause) {
+    public OctaveException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
     /**
      * @param cause
      */
-    public OctaveException(Throwable cause) {
+    public OctaveException(final Throwable cause) {
         super(cause);
     }
 
@@ -58,7 +58,7 @@ public class OctaveException extends Exception {
     /**
      * @param destroyed
      */
-    public void setDestroyed(boolean destroyed) {
+    public void setDestroyed(final boolean destroyed) {
         this.destroyed = destroyed;
     }
 

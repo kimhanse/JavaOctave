@@ -23,21 +23,23 @@ public class NoCloseWriter extends Writer {
      * @param writer
      *            the writer to be protected.
      */
-    public NoCloseWriter(Writer writer) {
+    public NoCloseWriter(final Writer writer) {
         this.writer = writer;
     }
 
     @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
-        if (writer == null)
+    public void write(final char[] cbuf, final int off, final int len) throws IOException {
+        if (writer == null) {
             return;
+        }
         writer.write(cbuf, off, len);
     }
 
     @Override
     public void flush() throws IOException {
-        if (writer == null)
+        if (writer == null) {
             return;
+        }
         writer.flush();
     }
 
@@ -50,8 +52,9 @@ public class NoCloseWriter extends Writer {
     @Override
     public void close() throws IOException {
         log.debug("ignoring close() on a writer");
-        if (writer == null)
+        if (writer == null) {
             return;
+        }
         writer.flush();
         writer = null;
     }

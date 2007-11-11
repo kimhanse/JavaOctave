@@ -28,7 +28,7 @@ public class OctaveStruct extends OctaveType {
      * @param reader
      * @throws OctaveException
      */
-    public OctaveStruct(BufferedReader reader) throws OctaveException {
+    public OctaveStruct(final BufferedReader reader) throws OctaveException {
         this(reader, true);
     }
 
@@ -38,7 +38,7 @@ public class OctaveStruct extends OctaveType {
      *            whether to close the stream. Really should be true by default, but Java....
      * @throws OctaveException
      */
-    public OctaveStruct(BufferedReader reader, boolean close) throws OctaveException {
+    public OctaveStruct(final BufferedReader reader, final boolean close) throws OctaveException {
         try {
             String line;
             final String TYPE_STRUCT = "# type: struct";
@@ -54,7 +54,7 @@ public class OctaveStruct extends OctaveType {
             if (!line.startsWith(LENGTH)) {
                 throw new OctaveException("Expected <" + LENGTH + "> got <" + line + ">");
             }
-            int length = Integer.valueOf(line.substring(LENGTH.length())); // only used during conversion
+            final int length = Integer.valueOf(line.substring(LENGTH.length())); // only used during conversion
 
             for (int i = 0; i < length; i++) {
                 // # name: elemmatrix
@@ -63,11 +63,11 @@ public class OctaveStruct extends OctaveType {
                 if (!line.startsWith(NAME)) {
                     throw new OctaveException("Expected <" + NAME + "> got <" + line + ">");
                 }
-                String subname = line.substring(NAME.length());
-                OctaveCell cell = new OctaveCell(reader, false);
+                final String subname = line.substring(NAME.length());
+                final OctaveCell cell = new OctaveCell(reader, false);
                 // If the cell is a 1x1, move up the value
                 if (cell.getRowDimension() == 1 && cell.getColumnDimension() == 1) {
-                    OctaveType value = cell.get(1, 1);
+                    final OctaveType value = cell.get(1, 1);
                     data.put(subname, value);
                 } else {
                     data.put(subname, cell);
@@ -76,12 +76,12 @@ public class OctaveStruct extends OctaveType {
             if (close) {
                 reader.close();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
     }
 
-    private OctaveStruct(Map<String, OctaveType> data) {
+    private OctaveStruct(final Map<String, OctaveType> data) {
         this.data = data;
     }
 
@@ -89,16 +89,16 @@ public class OctaveStruct extends OctaveType {
      * @param name
      * @param value
      */
-    public void set(String name, OctaveType value) {
+    public void set(final String name, final OctaveType value) {
         data.put(name, value);
     }
 
     @Override
-    public void save(String name, Writer writer) throws IOException {
+    public void save(final String name, final Writer writer) throws IOException {
         writer.write("# name: " + name + "\n# type: struct\n# length: " + data.size() + "\n");
-        for (Map.Entry<String, OctaveType> entry : data.entrySet()) {
-            String subname = entry.getKey();
-            OctaveType value = entry.getValue();
+        for (final Map.Entry<String, OctaveType> entry : data.entrySet()) {
+            final String subname = entry.getKey();
+            final OctaveType value = entry.getValue();
             writer.write("# name: " + subname + "\n# type: cell\n# rows: 1\n# columns: 1\n");
             value.save("<cell-element>", writer);
         }
@@ -109,7 +109,7 @@ public class OctaveStruct extends OctaveType {
      * @param key
      * @return (shallow copy of) value for this key, or null if key isn't there.
      */
-    public OctaveType get(String key) {
+    public OctaveType get(final String key) {
         return OctaveType.copy(data.get(key));
     }
 
@@ -119,9 +119,9 @@ public class OctaveStruct extends OctaveType {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof OctaveStruct) {
-            OctaveStruct struct = (OctaveStruct) obj;
+            final OctaveStruct struct = (OctaveStruct) obj;
             return data.equals(struct.data);
 
         }

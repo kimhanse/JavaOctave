@@ -25,7 +25,7 @@ public final class InputStreamSinkThread extends Thread {
      * 
      * @param inputStream
      */
-    public InputStreamSinkThread(InputStream inputStream) {
+    public InputStreamSinkThread(final InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
@@ -36,16 +36,17 @@ public final class InputStreamSinkThread extends Thread {
             int len;
             try {
                 len = inputStream.read(b);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Error when reading from inputStream", e);
                 return;
             }
-            if (len == -1) // eof
+            if (len == -1) {
                 break;
+            }
         }
         try {
             inputStream.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.info("Error when closing inputStream", e);
             return;
         }

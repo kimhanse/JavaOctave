@@ -29,7 +29,7 @@ public final class IOStreamPipeThread extends Thread {
      * @param inputStream
      * @param outputStream
      */
-    public IOStreamPipeThread(InputStream inputStream, OutputStream outputStream) {
+    public IOStreamPipeThread(final InputStream inputStream, final OutputStream outputStream) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }
@@ -41,16 +41,17 @@ public final class IOStreamPipeThread extends Thread {
             final int len;
             try {
                 len = inputStream.read(b);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Error when reading from inputStream", e);
                 return;
             }
-            if (len == -1) // eof
+            if (len == -1) {
                 break;
+            }
             try {
                 outputStream.write(b, 0, len);
                 outputStream.flush();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Error when writing to outputStream", e);
                 return;
             }
@@ -58,7 +59,7 @@ public final class IOStreamPipeThread extends Thread {
         try {
             inputStream.close();
             // Don't close outputStream, other programs might use it
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.info("Error when closing inputStream", e);
             return;
         }

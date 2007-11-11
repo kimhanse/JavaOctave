@@ -16,7 +16,7 @@ public class TestOctaveScalar extends TestCase {
      * @throws Exception
      */
     public void testToString() throws Exception {
-        OctaveType integer = new OctaveScalar(42);
+        final OctaveType integer = new OctaveScalar(42);
         Assert.assertEquals(integer.toString(), "# name: ans\n# type: scalar\n42.0\n\n");
     }
 
@@ -24,7 +24,7 @@ public class TestOctaveScalar extends TestCase {
      * @throws Exception
      */
     public void testToOctave() throws Exception {
-        OctaveType integer = new OctaveScalar(43);
+        final OctaveType integer = new OctaveScalar(43);
         Assert.assertEquals(integer.toText("tre"), "# name: tre\n# type: scalar\n43.0\n\n");
     }
 
@@ -32,10 +32,10 @@ public class TestOctaveScalar extends TestCase {
      * @throws Exception
      */
     public void testOctaveConnection() throws Exception {
-        OctaveType i1 = new OctaveScalar(42);
-        Octave octave = new Octave();
+        final OctaveType i1 = new OctaveScalar(42);
+        final Octave octave = new Octave();
         octave.set("i", i1);
-        OctaveScalar i2 = new OctaveScalar(octave.get("i"));
+        final OctaveScalar i2 = new OctaveScalar(octave.get("i"));
         Assert.assertEquals(i1, i2);
     }
 
@@ -45,25 +45,25 @@ public class TestOctaveScalar extends TestCase {
      * @throws Exception
      */
     public void testSaveNanInf() throws Exception {
-        StringWriter stderr = new StringWriter();
-        Octave octave = new Octave(null, new OutputStreamWriter(System.out), stderr);
+        final StringWriter stderr = new StringWriter();
+        final Octave octave = new Octave(null, new OutputStreamWriter(System.out), stderr);
         octave.execute("ok=1;");
 
         octave.execute("xnan=NaN;");
         new OctaveScalar(octave.get("ok"));
-        OctaveScalar xnan = new OctaveScalar(octave.get("xnan"));
+        final OctaveScalar xnan = new OctaveScalar(octave.get("xnan"));
         assertEquals(Double.NaN, xnan.getDouble());
         new OctaveScalar(octave.get("ok"));
 
         octave.execute("xinf=Inf;");
         new OctaveScalar(octave.get("ok"));
-        OctaveScalar xinf = new OctaveScalar(octave.get("xinf"));
+        final OctaveScalar xinf = new OctaveScalar(octave.get("xinf"));
         assertEquals(Double.POSITIVE_INFINITY, xinf.getDouble());
         new OctaveScalar(octave.get("ok"));
 
         octave.execute("xninf=-Inf;");
         new OctaveScalar(octave.get("ok"));
-        OctaveScalar xninf = new OctaveScalar(octave.get("xninf"));
+        final OctaveScalar xninf = new OctaveScalar(octave.get("xninf"));
         assertEquals(Double.NEGATIVE_INFINITY, xninf.getDouble());
         new OctaveScalar(octave.get("ok"));
 

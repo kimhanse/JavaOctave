@@ -19,13 +19,13 @@ final class OctaveExecuteReader extends Reader {
 
     private static final Log log = LogFactory.getLog(OctaveExecuteReader.class);
 
-    private BufferedReader octaveReader;
+    private final BufferedReader octaveReader;
 
-    private String spacer;
+    private final String spacer;
 
-    private OctaveInputThread octaveInputThread;
+    private final OctaveInputThread octaveInputThread;
 
-    private Octave octave;
+    private final Octave octave;
 
     private StringBuffer buffer;
 
@@ -41,8 +41,8 @@ final class OctaveExecuteReader extends Reader {
      * @param octaveInputThread
      * @param octave
      */
-    public OctaveExecuteReader(BufferedReader octaveReader, String spacer, OctaveInputThread octaveInputThread,
-            Octave octave) {
+    public OctaveExecuteReader(final BufferedReader octaveReader, final String spacer,
+            final OctaveInputThread octaveInputThread, final Octave octave) {
         this.octaveReader = octaveReader;
         this.spacer = spacer;
         this.octaveInputThread = octaveInputThread;
@@ -50,11 +50,12 @@ final class OctaveExecuteReader extends Reader {
     }
 
     @Override
-    public int read(char[] cbuf, int off, int len) throws IOException {
-        if (eof)
+    public int read(final char[] cbuf, final int off, final int len) throws IOException {
+        if (eof) {
             return -1;
+        }
         if (buffer == null) {
-            String line = octaveReader.readLine();
+            final String line = octaveReader.readLine();
             if (log.isTraceEnabled()) {
                 log.trace("octaveReader.readLine() = " + StringUtil.jQuote(line));
             }
@@ -68,7 +69,7 @@ final class OctaveExecuteReader extends Reader {
             buffer = new StringBuffer(line);
             buffer.append('\n');
         }
-        int charsRead = Math.min(buffer.length(), len);
+        final int charsRead = Math.min(buffer.length(), len);
         buffer.getChars(0, charsRead, cbuf, off);
         if (charsRead == buffer.length()) {
             buffer = null;
@@ -82,7 +83,7 @@ final class OctaveExecuteReader extends Reader {
     public void close() throws IOException {
         try {
             octaveInputThread.join();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             throw new IOException("InterruptedException: " + e);
         }
         if (read() != -1) {
@@ -93,7 +94,7 @@ final class OctaveExecuteReader extends Reader {
         }
         try {
             octave.setExecuteState(Octave.ExecuteState.NONE);
-        } catch (OctaveException e) {
+        } catch (final OctaveException e) {
             throw new IOException("OctaveException: " + e);
         }
         log.debug("Reader closed()");

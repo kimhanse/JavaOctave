@@ -21,14 +21,14 @@ public class TestOctave extends TestCase {
     /**
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         junit.textui.TestRunner.run(TestOctave.class);
     }
 
     /**
      * @param name
      */
-    public TestOctave(String name) {
+    public TestOctave(final String name) {
         super(name);
     }
 
@@ -48,13 +48,13 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testExecute() throws Exception {
-        Octave octave = new Octave();
-        HashMap<String, OctaveType> typelist = new HashMap<String, OctaveType>();
-        OctaveType Y = new OctaveScalar(2);
+        final Octave octave = new Octave();
+        final HashMap<String, OctaveType> typelist = new HashMap<String, OctaveType>();
+        final OctaveType Y = new OctaveScalar(2);
         typelist.put("y", Y);
-        OctaveType X = new OctaveScalar(42);
+        final OctaveType X = new OctaveScalar(42);
         typelist.put("x", X);
-        OctaveType Z = new OctaveScalar(4);
+        final OctaveType Z = new OctaveScalar(4);
         typelist.put("z", Z);
 
         octave.set(typelist);
@@ -73,10 +73,10 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testExec() throws Exception {
-        Octave octave = new Octave();
+        final Octave octave = new Octave();
         octave.set("x", new OctaveScalar(42));
         octave.execute(new StringReader("x=x+10;"));
-        double x = new OctaveScalar(octave.get("x")).getDouble();
+        final double x = new OctaveScalar(octave.get("x")).getDouble();
         assertEquals(52.0, x, 0.0);
         octave.close();
     }
@@ -85,12 +85,12 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testDestroy() throws Exception {
-        Octave octave = new Octave();
+        final Octave octave = new Octave();
         octave.execute("sigterm_dumps_octave_core(0);");
         new DestroyThread(octave).start();
         try {
             octave.execute("sleep(10);");
-        } catch (OctaveException e) {
+        } catch (final OctaveException e) {
             assertTrue(e.isDestroyed());
         }
     }
@@ -101,9 +101,9 @@ public class TestOctave extends TestCase {
      * @author Kim Hansen
      */
     private static class DestroyThread extends Thread {
-        private Octave octave;
+        private final Octave octave;
 
-        private DestroyThread(Octave octave) {
+        private DestroyThread(final Octave octave) {
             this.octave = octave;
         }
 
@@ -112,7 +112,7 @@ public class TestOctave extends TestCase {
             try {
                 sleep(1000);
                 octave.destroy();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
@@ -124,7 +124,7 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testNullInput() throws Exception {
-        Octave octave = new Octave(null, null, null);
+        final Octave octave = new Octave(null, null, null);
         octave.execute("disp('Test');");
         octave.close();
     }
@@ -137,7 +137,7 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testConstructor() throws Exception {
-        Octave octave = new Octave(null, null, null, new File("/usr/bin/octave"), null, null);
+        final Octave octave = new Octave(null, null, null, new File("/usr/bin/octave"), null, null);
         octave.execute("disp('Test');");
         octave.close();
     }
@@ -158,26 +158,25 @@ public class TestOctave extends TestCase {
         try {
             octave2.execute("error('Test');");
             fail();
-        } catch (OctaveException e) {
+        } catch (final OctaveException e) {
             assertTrue(e.getCause() instanceof IOException);
         }
     }
 
-    @SuppressWarnings("unused")
     private static class DontCloseWriter extends Writer {
         private final String name;
 
-        private DontCloseWriter(String name) {
+        private DontCloseWriter(final String name) {
             this.name = name;
         }
 
         @Override
-        public void write(char[] cbuf, int off, int len) throws IOException {
+        public void write(final char[] cbuf, final int off, final int len) {
             // Don't do anything
         }
 
         @Override
-        public void flush() throws IOException {
+        public void flush() {
             // Don't do anything
         }
 

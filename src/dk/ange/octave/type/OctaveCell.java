@@ -34,7 +34,7 @@ public class OctaveCell extends OctaveType {
     /**
      * @param value
      */
-    public OctaveCell(OctaveType value) {
+    public OctaveCell(final OctaveType value) {
         this();
         set(1, 1, value);
     }
@@ -43,7 +43,7 @@ public class OctaveCell extends OctaveType {
      * @param reader
      * @throws OctaveException
      */
-    public OctaveCell(BufferedReader reader) throws OctaveException {
+    public OctaveCell(final BufferedReader reader) throws OctaveException {
         this(reader, true);
     }
 
@@ -53,7 +53,7 @@ public class OctaveCell extends OctaveType {
      *            whether to close the stream. Really should be true by default, but Java....
      * @throws OctaveException
      */
-    public OctaveCell(BufferedReader reader, boolean close) throws OctaveException {
+    public OctaveCell(final BufferedReader reader, final boolean close) throws OctaveException {
         this();
         try {
             String line;
@@ -69,14 +69,14 @@ public class OctaveCell extends OctaveType {
             if (!line.startsWith(token)) {
                 throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
             }
-            int nrows = Integer.parseInt(line.substring(token.length()));
+            final int nrows = Integer.parseInt(line.substring(token.length()));
 
             line = readerReadLine(reader);
             token = "# columns: ";
             if (!line.startsWith(token)) {
                 throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
             }
-            int ncols = Integer.parseInt(line.substring(token.length()));
+            final int ncols = Integer.parseInt(line.substring(token.length()));
             for (int col = 1; col <= ncols; col++) {
                 for (int row = 1; row <= nrows; row++) {
                     line = readerReadLine(reader);
@@ -84,7 +84,7 @@ public class OctaveCell extends OctaveType {
                     if (!line.equals(token)) {
                         throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
                     }
-                    OctaveType octaveType = OctaveType.readOctaveType(reader, false);
+                    final OctaveType octaveType = OctaveType.readOctaveType(reader, false);
                     set(row, col, octaveType);
                 }
                 line = readerReadLine(reader);
@@ -101,12 +101,12 @@ public class OctaveCell extends OctaveType {
             if (rows != data.size()) {
                 throw new IllegalStateException("After read, number of rows doesn't match the number read");
             }
-            for (ArrayList<OctaveType> row : data) {
+            for (final ArrayList<OctaveType> row : data) {
                 if (columns != row.size()) {
                     throw new IllegalStateException("After read, number of columns doesn't match the number read");
                 }
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
 
@@ -116,23 +116,23 @@ public class OctaveCell extends OctaveType {
      * @param rows
      * @param columns
      */
-    public OctaveCell(int rows, int columns) {
+    public OctaveCell(final int rows, final int columns) {
         data = new ArrayList<ArrayList<OctaveType>>();
         this.rows = 0;
         this.columns = 0;
         resize(rows, columns);
     }
 
-    private OctaveCell(int rows, int columns, ArrayList<ArrayList<OctaveType>> data) {
+    private OctaveCell(final int rows, final int columns, final ArrayList<ArrayList<OctaveType>> data) {
         this.rows = rows;
         this.columns = columns;
         this.data = data;
 
     }
 
-    private void resize(int newRows, int newColumns) {
+    private void resize(final int newRows, final int newColumns) {
         while (newRows > rows) {
-            ArrayList<OctaveType> newrow = new ArrayList<OctaveType>();
+            final ArrayList<OctaveType> newrow = new ArrayList<OctaveType>();
             data.add(newrow);
             for (int i = 0; i < columns; i++) {
                 newrow.add(EMPTY_CELL);
@@ -140,7 +140,7 @@ public class OctaveCell extends OctaveType {
             rows++;
         }
         while (newColumns > columns) {
-            for (ArrayList<OctaveType> rowData : data) {
+            for (final ArrayList<OctaveType> rowData : data) {
                 rowData.add(EMPTY_CELL);
             }
             columns++;
@@ -197,10 +197,10 @@ public class OctaveCell extends OctaveType {
     }
 
     @Override
-    public void save(String name, Writer writer) throws IOException {
+    public void save(final String name, final Writer writer) throws IOException {
         writer.write("# name: " + name + "\n# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
-        for (ArrayList<OctaveType> row : data) {
-            for (OctaveType value : row) {
+        for (final ArrayList<OctaveType> row : data) {
+            for (final OctaveType value : row) {
                 value.save("<cell-element>", writer);
             }
             writer.write("\n");
@@ -214,18 +214,18 @@ public class OctaveCell extends OctaveType {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof OctaveCell) {
-            OctaveCell cell = (OctaveCell) obj;
+            final OctaveCell cell = (OctaveCell) obj;
             if (cell.rows != rows || cell.columns != columns) {
                 return false;
             }
             for (int row = 0; row < rows; row++) {
-                ArrayList<OctaveType> cellrow = cell.data.get(row);
-                ArrayList<OctaveType> thisrow = data.get(row);
+                final ArrayList<OctaveType> cellrow = cell.data.get(row);
+                final ArrayList<OctaveType> thisrow = data.get(row);
                 for (int col = 0; col < columns; col++) {
-                    OctaveType thisvalue = thisrow.get(col);
-                    OctaveType cellvalue = cellrow.get(col);
+                    final OctaveType thisvalue = thisrow.get(col);
+                    final OctaveType cellvalue = cellrow.get(col);
                     if (thisvalue != null) {
                         if (!thisvalue.equals(cellvalue)) {
                             return false;

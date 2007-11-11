@@ -13,7 +13,7 @@ public class TestOctaveString extends TestCase {
      * @throws Exception
      */
     public void testToString() throws Exception {
-        OctaveType string = new OctaveString("tekst");
+        final OctaveType string = new OctaveString("tekst");
         Assert.assertEquals("# name: ans\n# type: string\n# elements: 1\n# length: 5\ntekst\n\n", string.toString());
     }
 
@@ -21,7 +21,7 @@ public class TestOctaveString extends TestCase {
      * @throws Exception
      */
     public void testToOctave() throws Exception {
-        OctaveType string = new OctaveString("mytekst");
+        final OctaveType string = new OctaveString("mytekst");
         Assert.assertEquals("# name: tre\n# type: string\n# elements: 1\n# length: 7\nmytekst\n\n", string
                 .toText("tre"));
     }
@@ -30,10 +30,10 @@ public class TestOctaveString extends TestCase {
      * @throws Exception
      */
     public void testOctaveConnection() throws Exception {
-        OctaveType s1 = new OctaveString("tekst");
-        Octave octave = new Octave();
+        final OctaveType s1 = new OctaveString("tekst");
+        final Octave octave = new Octave();
         octave.set("st", s1);
-        OctaveString s2 = new OctaveString(octave.get("st"));
+        final OctaveString s2 = new OctaveString(octave.get("st"));
         Assert.assertEquals(s1, s2);
     }
 

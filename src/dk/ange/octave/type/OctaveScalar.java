@@ -19,7 +19,7 @@ public class OctaveScalar extends OctaveType {
      * @param reader
      * @throws OctaveException
      */
-    public OctaveScalar(BufferedReader reader) throws OctaveException {
+    public OctaveScalar(final BufferedReader reader) throws OctaveException {
         this(reader, true);
     }
 
@@ -29,10 +29,10 @@ public class OctaveScalar extends OctaveType {
      *            whether to close the stream. Really should be true by default, but Java....
      * @throws OctaveException
      */
-    public OctaveScalar(BufferedReader reader, boolean close) throws OctaveException {
+    public OctaveScalar(final BufferedReader reader, final boolean close) throws OctaveException {
         try {
             String line = reader.readLine();
-            String token = "# type: scalar";
+            final String token = "# type: scalar";
             if (!line.equals(token)) {
                 throw new OctaveException("Expected <" + token + ">, but got <" + line + ">\n");
             }
@@ -41,7 +41,7 @@ public class OctaveScalar extends OctaveType {
             if (close) {
                 reader.close();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
     }
@@ -49,16 +49,16 @@ public class OctaveScalar extends OctaveType {
     /**
      * @param value
      */
-    public OctaveScalar(double value) {
+    public OctaveScalar(final double value) {
         this.value = value;
     }
 
     @Override
-    public boolean equals(Object thatObject) {
+    public boolean equals(final Object thatObject) {
         if (!(thatObject instanceof OctaveScalar)) {
             return false;
         }
-        OctaveScalar that = (OctaveScalar) thatObject;
+        final OctaveScalar that = (OctaveScalar) thatObject;
         return this.value == that.value;
     }
 
@@ -70,7 +70,7 @@ public class OctaveScalar extends OctaveType {
     }
 
     @Override
-    public void save(String name, Writer writer) throws IOException {
+    public void save(final String name, final Writer writer) throws IOException {
         writer.write("# name: " + name + "\n# type: scalar\n" + value + "\n\n");
     }
 
@@ -84,7 +84,7 @@ public class OctaveScalar extends OctaveType {
      * 
      * @param value
      */
-    public void set(double value) {
+    public void set(final double value) {
         this.value = value;
     }
 

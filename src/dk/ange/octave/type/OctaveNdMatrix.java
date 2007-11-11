@@ -28,7 +28,7 @@ public class OctaveNdMatrix extends OctaveType {
      * @param reader
      * @throws OctaveException
      */
-    public OctaveNdMatrix(BufferedReader reader) throws OctaveException {
+    public OctaveNdMatrix(final BufferedReader reader) throws OctaveException {
         this(reader, true);
     }
 
@@ -38,7 +38,7 @@ public class OctaveNdMatrix extends OctaveType {
      *            whether to close the stream. Really should be true by default, but Java....
      * @throws OctaveException
      */
-    public OctaveNdMatrix(BufferedReader reader, boolean close) throws OctaveException {
+    public OctaveNdMatrix(final BufferedReader reader, final boolean close) throws OctaveException {
         try {
             String line;
             // # type: matrix
@@ -61,14 +61,14 @@ public class OctaveNdMatrix extends OctaveType {
             if (close) {
                 reader.close();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OctaveException(e);
         }
 
     }
 
-    private void readScalarMatrix(BufferedReader reader) throws OctaveException {
-        String line = readerReadLine(reader);
+    private void readScalarMatrix(final BufferedReader reader) throws OctaveException {
+        final String line = readerReadLine(reader);
         size = new int[2];
         size[0] = 1;
         size[1] = 1;
@@ -77,16 +77,16 @@ public class OctaveNdMatrix extends OctaveType {
 
     }
 
-    private void readVectorizedMatrix(BufferedReader reader) throws OctaveException {
+    private void readVectorizedMatrix(final BufferedReader reader) throws OctaveException {
         String line;
         final String NDIMS = "# ndims: ";
         line = readerReadLine(reader);
         if (!line.startsWith(NDIMS)) {
             throw new OctaveException("Expected <" + NDIMS + ">, but got <" + line + ">");
         }
-        int ndims = Integer.parseInt(line.substring(NDIMS.length()));
+        final int ndims = Integer.parseInt(line.substring(NDIMS.length()));
         line = readerReadLine(reader);
-        String[] split = line.substring(1).split(" ");
+        final String[] split = line.substring(1).split(" ");
         if (split.length != ndims) {
             throw new OctaveException("Expected " + ndims + " dimesion, but got " + (split.length) + " (line was <"
                     + line + ">)");
@@ -103,18 +103,20 @@ public class OctaveNdMatrix extends OctaveType {
 
     }
 
-    private void read2dmatrix(BufferedReader reader) throws OctaveException {
+    private void read2dmatrix(final BufferedReader reader) throws OctaveException {
         String line;
         // # rows: 1
         line = readerReadLine(reader);
-        if (!line.startsWith("# rows: "))
+        if (!line.startsWith("# rows: ")) {
             throw new OctaveException("Expected <# rows: > got <" + line + ">");
-        int rows = Integer.valueOf(line.substring(8));
+        }
+        final int rows = Integer.valueOf(line.substring(8));
         // # columns: 3
         line = readerReadLine(reader);
-        if (!line.startsWith("# columns: "))
+        if (!line.startsWith("# columns: ")) {
             throw new OctaveException("Expected <# columns: > got <" + line + ">");
-        int columns = Integer.valueOf(line.substring(11));
+        }
+        final int columns = Integer.valueOf(line.substring(11));
         // 1 2 3
         size = new int[2];
         size[0] = rows;
@@ -122,9 +124,10 @@ public class OctaveNdMatrix extends OctaveType {
         data = new double[rows * columns];
         for (int r = 1; r <= rows; ++r) {
             line = readerReadLine(reader);
-            String[] split = line.split(" ");
-            if (split.length != columns + 1)
+            final String[] split = line.split(" ");
+            if (split.length != columns + 1) {
                 throw new OctaveException("Error in matrix-format: '" + line + "'");
+            }
             for (int c = 1; c < split.length; c++) {
                 set(parseDouble(split[c]), r, c);
             }
@@ -148,7 +151,7 @@ public class OctaveNdMatrix extends OctaveType {
     /**
      * @param size
      */
-    public OctaveNdMatrix(int... size) {
+    public OctaveNdMatrix(final int... size) {
         init(size);
         data = new double[product(size)];
     }
@@ -157,22 +160,25 @@ public class OctaveNdMatrix extends OctaveType {
      * @param ns
      * @return product of rs
      */
-    protected static int product(int... ns) {
+    protected static int product(final int... ns) {
         int p = 1;
-        for (int n : ns)
+        for (final int n : ns) {
             p *= n;
+        }
         return p;
     }
 
-    private void init(int... size_) throws IllegalArgumentException {
-        if (size_.length == 0)
+    private void init(final int... size_) throws IllegalArgumentException {
+        if (size_.length == 0) {
             throw new IllegalArgumentException("no size");
+        }
         if (size_.length < 2) {
             throw new IllegalArgumentException("size must have a least 2 dimenstions");
         }
-        for (int s : size_) {
-            if (s < 0)
+        for (final int s : size_) {
+            if (s < 0) {
                 throw new IllegalArgumentException("element in size less than zero. =" + s);
+            }
         }
         this.size = size_;
     }
@@ -181,10 +187,10 @@ public class OctaveNdMatrix extends OctaveType {
      * @param data
      * @param size
      */
-    public OctaveNdMatrix(double[] data, int... size) {
+    public OctaveNdMatrix(final double[] data, final int... size) {
         init(size);
         if (product(size) != data.length) {
-            StringBuilder text = new StringBuilder();
+            final StringBuilder text = new StringBuilder();
             text.append("length of data(");
             text.append(data.length);
             text.append(") doesn't fit with size(");
@@ -212,13 +218,13 @@ public class OctaveNdMatrix extends OctaveType {
      * @param pos
      *            position in matrix, 1-indexed.
      */
-    public void set(double value, int... pos) {
+    public void set(final double value, final int... pos) {
         resize(pos);
         data[pos2ind(pos)] = value;
     }
 
     @Override
-    public void save(String name, Writer writer) throws IOException {
+    public void save(final String name, final Writer writer) throws IOException {
         writer.write("# name: " + name + "\n# type: matrix\n");
         if (size.length > 2) {
             saveDataVectorized(writer);
@@ -227,9 +233,9 @@ public class OctaveNdMatrix extends OctaveType {
         }
     }
 
-    private void saveData2d(Writer writer) throws IOException {
-        int nrows = size[0];
-        int ncols = size.length > 1 ? size[1] : 1;
+    private void saveData2d(final Writer writer) throws IOException {
+        final int nrows = size[0];
+        final int ncols = size.length > 1 ? size[1] : 1;
         writer.write("# rows: " + nrows + "\n# columns: " + ncols + "\n");
         for (int row = 0; row < nrows; row++) {
             for (int col = 0; col < ncols; col++) {
@@ -240,12 +246,12 @@ public class OctaveNdMatrix extends OctaveType {
         writer.write("\n");
     }
 
-    private void saveDataVectorized(Writer writer) throws IOException {
+    private void saveDataVectorized(final Writer writer) throws IOException {
         writer.write("# ndims: " + size.length + "\n");
-        for (int sdim : size) {
+        for (final int sdim : size) {
             writer.write(" " + sdim);
         }
-        for (double d : data) {
+        for (final double d : data) {
             writer.write("\n " + d);
         }
         writer.write("\n\n");
@@ -260,7 +266,7 @@ public class OctaveNdMatrix extends OctaveType {
      * @param pos
      * @return the index into data() for the position
      */
-    public int pos2ind(int... pos) {
+    public int pos2ind(final int... pos) {
         int idx = 0;
         int factor = 1;
         for (int dim = 0; dim < pos.length; dim++) {
@@ -278,28 +284,28 @@ public class OctaveNdMatrix extends OctaveType {
      * @param pos
      * @return value for pos
      */
-    public double get(int... pos) {
+    public double get(final int... pos) {
         return data[pos2ind(pos)];
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof OctaveNdMatrix) {
-            OctaveNdMatrix matrix = (OctaveNdMatrix) obj;
+            final OctaveNdMatrix matrix = (OctaveNdMatrix) obj;
             return Arrays.equals(matrix.size, size) && Arrays.equals(matrix.data, data);
         } else {
             return false;
         }
     }
 
-    private void resize(int... pos) {
+    private void resize(final int... pos) {
         if (size.length != pos.length) {
             throw new UnsupportedOperationException("Change in number of dimenstions not supported");
         }
         // Resize from the smallest dimension. This is not the optimal way to do it,
         // but it works.
         int smallest_dim = 0;
-        int[] newsize = new int[size.length];
+        final int[] newsize = new int[size.length];
         System.arraycopy(size, 0, newsize, 0, size.length);
         for (; smallest_dim < size.length; smallest_dim++) {
             if (pos[smallest_dim] > size[smallest_dim]) {
@@ -310,7 +316,7 @@ public class OctaveNdMatrix extends OctaveType {
 
     }
 
-    private void resizework(int smallest_dim, int[] pos) {
+    private void resizework(final int smallest_dim, final int[] pos) {
         // Calculate blocksize
         int blocksize = 1;
         for (int dim = 0; dim < smallest_dim + 1; dim++) {
@@ -318,7 +324,7 @@ public class OctaveNdMatrix extends OctaveType {
         }
 
         // Calculate new dimensions
-        int[] newsize = new int[size.length];
+        final int[] newsize = new int[size.length];
         for (int dim = 0; dim < newsize.length; dim++) {
             newsize[dim] = Math.max(pos[dim], size[dim]);
         }
@@ -330,9 +336,9 @@ public class OctaveNdMatrix extends OctaveType {
         }
 
         // Allocate new data array if neccessary
-        int neededSize = product(newsize);
+        final int neededSize = product(newsize);
         if (data.length < neededSize) {
-            double[] newdata = new double[neededSize * 2];
+            final double[] newdata = new double[neededSize * 2];
             // Move data into new array
             int src_offset = 0;
             for (int dest_offset = 0; dest_offset < neededSize; dest_offset += stride) {

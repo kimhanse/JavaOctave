@@ -20,7 +20,7 @@ public class TeeWriter extends Writer {
 
     private static final Log log = LogFactory.getLog(TeeWriter.class);
 
-    private Writer[] writers;
+    private final Writer[] writers;
 
     /**
      * Create a writer that doesn't do anything.
@@ -35,17 +35,17 @@ public class TeeWriter extends Writer {
      * @param writers
      *            the list of writers that should be written to.
      */
-    public TeeWriter(Writer... writers) {
+    public TeeWriter(final Writer... writers) {
         this.writers = writers;
     }
 
     @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
+    public void write(final char[] cbuf, final int off, final int len) throws IOException {
         IOException ioe = null;
-        for (Writer writer : writers) {
+        for (final Writer writer : writers) {
             try {
                 writer.write(cbuf, off, len);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Exception during write()", e);
                 ioe = e;
             }
@@ -58,10 +58,10 @@ public class TeeWriter extends Writer {
     @Override
     public void flush() throws IOException {
         IOException ioe = null;
-        for (Writer writer : writers) {
+        for (final Writer writer : writers) {
             try {
                 writer.flush();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Exception during flush()", e);
                 ioe = e;
             }
@@ -74,10 +74,10 @@ public class TeeWriter extends Writer {
     @Override
     public void close() throws IOException {
         IOException ioe = null;
-        for (Writer writer : writers) {
+        for (final Writer writer : writers) {
             try {
                 writer.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.info("Exception during close()", e);
                 ioe = e;
             }

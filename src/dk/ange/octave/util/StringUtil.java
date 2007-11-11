@@ -16,15 +16,15 @@ public final class StringUtil {
      * @param s
      * @return the string encoded and quoted
      */
-    public static String jQuote(String s) {
+    public static String jQuote(final String s) {
         if (s == null) {
             return "null";
         }
-        int ln = s.length();
-        StringBuffer b = new StringBuffer(ln + 4);
+        final int ln = s.length();
+        final StringBuffer b = new StringBuffer(ln + 4);
         b.append('"');
         for (int i = 0; i < ln; i++) {
-            char c = s.charAt(i);
+            final char c = s.charAt(i);
             if (c == '"') {
                 b.append("\\\"");
             } else if (c == '\\') {
@@ -65,11 +65,11 @@ public final class StringUtil {
      *            How much of the buffer to quote
      * @return the string encoded and quoted
      */
-    public static String jQuote(char[] cbuf, int len) {
-        StringBuffer b = new StringBuffer(len + 4);
+    public static String jQuote(final char[] cbuf, final int len) {
+        final StringBuffer b = new StringBuffer(len + 4);
         b.append('"');
         for (int i = 0; i < len; i++) {
-            char c = cbuf[i];
+            final char c = cbuf[i];
             if (c == '"') {
                 b.append("\\\"");
             } else if (c == '\\') {
