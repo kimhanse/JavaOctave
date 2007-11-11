@@ -89,6 +89,7 @@ public class OctaveScalar extends OctaveNdMatrix {
 
     @Override
     public double[] getData() {
+        // FIXME change value to use double[1] data
         throw new UnsupportedOperationException("Not possible for OctaveScalar");
     }
 
