@@ -14,6 +14,8 @@ import dk.ange.octave.OctaveException;
  */
 public class OctaveStruct extends OctaveType {
 
+    private static final long serialVersionUID = 430390185317050230L;
+
     private Map<String, OctaveType> data = new HashMap<String, OctaveType>();
 
     /**

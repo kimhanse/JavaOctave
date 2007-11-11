@@ -12,6 +12,8 @@ import dk.ange.octave.OctaveException;
  */
 public class OctaveNdMatrix extends OctaveType {
 
+    private static final long serialVersionUID = 4697636627793706177L;
+
     /**
      * The data, vectorized.
      */

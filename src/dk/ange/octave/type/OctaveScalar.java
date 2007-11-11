@@ -11,7 +11,9 @@ import dk.ange.octave.OctaveException;
  */
 public class OctaveScalar extends OctaveType {
 
-    double value;
+    private static final long serialVersionUID = 2221234552189760358L;
+
+    private double value;
 
     /**
      * @param reader

@@ -69,9 +69,7 @@ public class TestOctaveScalar extends TestCase {
 
         octave.close();
         stderr.close();
-        assertEquals("warning: save: Inf or NaN values may not be reloadable\n"
-                + "warning: save: Inf or NaN values may not be reloadable\n"
-                + "warning: save: Inf or NaN values may not be reloadable\n", stderr.toString());
+        assertEquals("", stderr.toString());
     }
 
 }

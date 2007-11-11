@@ -10,14 +10,13 @@ import dk.ange.octave.Octave;
 /**
  * @author Kim Hansen
  */
-@SuppressWarnings("deprecation")
 public class TestOctaveMatrix extends TestCase {
 
     /**
      * @throws Exception
      */
     public void testConstructor() throws Exception {
-        OctaveMatrix matrix = new OctaveMatrix();
+        OctaveNdMatrix matrix = new OctaveNdMatrix(0, 0);
         Assert.assertEquals(0, matrix.rows());
         Assert.assertEquals(0, matrix.columns());
         Assert.assertEquals("" + //
@@ -34,7 +33,7 @@ public class TestOctaveMatrix extends TestCase {
      */
     public void testConstructorMatrix() throws Exception {
         double[] numbers = { 1, 2, 3, 4, 5, 6 };
-        OctaveMatrix matrix = new OctaveMatrix(numbers, 2, 3);
+        OctaveNdMatrix matrix = new OctaveNdMatrix(numbers, 2, 3);
         Assert.assertEquals(2, matrix.rows());
         Assert.assertEquals(3, matrix.columns());
         Assert.assertEquals("" + //
@@ -51,7 +50,7 @@ public class TestOctaveMatrix extends TestCase {
      * @throws Exception
      */
     public void testConstructorIntInt() throws Exception {
-        OctaveMatrix matrix = new OctaveMatrix(2, 3);
+        OctaveNdMatrix matrix = new OctaveNdMatrix(2, 3);
         Assert.assertEquals(2, matrix.rows());
         Assert.assertEquals(3, matrix.columns());
         Assert.assertEquals("" + //
@@ -95,9 +94,7 @@ public class TestOctaveMatrix extends TestCase {
      * @throws Exception
      */
     public void testGrowth() throws Exception {
-        OctaveMatrix matrix;
-
-        matrix = new OctaveMatrix(0, 0);
+        final OctaveNdMatrix matrix = new OctaveNdMatrix(0, 0);
         Assert.assertEquals(0, matrix.rows());
         Assert.assertEquals(0, matrix.columns());
         Assert.assertEquals("" + //
@@ -129,8 +126,8 @@ public class TestOctaveMatrix extends TestCase {
                 " 3.0\n\n" //
         , matrix.toText("matrix"));
 
-        matrix = new OctaveMatrix(0, 0);
-        matrix.set(3.0, 1, 3);
+        final OctaveNdMatrix matrix2 = new OctaveNdMatrix(0, 0);
+        matrix2.set(3.0, 1, 3);
         Assert.assertEquals("" + //
                 "# name: matrix\n" + //
                 "# type: matrix\n" + //
@@ -138,7 +135,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 0.0 0.0 3.0\n" + //
                 "\n" //
-        , matrix.toText("matrix"));
+        , matrix2.toText("matrix"));
     }
 
     /**
@@ -147,8 +144,8 @@ public class TestOctaveMatrix extends TestCase {
     public void testOctaveGet() throws Exception {
         Octave octave = new Octave();
         octave.execute("m=[1 2;3 4];");
-        OctaveNdMatrix matrix = new OctaveMatrix(octave.get("m"));
-        matrix = new OctaveMatrix(octave.get("m"));
+        OctaveNdMatrix matrix = new OctaveNdMatrix(octave.get("m"));
+        matrix = new OctaveNdMatrix(octave.get("m"));
         Assert.assertEquals("" + //
                 "# name: m\n" + //
                 "# type: matrix\n" + //
@@ -166,14 +163,14 @@ public class TestOctaveMatrix extends TestCase {
     public void testOctaveSetExecGet() throws Exception {
         double[] numbers = { 1, 2, 3, 4, 5, 6 };
         Octave octave = new Octave();
-        OctaveNdMatrix in = new OctaveMatrix(numbers, 2, 3);
+        OctaveNdMatrix in = new OctaveNdMatrix(numbers, 2, 3);
         octave.set("in", in);
         octave.execute("out=in;");
-        OctaveNdMatrix out = new OctaveMatrix(octave.get("out"));
+        OctaveNdMatrix out = new OctaveNdMatrix(octave.get("out"));
         Assert.assertEquals(in.toString(), out.toString());
         octave.execute("slicerow=in(2,:); slicecol=in(:,2);");
-        OctaveMatrix slicerow = new OctaveMatrix(octave.get("slicerow"));
-        OctaveMatrix slicecol = new OctaveMatrix(octave.get("slicecol"));
+        OctaveNdMatrix slicerow = new OctaveNdMatrix(octave.get("slicerow"));
+        OctaveNdMatrix slicecol = new OctaveNdMatrix(octave.get("slicecol"));
         assertEquals(2.0, slicerow.get(1, 1));
         assertEquals(4.0, slicerow.get(1, 2));
         assertEquals(6.0, slicerow.get(1, 3));
@@ -186,7 +183,7 @@ public class TestOctaveMatrix extends TestCase {
      * @throws Exception
      */
     public void testPerformance() throws Exception {
-        OctaveMatrix matrix = new OctaveMatrix(30, 0);
+        OctaveNdMatrix matrix = new OctaveNdMatrix(30, 0);
         long t = System.currentTimeMillis();
         // 4125 was the number of containers in a real job.
         for (int pos = 1; pos <= 4125; ++pos) {
@@ -198,7 +195,7 @@ public class TestOctaveMatrix extends TestCase {
             fail("Performance test didn't finish in 500ms (used " + timeused + "ms)");
         }
 
-        matrix = new OctaveMatrix(0, 30);
+        matrix = new OctaveNdMatrix(0, 30);
         t = System.currentTimeMillis();
         // 700 is just some random number
         for (int pos = 1; pos <= 700; ++pos) {
@@ -222,13 +219,13 @@ public class TestOctaveMatrix extends TestCase {
         octave.execute("ok=1;");
         octave.execute("xnan=[NaN 0];");
         new OctaveScalar(octave.get("ok"));
-        OctaveMatrix xnan = new OctaveMatrix(octave.get("xnan"));
+        OctaveNdMatrix xnan = new OctaveNdMatrix(octave.get("xnan"));
         assertEquals(Double.NaN, xnan.get(1, 1));
         assertEquals(Double.valueOf(0), xnan.get(1, 2));
         new OctaveScalar(octave.get("ok"));
         octave.execute("xinf=[Inf -Inf];");
         new OctaveScalar(octave.get("ok"));
-        OctaveMatrix xinf = new OctaveMatrix(octave.get("xinf"));
+        OctaveNdMatrix xinf = new OctaveNdMatrix(octave.get("xinf"));
         assertEquals(Double.POSITIVE_INFINITY, xinf.get(1, 1));
         assertEquals(Double.NEGATIVE_INFINITY, xinf.get(1, 2));
         new OctaveScalar(octave.get("ok"));

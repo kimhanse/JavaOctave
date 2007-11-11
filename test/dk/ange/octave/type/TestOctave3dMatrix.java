@@ -7,14 +7,13 @@ import dk.ange.octave.Octave;
 /**
  * @author Kim Hansen
  */
-@SuppressWarnings("deprecation")
 public class TestOctave3dMatrix extends TestCase {
 
     /**
      * @throws Exception
      */
     public void testConstructor() throws Exception {
-        Octave3dMatrix matrix = new Octave3dMatrix(0, 0, 0);
+        OctaveNdMatrix matrix = new OctaveNdMatrix(0, 0, 0);
 
         Assert.assertEquals("# name: matrix3d\n# type: matrix\n# ndims: 3\n 0 0 0\n\n", matrix.toText("matrix3d"));
     }
@@ -23,7 +22,7 @@ public class TestOctave3dMatrix extends TestCase {
      * @throws Exception
      */
     public void testConstructorIntIntInt() throws Exception {
-        Octave3dMatrix matrix = new Octave3dMatrix(3, 4, 2);
+        OctaveNdMatrix matrix = new OctaveNdMatrix(3, 4, 2);
         Assert.assertEquals("" //
                 + "# name: matrix3d\n" //
                 + "# type: matrix\n" //
@@ -59,7 +58,7 @@ public class TestOctave3dMatrix extends TestCase {
      * @throws Exception
      */
     public void testOctave() throws Exception {
-        Octave3dMatrix matrix3d = new Octave3dMatrix(3, 4, 2);
+        OctaveNdMatrix matrix3d = new OctaveNdMatrix(3, 4, 2);
 
         matrix3d.set(42.0, 1, 3, 2);
         matrix3d.set(-1.0, 3, 1, 1);
@@ -69,10 +68,10 @@ public class TestOctave3dMatrix extends TestCase {
         octave.execute("x2 = matrix3d(:,:,2);");
         octave.execute("x3 = matrix3d(:,3,:);");
         octave.execute("x4 = matrix3d(3,:,:);");
-        OctaveMatrix x1 = new OctaveMatrix(octave.get("x1"));
-        OctaveMatrix x2 = new OctaveMatrix(octave.get("x2"));
-        Octave3dMatrix x3 = new Octave3dMatrix(octave.get("x3"));
-        Octave3dMatrix x4 = new Octave3dMatrix(octave.get("x4"));
+        OctaveNdMatrix x1 = new OctaveNdMatrix(octave.get("x1"));
+        OctaveNdMatrix x2 = new OctaveNdMatrix(octave.get("x2"));
+        OctaveNdMatrix x3 = new OctaveNdMatrix(octave.get("x3"));
+        OctaveNdMatrix x4 = new OctaveNdMatrix(octave.get("x4"));
         assertEquals(0.0, x1.get(1, 3));
         assertEquals(-1.0, x1.get(3, 1));
         assertEquals(42.0, x2.get(1, 3));

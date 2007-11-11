@@ -12,9 +12,11 @@ import dk.ange.octave.OctaveException;
  */
 public class OctaveCell extends OctaveType {
 
+    private static final long serialVersionUID = -8884907460912911699L;
+
     private static final OctaveType EMPTY_CELL = new OctaveNdMatrix(0, 0);
 
-    final private ArrayList<ArrayList<OctaveType>> data;
+    private final ArrayList<ArrayList<OctaveType>> data;
 
     private int rows;
 
