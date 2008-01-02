@@ -279,8 +279,8 @@ public final class Octave {
         final BufferedReader resultReader = new BufferedReader(executeReader(new StringReader("save -text - " + name)));
         try {
             String line = processReader.readLine();
-            if (line == null || !line.startsWith("# Created by Octave 2.9")) {
-                throw new OctaveException("Unsupported version of octave " + line);
+            if (line == null || !line.startsWith("# Created by Octave")) {
+                throw new OctaveException("Not created by Octave?: '" + line+ "'");
             }
             line = processReader.readLine();
             final String token = "# name: ";
