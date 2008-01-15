@@ -1,3 +1,18 @@
+/*
+ * Copyright 2007, 2008 Ange Optimization ApS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dk.ange.octave;
 
 import java.io.BufferedReader;
@@ -50,23 +65,23 @@ public final class Octave {
      * Will start the octave process.
      * 
      * @param stdinLog
-     *            This writer will capture all that is written to the octave process via stdin, if null the data will
-     *            not be captured.
+     *                This writer will capture all that is written to the octave process via stdin, if null the data
+     *                will not be captured.
      * @param stdoutLog
-     *            This writer will capture all that is written from the octave process on stdout, if null the data will
-     *            not be captured.
+     *                This writer will capture all that is written from the octave process on stdout, if null the data
+     *                will not be captured.
      * @param stderrLog
-     *            This writer will capture all that is written from the octave process on stderr, if null the data will
-     *            not be captured.
+     *                This writer will capture all that is written from the octave process on stderr, if null the data
+     *                will not be captured.
      * @param octaveProgram
-     *            This is the path to the octave program, if it is null the program 'octave' will be assumed to be in
-     *            the PATH.
+     *                This is the path to the octave program, if it is null the program 'octave' will be assumed to be
+     *                in the PATH.
      * @param environment
-     *            The environment for the octave process, if null the process will inherit the environment for the
-     *            virtual mashine.
+     *                The environment for the octave process, if null the process will inherit the environment for the
+     *                virtual mashine.
      * @param workingDir
-     *            This will be the working dir for the octave process, if null the process will inherit the working dir
-     *            of the current process.
+     *                This will be the working dir for the octave process, if null the process will inherit the working
+     *                dir of the current process.
      * @throws OctaveException
      */
     public Octave(final Writer stdinLog, final Writer stdoutLog, final Writer stderrLog, final File octaveProgram,
@@ -128,14 +143,14 @@ public final class Octave {
      * Will start the octave process in a standard environment.
      * 
      * @param stdinLog
-     *            This writer will capture all that is written to the octave process via stdin, if null the data will
-     *            not be captured.
+     *                This writer will capture all that is written to the octave process via stdin, if null the data
+     *                will not be captured.
      * @param stdoutLog
-     *            This writer will capture all that is written from the octave process on stdout, if null the data will
-     *            not be captured.
+     *                This writer will capture all that is written from the octave process on stdout, if null the data
+     *                will not be captured.
      * @param stderrLog
-     *            This writer will capture all that is written from the octave process on stderr, if null the data will
-     *            not be captured.
+     *                This writer will capture all that is written from the octave process on stderr, if null the data
+     *                will not be captured.
      * @throws OctaveException
      */
     public Octave(final Writer stdinLog, final Writer stdoutLog, final Writer stderrLog) throws OctaveException {
@@ -280,7 +295,7 @@ public final class Octave {
         try {
             String line = processReader.readLine();
             if (line == null || !line.startsWith("# Created by Octave")) {
-                throw new OctaveException("Not created by Octave?: '" + line+ "'");
+                throw new OctaveException("Not created by Octave?: '" + line + "'");
             }
             line = processReader.readLine();
             final String token = "# name: ";
@@ -335,7 +350,7 @@ public final class Octave {
      * @return Returns always true, return value is needed in order for this to be used in assert statements. If there
      *         was an error OctaveException would be thrown.
      * @throws OctaveException
-     *             when the executeState is illegal
+     *                 when the executeState is illegal
      */
     public boolean check() throws OctaveException {
         final ExecuteState executeState2 = getExecuteState();
