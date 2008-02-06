@@ -124,7 +124,6 @@ public class OctaveCell extends OctaveType {
         } catch (final IOException e) {
             throw new OctaveException(e);
         }
-
     }
 
     /**
@@ -142,7 +141,6 @@ public class OctaveCell extends OctaveType {
         this.rows = rows;
         this.columns = columns;
         this.data = data;
-
     }
 
     private void resize(final int newRows, final int newColumns) {
@@ -220,7 +218,6 @@ public class OctaveCell extends OctaveType {
             }
             writer.write("\n");
         }
-
     }
 
     @Override

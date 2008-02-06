@@ -50,7 +50,7 @@ public class OctaveNdMatrix extends OctaveType {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream. Really should be true by default, but Java....
+     *                whether to close the stream
      * @throws OctaveException
      */
     public OctaveNdMatrix(final BufferedReader reader, final boolean close) throws OctaveException {
@@ -79,7 +79,6 @@ public class OctaveNdMatrix extends OctaveType {
         } catch (final IOException e) {
             throw new OctaveException(e);
         }
-
     }
 
     private void readScalarMatrix(final BufferedReader reader) throws OctaveException {
@@ -89,7 +88,6 @@ public class OctaveNdMatrix extends OctaveType {
         size[1] = 1;
         data = new double[1];
         data[0] = parseDouble(line);
-
     }
 
     private void readVectorizedMatrix(final BufferedReader reader) throws OctaveException {
@@ -115,7 +113,6 @@ public class OctaveNdMatrix extends OctaveType {
             line = readerReadLine(reader);
             data[idx] = parseDouble(line);
         }
-
     }
 
     private void read2dmatrix(final BufferedReader reader) throws OctaveException {
@@ -209,7 +206,6 @@ public class OctaveNdMatrix extends OctaveType {
             text.append("length of data(");
             text.append(data.length);
             text.append(") doesn't fit with size(");
-
             text.append("[");
             boolean first = true;
             for (final int i : size) {
@@ -221,7 +217,6 @@ public class OctaveNdMatrix extends OctaveType {
                 text.append(i);
             }
             text.append("]");
-
             text.append(")");
             throw new IllegalArgumentException(text.toString());
         }
@@ -231,7 +226,7 @@ public class OctaveNdMatrix extends OctaveType {
     /**
      * @param value
      * @param pos
-     *            position in matrix, 1-indexed.
+     *                position in matrix, 1-indexed.
      */
     public void set(final double value, final int... pos) {
         resize(pos);
@@ -328,7 +323,6 @@ public class OctaveNdMatrix extends OctaveType {
                 resizework(smallest_dim, newsize);
             }
         }
-
     }
 
     private void resizework(final int smallest_dim, final int[] pos) {
@@ -383,7 +377,6 @@ public class OctaveNdMatrix extends OctaveType {
 
         // set new size
         size = newsize;
-
     }
 
     /**

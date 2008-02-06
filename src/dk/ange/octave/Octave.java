@@ -322,6 +322,8 @@ public final class Octave {
     }
 
     /**
+     * Close the octave process in an orderly fasion.
+     * 
      * @throws OctaveException
      */
     public void close() throws OctaveException {
@@ -365,6 +367,8 @@ public final class Octave {
     }
 
     /**
+     * Kill the octave process without remorse
+     * 
      * @throws OctaveException
      */
     public void destroy() throws OctaveException {
