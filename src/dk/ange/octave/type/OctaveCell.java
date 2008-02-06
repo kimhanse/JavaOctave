@@ -65,7 +65,7 @@ public class OctaveCell extends OctaveType {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream. Really should be true by default, but Java....
+     *                whether to close the stream. Really should be true by default, but Java....
      * @throws OctaveException
      */
     public OctaveCell(final BufferedReader reader, final boolean close) throws OctaveException {
@@ -212,9 +212,9 @@ public class OctaveCell extends OctaveType {
     @Override
     public void save(final String name, final Writer writer) throws IOException {
         writer.write("# name: " + name + "\n# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
-        for (final ArrayList<OctaveType> row : data) {
-            for (final OctaveType value : row) {
-                value.save("<cell-element>", writer);
+        for (int c = 0; c < columns; ++c) {
+            for (int r = 0; r < rows; ++r) {
+                data.get(r).get(c).save("<cell-element>", writer);
             }
             writer.write("\n");
         }

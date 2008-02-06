@@ -77,14 +77,15 @@ public class TestOctaveCell extends TestCase {
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
+                "\n" + //
+                "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
+                "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
-                "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "\n" + //
-                "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: scalar\n42.0\n\n\n" //
@@ -115,6 +116,26 @@ public class TestOctaveCell extends TestCase {
         octave.set("mycell", cell);
         final OctaveCell mycell_copy = new OctaveCell(octave.get("mycell"));
         assertEquals(cell, mycell_copy);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSameInOctave() throws Exception {
+        final OctaveCell cell = new OctaveCell(2, 3);
+        for (int r = 1; r <= 2; ++r) {
+            for (int c = 1; c <= 3; ++c) {
+                cell.set(r, c, new OctaveScalar(r + 0.1 * c));
+            }
+        }
+        final Octave octave = new Octave();
+        octave.set("cell_java", cell);
+        // Assert it is the same in Octave and Java
+        octave.execute("cell_octave=cell(); for r=1:2 for c=1:3 cell_octave{r,c}=r+0.1*c; endfor endfor");
+        octave.execute("assert(cell_octave, cell_java);");
+        // Assert that the returned value is the same as the original
+        assertEquals(cell, new OctaveCell(octave.get("cell_java")));
+        octave.close();
     }
 
 }
