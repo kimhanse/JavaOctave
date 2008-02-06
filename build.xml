@@ -56,12 +56,7 @@
 
   <!-- JAR -->
   <target name="jar" depends="build,install.src" description="--> Assemble jar">
-    <exec executable="svnversion" outputproperty="svn.version" />
-    <jar destfile="javaoctave.jar" basedir="build/classes">
-      <manifest>
-        <attribute name="SVN-Version" value="${svn.version}" />
-      </manifest>
-    </jar>
+    <jar destfile="javaoctave.jar" basedir="build/classes" />
   </target>
 
   <!-- Test -->
