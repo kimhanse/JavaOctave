@@ -65,7 +65,7 @@ public class OctaveCell extends OctaveType {
     /**
      * @param reader
      * @param close
-     *                whether to close the stream. Really should be true by default, but Java....
+     *                whether to close the stream. Really should be true by default
      * @throws OctaveException
      */
     public OctaveCell(final BufferedReader reader, final boolean close) throws OctaveException {

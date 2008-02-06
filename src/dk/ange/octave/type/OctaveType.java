@@ -183,7 +183,7 @@ public abstract class OctaveType implements Serializable {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream. Really should be true by default, but Java....
+     *            whether to close the stream. Really should be true by default
      * @return octavetype read from reader
      * @throws OctaveException
      *             if read failed.

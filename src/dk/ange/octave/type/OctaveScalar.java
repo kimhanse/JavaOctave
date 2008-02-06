@@ -41,7 +41,7 @@ public class OctaveScalar extends OctaveNdMatrix {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream. Really should be true by default, but Java....
+     *            whether to close the stream. Really should be true by default
      * @throws OctaveException
      */
     public OctaveScalar(final BufferedReader reader, final boolean close) throws OctaveException {
