@@ -35,7 +35,7 @@ public abstract class OctaveException extends RuntimeException {
      * 
      * @param message
      */
-    public OctaveException(String message) {
+    public OctaveException(final String message) {
         super(message);
     }
 
@@ -44,7 +44,7 @@ public abstract class OctaveException extends RuntimeException {
      * 
      * @param cause
      */
-    public OctaveException(Throwable cause) {
+    public OctaveException(final Throwable cause) {
         super(cause);
     }
 
@@ -54,7 +54,7 @@ public abstract class OctaveException extends RuntimeException {
      * @param message
      * @param cause
      */
-    public OctaveException(String message, Throwable cause) {
+    public OctaveException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

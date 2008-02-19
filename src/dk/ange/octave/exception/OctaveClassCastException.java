@@ -37,7 +37,7 @@ public class OctaveClassCastException extends OctaveException {
      * 
      * @param message
      */
-    public OctaveClassCastException(String message) {
+    public OctaveClassCastException(final String message) {
         super(message);
     }
 
@@ -46,7 +46,7 @@ public class OctaveClassCastException extends OctaveException {
      * 
      * @param cause
      */
-    public OctaveClassCastException(Throwable cause) {
+    public OctaveClassCastException(final Throwable cause) {
         super(cause);
     }
 
@@ -56,7 +56,7 @@ public class OctaveClassCastException extends OctaveException {
      * @param message
      * @param cause
      */
-    public OctaveClassCastException(String message, Throwable cause) {
+    public OctaveClassCastException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

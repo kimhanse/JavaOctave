@@ -89,7 +89,7 @@ public class OctaveScalar extends OctaveNdMatrix {
     }
 
     @Override
-    public double get(int... pos) {
+    public double get(final int... pos) {
         if (pos2ind(pos) != 0) {
             throw new IllegalArgumentException("Can only access pos 0 for OctaveScalar");
         }
@@ -97,7 +97,7 @@ public class OctaveScalar extends OctaveNdMatrix {
     }
 
     @Override
-    public void set(double value, int... pos) {
+    public void set(final double value, final int... pos) {
         if (pos2ind(pos) != 0) {
             throw new IllegalArgumentException("Can only access pos 0 for OctaveScalar");
         }

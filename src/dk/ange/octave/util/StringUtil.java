@@ -75,9 +75,9 @@ public final class StringUtil {
      * <code>null</code>.
      * 
      * @param cbuf
-     *            the buffer
+     *                the buffer
      * @param len
-     *            How much of the buffer to quote
+     *                How much of the buffer to quote
      * @return the string encoded and quoted
      */
     public static String jQuote(final char[] cbuf, final int len) {

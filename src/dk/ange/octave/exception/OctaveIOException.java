@@ -37,7 +37,7 @@ public class OctaveIOException extends OctaveException {
      * 
      * @param message
      */
-    public OctaveIOException(String message) {
+    public OctaveIOException(final String message) {
         super(message);
     }
 
@@ -46,7 +46,7 @@ public class OctaveIOException extends OctaveException {
      * 
      * @param cause
      */
-    public OctaveIOException(Throwable cause) {
+    public OctaveIOException(final Throwable cause) {
         super(cause);
     }
 
@@ -56,7 +56,7 @@ public class OctaveIOException extends OctaveException {
      * @param message
      * @param cause
      */
-    public OctaveIOException(String message, Throwable cause) {
+    public OctaveIOException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

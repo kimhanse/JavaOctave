@@ -36,7 +36,7 @@ public class NoCloseWriter extends Writer {
      * Create a NoCloseWriter that will protect writer.
      * 
      * @param writer
-     *            the writer to be protected.
+     *                the writer to be protected.
      */
     public NoCloseWriter(final Writer writer) {
         this.writer = writer;
@@ -62,7 +62,7 @@ public class NoCloseWriter extends Writer {
      * Flushes the writer and looses the connection to it.
      * 
      * @throws IOException
-     *             from the underlying writer.
+     *                 from the underlying writer.
      */
     @Override
     public void close() throws IOException {
@@ -78,9 +78,9 @@ public class NoCloseWriter extends Writer {
      * Really closes the underlying writer.
      * 
      * @throws IOException
-     *             from the underlying writer.
+     *                 from the underlying writer.
      * @throws NullPointerException
-     *             if the NoCloseWriter has been closed.
+     *                 if the NoCloseWriter has been closed.
      */
     public void reallyClose() throws IOException {
         log.debug("reallyClose() a writer");

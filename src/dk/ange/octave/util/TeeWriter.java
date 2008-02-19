@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** 
+ * @author Kim Hansen
+ */
 package dk.ange.octave.util;
 
 import java.io.IOException;
@@ -28,8 +31,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * If there is thrown one or more exception all writers will still be accessed, the exceptions will be logged and the
  * last exception thrown will be passed on outside.
- * 
- * @author Kim Hansen
  */
 public class TeeWriter extends Writer {
 
@@ -48,7 +49,7 @@ public class TeeWriter extends Writer {
      * Create a single writer that writes to multiple writers.
      * 
      * @param writers
-     *            the list of writers that should be written to.
+     *                the list of writers that should be written to.
      */
     public TeeWriter(final Writer... writers) {
         this.writers = writers;

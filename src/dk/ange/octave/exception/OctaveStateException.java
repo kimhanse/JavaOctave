@@ -37,7 +37,7 @@ public class OctaveStateException extends OctaveException {
      * 
      * @param message
      */
-    public OctaveStateException(String message) {
+    public OctaveStateException(final String message) {
         super(message);
     }
 
@@ -46,7 +46,7 @@ public class OctaveStateException extends OctaveException {
      * 
      * @param cause
      */
-    public OctaveStateException(Throwable cause) {
+    public OctaveStateException(final Throwable cause) {
         super(cause);
     }
 
@@ -56,7 +56,7 @@ public class OctaveStateException extends OctaveException {
      * @param message
      * @param cause
      */
-    public OctaveStateException(String message, Throwable cause) {
+    public OctaveStateException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

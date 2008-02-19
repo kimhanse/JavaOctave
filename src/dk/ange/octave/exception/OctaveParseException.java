@@ -37,7 +37,7 @@ public class OctaveParseException extends OctaveException {
      * 
      * @param message
      */
-    public OctaveParseException(String message) {
+    public OctaveParseException(final String message) {
         super(message);
     }
 
@@ -46,7 +46,7 @@ public class OctaveParseException extends OctaveException {
      * 
      * @param cause
      */
-    public OctaveParseException(Throwable cause) {
+    public OctaveParseException(final Throwable cause) {
         super(cause);
     }
 
@@ -56,7 +56,7 @@ public class OctaveParseException extends OctaveException {
      * @param message
      * @param cause
      */
-    public OctaveParseException(String message, Throwable cause) {
+    public OctaveParseException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
