@@ -143,11 +143,8 @@ public class TestOctaveNdMatrix extends TestCase {
 
     }
 
-    /**
-     * @throws Exception
-     *                 matrixzero doesn't work because of bug in octave
-     */
-    public void testSetAndGetOctave() throws Exception {
+    /** Test */
+    public void testSetAndGetOctave() {
         final Octave octave = new Octave();
         final TreeMap<String, OctaveType> vars = new TreeMap<String, OctaveType>();
         final double[] bigdata = new double[2 * 3 * 4];
@@ -159,15 +156,15 @@ public class TestOctaveNdMatrix extends TestCase {
         vars.put("bigmatrix", new OctaveNdMatrix(bigdata, 1, 2, 3, 4));
         vars.put("matrix2d", new OctaveNdMatrix(data2d, 2, 3));
         vars.put("matrixscalar", new OctaveNdMatrix(datascalar, 1, 1));
-        // vars.put("matrixzero", new OctaveNdMatrix(0, 0, 0, 0));
+        vars.put("matrixzero", new OctaveNdMatrix(0, 0, 0, 0));
         vars.put("matrixzero2d", new OctaveNdMatrix(0, 0));
         octave.set(vars);
-        // OctaveNdMatrix matrixzero = new OctaveNdMatrix(octave.get("matrixzero"));
+        final OctaveNdMatrix matrixzero = new OctaveNdMatrix(octave.get("matrixzero"));
         final OctaveNdMatrix matrix2d = new OctaveNdMatrix(octave.get("matrix2d"));
         final OctaveNdMatrix bigmatrix = new OctaveNdMatrix(octave.get("bigmatrix"));
         final OctaveNdMatrix matrixzero2d = new OctaveNdMatrix(octave.get("matrixzero2d"));
         final OctaveNdMatrix matrixscalar = new OctaveNdMatrix(octave.get("matrixscalar"));
-        // assertEquals(matrixzero, vars.get("matrixzero"));
+        assertEquals(matrixzero, vars.get("matrixzero"));
         assertEquals(matrixzero2d, vars.get("matrixzero2d"));
         assertEquals(matrixscalar, vars.get("matrixscalar"));
         assertEquals(matrix2d, vars.get("matrix2d"));
@@ -180,10 +177,13 @@ public class TestOctaveNdMatrix extends TestCase {
                 "# columns: 0\n\n" //
         , matrixzero2d.toText("matrixzero2d"));
 
-        /*
-         * assertEquals("" + // "# name: matrixzero\n" + // "# type: matrix\n" + // "# ndims: 4\n" + // " 0 0 0 0\n" // ,
-         * matrixzero.toText("matrixzero"));
-         */
+        assertEquals("" + //
+                "# name: matrixzero\n" + //
+                "# type: matrix\n" + //
+                "# ndims: 4\n" + //
+                " 0 0 0 0\n\n" // 
+        , matrixzero.toText("matrixzero"));
+
         assertEquals("" + //
                 "# name: matrixscalar\n" + //
                 "# type: matrix\n" + //
