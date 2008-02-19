@@ -18,7 +18,6 @@ package dk.ange.octave;
 import java.io.Reader;
 import java.io.StringReader;
 
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.type.OctaveScalar;
 
 /**
@@ -28,9 +27,8 @@ public class RunOctave {
 
     /**
      * @param args
-     * @throws OctaveException
      */
-    public static void main(final String[] args) throws OctaveException {
+    public static void main(final String[] args) {
         final Octave octave = new Octave();
         try {
             octave.set("a", new OctaveScalar(42));

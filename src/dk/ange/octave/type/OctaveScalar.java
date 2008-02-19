@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 
@@ -34,9 +33,8 @@ public class OctaveScalar extends OctaveNdMatrix {
 
     /**
      * @param reader
-     * @throws OctaveException
      */
-    public OctaveScalar(final BufferedReader reader) throws OctaveException {
+    public OctaveScalar(final BufferedReader reader) {
         this(reader, true);
     }
 
@@ -44,9 +42,8 @@ public class OctaveScalar extends OctaveNdMatrix {
      * @param reader
      * @param close
      *                whether to close the stream. Really should be true by default
-     * @throws OctaveException
      */
-    public OctaveScalar(final BufferedReader reader, final boolean close) throws OctaveException {
+    public OctaveScalar(final BufferedReader reader, final boolean close) {
         super(1, 1);
         try {
             String line = reader.readLine();

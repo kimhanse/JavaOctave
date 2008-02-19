@@ -145,7 +145,7 @@ public class TestOctaveNdMatrix extends TestCase {
 
     /**
      * @throws Exception
-     *             matrixzero doesn't work because of bug in octave
+     *                 matrixzero doesn't work because of bug in octave
      */
     public void testSetAndGetOctave() throws Exception {
         final Octave octave = new Octave();
@@ -236,7 +236,7 @@ public class TestOctaveNdMatrix extends TestCase {
 
     /**
      * @throws Exception
-     *             matrixzero doesn't work because of bug in octave
+     *                 matrixzero doesn't work because of bug in octave
      */
     public void testGrowth() throws Exception {
         final OctaveNdMatrix matrix = new OctaveNdMatrix(3, 3, 3, 3);

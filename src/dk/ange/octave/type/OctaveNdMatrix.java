@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 
@@ -43,9 +42,8 @@ public class OctaveNdMatrix extends OctaveType {
 
     /**
      * @param reader
-     * @throws OctaveException
      */
-    public OctaveNdMatrix(final BufferedReader reader) throws OctaveException {
+    public OctaveNdMatrix(final BufferedReader reader) {
         this(reader, true);
     }
 
@@ -53,9 +51,8 @@ public class OctaveNdMatrix extends OctaveType {
      * @param reader
      * @param close
      *                whether to close the stream
-     * @throws OctaveException
      */
-    public OctaveNdMatrix(final BufferedReader reader, final boolean close) throws OctaveException {
+    public OctaveNdMatrix(final BufferedReader reader, final boolean close) {
         try {
             String line;
             // # type: matrix
@@ -83,7 +80,7 @@ public class OctaveNdMatrix extends OctaveType {
         }
     }
 
-    private void readScalarMatrix(final BufferedReader reader) throws OctaveException {
+    private void readScalarMatrix(final BufferedReader reader) {
         final String line = readerReadLine(reader);
         size = new int[2];
         size[0] = 1;
@@ -92,7 +89,7 @@ public class OctaveNdMatrix extends OctaveType {
         data[0] = parseDouble(line);
     }
 
-    private void readVectorizedMatrix(final BufferedReader reader) throws OctaveException {
+    private void readVectorizedMatrix(final BufferedReader reader) {
         String line;
         final String NDIMS = "# ndims: ";
         line = readerReadLine(reader);
@@ -117,7 +114,7 @@ public class OctaveNdMatrix extends OctaveType {
         }
     }
 
-    private void read2dmatrix(final BufferedReader reader) throws OctaveException {
+    private void read2dmatrix(final BufferedReader reader) {
         String line;
         // # rows: 1
         line = readerReadLine(reader);

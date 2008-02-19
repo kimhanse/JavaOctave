@@ -39,9 +39,8 @@ public abstract class OctaveType implements Serializable {
     /**
      * @param values
      * @return Returns a Reader from which the octave input version of values can be read.
-     * @throws OctaveException
      */
-    static public Reader octaveReader(final Map<String, OctaveType> values) throws OctaveException {
+    static public Reader octaveReader(final Map<String, OctaveType> values) {
         final PipedReader pipedReader = new PipedReader();
         final PipedWriter pipedWriter = new PipedWriter();
         try {
@@ -101,9 +100,8 @@ public abstract class OctaveType implements Serializable {
     /**
      * @param name
      * @return Text to feed to 'load -text -' to define the variable
-     * @throws OctaveException
      */
-    public String toText(final String name) throws OctaveException {
+    public String toText(final String name) {
         final StringWriter writer = new StringWriter();
         try {
             save(name, writer);
@@ -121,7 +119,7 @@ public abstract class OctaveType implements Serializable {
      * @return next line from reader
      * @throws OctaveException
      */
-    static String readerReadLine(final BufferedReader reader) throws OctaveException {
+    static String readerReadLine(final BufferedReader reader) {
         try {
             final String line = reader.readLine();
             if (line == null) {
@@ -142,7 +140,7 @@ public abstract class OctaveType implements Serializable {
      * @throws OctaveException
      *                 Note: The line to be read must be less than 1000 characters.
      */
-    static String readerPeekLine(final BufferedReader reader) throws OctaveException {
+    static String readerPeekLine(final BufferedReader reader) {
         try {
             reader.mark(1000);
             final String line = reader.readLine();
@@ -175,10 +173,8 @@ public abstract class OctaveType implements Serializable {
     /**
      * @param reader
      * @return octavetype read from reader
-     * @throws OctaveException
-     *                 if read failed.
      */
-    static public OctaveType readOctaveType(final BufferedReader reader) throws OctaveException {
+    static public OctaveType readOctaveType(final BufferedReader reader) {
         return readOctaveType(reader, true);
     }
 
@@ -187,10 +183,8 @@ public abstract class OctaveType implements Serializable {
      * @param close
      *                whether to close the stream. Really should be true by default
      * @return octavetype read from reader
-     * @throws OctaveException
-     *                 if read failed.
      */
-    static public OctaveType readOctaveType(final BufferedReader reader, final boolean close) throws OctaveException {
+    static public OctaveType readOctaveType(final BufferedReader reader, final boolean close) {
         final String line = readerPeekLine(reader);
         final String TYPE = "# type: ";
         if (!line.startsWith(TYPE)) {

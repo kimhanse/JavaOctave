@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 
@@ -37,9 +36,8 @@ public class OctaveString extends OctaveType {
 
     /**
      * @param reader
-     * @throws OctaveException
      */
-    public OctaveString(final BufferedReader reader) throws OctaveException {
+    public OctaveString(final BufferedReader reader) {
         this(reader, true);
     }
 
@@ -47,9 +45,8 @@ public class OctaveString extends OctaveType {
      * @param reader
      * @param close
      *                whether to close the stream.
-     * @throws OctaveException
      */
-    public OctaveString(final BufferedReader reader, final boolean close) throws OctaveException {
+    public OctaveString(final BufferedReader reader, final boolean close) {
         try {
             String line;
             line = readerReadLine(reader);
