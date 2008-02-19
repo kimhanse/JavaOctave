@@ -18,6 +18,7 @@ package dk.ange.octave;
 import java.io.Reader;
 import java.io.StringReader;
 
+import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.type.OctaveScalar;
 
 /**

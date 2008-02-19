@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * @author Kim Hansen
+ */
 package dk.ange.octave;
 
 import java.io.File;
@@ -23,12 +26,11 @@ import java.util.HashMap;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.type.OctaveScalar;
 import dk.ange.octave.type.OctaveType;
 
 /**
- * @author kim
- * 
  * Tests dk.ange.octave.Octave.*
  */
 public class TestOctave extends TestCase {

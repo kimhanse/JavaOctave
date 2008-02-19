@@ -25,7 +25,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
-import dk.ange.octave.OctaveException;
+import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exception.OctaveParseException;
 
 /**
  * @author Kim Hansen
@@ -45,7 +47,7 @@ public abstract class OctaveType implements Serializable {
         try {
             pipedWriter.connect(pipedReader);
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
         final ToOctaveMultiWriter toOctaveWriter = new ToOctaveMultiWriter(values, pipedWriter);
         toOctaveWriter.start();
@@ -106,7 +108,7 @@ public abstract class OctaveType implements Serializable {
         try {
             save(name, writer);
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
         return writer.getBuffer().toString();
 
@@ -123,11 +125,11 @@ public abstract class OctaveType implements Serializable {
         try {
             final String line = reader.readLine();
             if (line == null) {
-                throw new OctaveException("Pipe to octave-process broken");
+                throw new OctaveIOException("Pipe to octave-process broken");
             }
             return line;
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 
@@ -138,7 +140,7 @@ public abstract class OctaveType implements Serializable {
      * @return next line from reader without modifying the "file pointer", meaning that the next call to readLine or
      *         peekLine will return the same line.
      * @throws OctaveException
-     *             Note: The line to be read must be less than 1000 characters.
+     *                 Note: The line to be read must be less than 1000 characters.
      */
     static String readerPeekLine(final BufferedReader reader) throws OctaveException {
         try {
@@ -146,11 +148,11 @@ public abstract class OctaveType implements Serializable {
             final String line = reader.readLine();
             reader.reset();
             if (line == null) {
-                throw new OctaveException("Pipe to octave-process broken");
+                throw new OctaveIOException("Pipe to octave-process broken");
             }
             return line;
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 
@@ -174,7 +176,7 @@ public abstract class OctaveType implements Serializable {
      * @param reader
      * @return octavetype read from reader
      * @throws OctaveException
-     *             if read failed.
+     *                 if read failed.
      */
     static public OctaveType readOctaveType(final BufferedReader reader) throws OctaveException {
         return readOctaveType(reader, true);
@@ -183,16 +185,16 @@ public abstract class OctaveType implements Serializable {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream. Really should be true by default
+     *                whether to close the stream. Really should be true by default
      * @return octavetype read from reader
      * @throws OctaveException
-     *             if read failed.
+     *                 if read failed.
      */
     static public OctaveType readOctaveType(final BufferedReader reader, final boolean close) throws OctaveException {
         final String line = readerPeekLine(reader);
         final String TYPE = "# type: ";
         if (!line.startsWith(TYPE)) {
-            throw new OctaveException("Expected <" + TYPE + "> got <" + line + ">");
+            throw new OctaveParseException("Expected <" + TYPE + "> got <" + line + ">");
         }
         final String type = line.substring(TYPE.length());
         final OctaveType rv;

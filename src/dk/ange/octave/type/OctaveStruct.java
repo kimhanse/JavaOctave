@@ -21,7 +21,9 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import dk.ange.octave.OctaveException;
+import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exception.OctaveParseException;
 
 /**
  * @author Kim Hansen
@@ -50,7 +52,7 @@ public class OctaveStruct extends OctaveType {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream. Really should be true by default
+     *                whether to close the stream. Really should be true by default
      * @throws OctaveException
      */
     public OctaveStruct(final BufferedReader reader, final boolean close) throws OctaveException {
@@ -60,14 +62,14 @@ public class OctaveStruct extends OctaveType {
             final String TYPE_GLOBAL_STRUCT = "# type: global struct";
             line = readerReadLine(reader);
             if (!line.equals(TYPE_STRUCT) && !line.equals(TYPE_GLOBAL_STRUCT)) {
-                throw new OctaveException("Variable was not a struct or global struct, " + line);
+                throw new OctaveParseException("Variable was not a struct or global struct, " + line);
             }
             // # length: 4
             line = readerReadLine(reader);
 
             final String LENGTH = "# length: ";
             if (!line.startsWith(LENGTH)) {
-                throw new OctaveException("Expected <" + LENGTH + "> got <" + line + ">");
+                throw new OctaveParseException("Expected <" + LENGTH + "> got <" + line + ">");
             }
             final int length = Integer.valueOf(line.substring(LENGTH.length())); // only used during conversion
 
@@ -76,7 +78,7 @@ public class OctaveStruct extends OctaveType {
                 final String NAME = "# name: ";
                 line = readerReadLine(reader);
                 if (!line.startsWith(NAME)) {
-                    throw new OctaveException("Expected <" + NAME + "> got <" + line + ">");
+                    throw new OctaveParseException("Expected <" + NAME + "> got <" + line + ">");
                 }
                 final String subname = line.substring(NAME.length());
                 final OctaveCell cell = new OctaveCell(reader, false);
@@ -92,7 +94,7 @@ public class OctaveStruct extends OctaveType {
                 reader.close();
             }
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 

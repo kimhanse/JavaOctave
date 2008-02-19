@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import dk.ange.octave.OctaveException;
+import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exception.OctaveParseException;
 
 /**
  * @author Kim Hansen
@@ -76,20 +78,20 @@ public class OctaveCell extends OctaveType {
             line = readerReadLine(reader);
             token = "# type: cell";
             if (!line.equals(token)) {
-                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
             }
 
             line = readerReadLine(reader);
             token = "# rows: ";
             if (!line.startsWith(token)) {
-                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
             }
             final int nrows = Integer.parseInt(line.substring(token.length()));
 
             line = readerReadLine(reader);
             token = "# columns: ";
             if (!line.startsWith(token)) {
-                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
             }
             final int ncols = Integer.parseInt(line.substring(token.length()));
             for (int col = 1; col <= ncols; col++) {
@@ -97,7 +99,7 @@ public class OctaveCell extends OctaveType {
                     line = readerReadLine(reader);
                     token = "# name: <cell-element>";
                     if (!line.equals(token)) {
-                        throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                        throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
                     }
                     final OctaveType octaveType = OctaveType.readOctaveType(reader, false);
                     set(row, col, octaveType);
@@ -105,7 +107,7 @@ public class OctaveCell extends OctaveType {
                 line = readerReadLine(reader);
                 token = "";
                 if (!line.equals(token)) {
-                    throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                    throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
                 }
             }
             if (close) {
@@ -122,7 +124,7 @@ public class OctaveCell extends OctaveType {
                 }
             }
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 

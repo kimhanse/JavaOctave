@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 
-import dk.ange.octave.OctaveException;
+import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exception.OctaveParseException;
 
 /**
  * @author Kim Hansen
@@ -68,16 +70,16 @@ public class OctaveNdMatrix extends OctaveType {
                 } else if (line.startsWith("# ndims: ")) {
                     readVectorizedMatrix(reader);
                 } else {
-                    throw new OctaveException("Expected <# rows: > or <# ndims: >, but got <" + line + ">");
+                    throw new OctaveParseException("Expected <# rows: > or <# ndims: >, but got <" + line + ">");
                 }
             } else {
-                throw new OctaveException("Wrong type of variable, " + line);
+                throw new OctaveParseException("Wrong type of variable, " + line);
             }
             if (close) {
                 reader.close();
             }
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 
@@ -95,14 +97,14 @@ public class OctaveNdMatrix extends OctaveType {
         final String NDIMS = "# ndims: ";
         line = readerReadLine(reader);
         if (!line.startsWith(NDIMS)) {
-            throw new OctaveException("Expected <" + NDIMS + ">, but got <" + line + ">");
+            throw new OctaveParseException("Expected <" + NDIMS + ">, but got <" + line + ">");
         }
         final int ndims = Integer.parseInt(line.substring(NDIMS.length()));
         line = readerReadLine(reader);
         final String[] split = line.substring(1).split(" ");
         if (split.length != ndims) {
-            throw new OctaveException("Expected " + ndims + " dimesion, but got " + (split.length) + " (line was <"
-                    + line + ">)");
+            throw new OctaveParseException("Expected " + ndims + " dimesion, but got " + (split.length)
+                    + " (line was <" + line + ">)");
         }
         size = new int[split.length];
         for (int dim = 0; dim < split.length; dim++) {
@@ -120,13 +122,13 @@ public class OctaveNdMatrix extends OctaveType {
         // # rows: 1
         line = readerReadLine(reader);
         if (!line.startsWith("# rows: ")) {
-            throw new OctaveException("Expected <# rows: > got <" + line + ">");
+            throw new OctaveParseException("Expected <# rows: > got <" + line + ">");
         }
         final int rows = Integer.valueOf(line.substring(8));
         // # columns: 3
         line = readerReadLine(reader);
         if (!line.startsWith("# columns: ")) {
-            throw new OctaveException("Expected <# columns: > got <" + line + ">");
+            throw new OctaveParseException("Expected <# columns: > got <" + line + ">");
         }
         final int columns = Integer.valueOf(line.substring(11));
         // 1 2 3
@@ -138,7 +140,7 @@ public class OctaveNdMatrix extends OctaveType {
             line = readerReadLine(reader);
             final String[] split = line.split(" ");
             if (split.length != columns + 1) {
-                throw new OctaveException("Error in matrix-format: '" + line + "'");
+                throw new OctaveParseException("Error in matrix-format: '" + line + "'");
             }
             for (int c = 1; c < split.length; c++) {
                 set(parseDouble(split[c]), r, c);

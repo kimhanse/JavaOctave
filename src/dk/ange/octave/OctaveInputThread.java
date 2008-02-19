@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * @author Kim Hansen
+ */
 package dk.ange.octave;
 
 import java.io.IOException;
@@ -22,10 +25,11 @@ import java.io.Writer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.util.StringUtil;
 
 /**
- * @author Kim Hansen
+ * Thread that writes data into the octave process
  */
 final class OctaveInputThread extends Thread {
 

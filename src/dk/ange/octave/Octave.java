@@ -30,6 +30,10 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exception.OctaveParseException;
+import dk.ange.octave.exception.OctaveStateException;
 import dk.ange.octave.type.OctaveType;
 import dk.ange.octave.util.InputStreamSinkThread;
 import dk.ange.octave.util.NoCloseWriter;
@@ -96,7 +100,7 @@ public final class Octave {
         try {
             process = Runtime.getRuntime().exec(cmdArray, environment, workingDir);
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
         // Connect stderr
         if (stderrLog == null) {
@@ -135,7 +139,7 @@ public final class Octave {
             }
             setup.close();
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 
@@ -214,7 +218,7 @@ public final class Octave {
             }
             resultReader.close();
         } catch (final IOException e) {
-            final OctaveException octaveException = new OctaveException(e);
+            final OctaveException octaveException = new OctaveIOException(e);
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
@@ -271,11 +275,11 @@ public final class Octave {
             final int len = resultReader.read(cbuf);
             if (len != -1) {
                 final String buffer = new String(cbuf, 0, len);
-                throw new OctaveException("Unexpected output when setting variable in octave: " + buffer);
+                throw new OctaveIOException("Unexpected output when setting variable in octave: " + buffer);
             }
             resultReader.close();
         } catch (final IOException e) {
-            final OctaveException octaveException = new OctaveException(e);
+            final OctaveException octaveException = new OctaveIOException(e);
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
@@ -295,24 +299,24 @@ public final class Octave {
         try {
             String line = processReader.readLine();
             if (line == null || !line.startsWith("# Created by Octave")) {
-                throw new OctaveException("Not created by Octave?: '" + line + "'");
+                throw new OctaveParseException("Not created by Octave?: '" + line + "'");
             }
             line = processReader.readLine();
             final String token = "# name: ";
             if (!line.startsWith(token)) {
                 if (isSpacer(line)) {
-                    throw new OctaveException("no such variable '" + name + "'");
+                    throw new OctaveParseException("no such variable '" + name + "'");
                 } else {
-                    throw new OctaveException("Expected <" + token + ">, but got <" + line + ">");
+                    throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
                 }
             }
             final String readname = line.substring(token.length());
             if (!name.equals(readname)) {
-                throw new OctaveException("Expected variable named \"" + name + "\" but got one named \"" + readname
-                        + "\"");
+                throw new OctaveParseException("Expected variable named \"" + name + "\" but got one named \""
+                        + readname + "\"");
             }
         } catch (final IOException e) {
-            final OctaveException octaveException = new OctaveException(e);
+            final OctaveException octaveException = new OctaveIOException(e);
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
@@ -334,11 +338,11 @@ public final class Octave {
             processWriter.close();
             final String read = processReader.readLine();
             if (read != null) {
-                throw new OctaveException("Expected reader to be closed: " + read);
+                throw new OctaveIOException("Expected reader to be closed: " + read);
             }
             processReader.close();
         } catch (final IOException e) {
-            final OctaveException octaveException = new OctaveException("reader error", e);
+            final OctaveException octaveException = new OctaveIOException("reader error", e);
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
@@ -357,7 +361,8 @@ public final class Octave {
     public boolean check() throws OctaveException {
         final ExecuteState executeState2 = getExecuteState();
         if (executeState2 != ExecuteState.NONE) {
-            final OctaveException octaveException = new OctaveException("Failed check(), executeState=" + executeState2);
+            final OctaveException octaveException = new OctaveStateException("Failed check(), executeState="
+                    + executeState2);
             if (executeState2 == ExecuteState.DESTROYED) {
                 octaveException.setDestroyed(true);
             }
@@ -377,7 +382,7 @@ public final class Octave {
         try {
             processWriter.close();
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 
@@ -395,8 +400,8 @@ public final class Octave {
     synchronized void setExecuteState(final ExecuteState executeState) throws OctaveException {
         // Throw exception with isDestroyed if state changes from DESTROYED
         if (this.executeState == ExecuteState.DESTROYED) {
-            final OctaveException octaveException = new OctaveException("setExecuteState Error: " + this.executeState
-                    + " -> " + executeState);
+            final OctaveException octaveException = new OctaveStateException("setExecuteState Error: "
+                    + this.executeState + " -> " + executeState);
             octaveException.setDestroyed(true);
             throw octaveException;
         }
@@ -412,7 +417,7 @@ public final class Octave {
                 || this.executeState == ExecuteState.WRITER_OK && executeState == ExecuteState.NONE
                 || this.executeState == ExecuteState.NONE && executeState == ExecuteState.CLOSING
                 || this.executeState == ExecuteState.CLOSING && executeState == ExecuteState.CLOSED || executeState == ExecuteState.DESTROYED)) {
-            throw new OctaveException("setExecuteState Error: " + this.executeState + " -> " + executeState);
+            throw new OctaveStateException("setExecuteState Error: " + this.executeState + " -> " + executeState);
         }
         log.debug("State changed from " + this.executeState + " to " + executeState);
         this.executeState = executeState;

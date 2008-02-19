@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import junit.framework.TestCase;
+import dk.ange.octave.exception.OctaveException;
 
 /**
  * @author Kim Hansen

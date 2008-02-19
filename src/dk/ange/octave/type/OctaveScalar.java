@@ -19,7 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.OctaveException;
+import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exception.OctaveParseException;
 
 /**
  * @author Kim Hansen
@@ -41,7 +43,7 @@ public class OctaveScalar extends OctaveNdMatrix {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream. Really should be true by default
+     *                whether to close the stream. Really should be true by default
      * @throws OctaveException
      */
     public OctaveScalar(final BufferedReader reader, final boolean close) throws OctaveException {
@@ -50,7 +52,7 @@ public class OctaveScalar extends OctaveNdMatrix {
             String line = reader.readLine();
             final String token = "# type: scalar";
             if (!line.equals(token)) {
-                throw new OctaveException("Expected <" + token + ">, but got <" + line + ">\n");
+                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">\n");
             }
             line = reader.readLine();
             value = parseDouble(line);
@@ -58,7 +60,7 @@ public class OctaveScalar extends OctaveNdMatrix {
                 reader.close();
             }
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 

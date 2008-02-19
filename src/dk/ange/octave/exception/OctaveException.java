@@ -58,4 +58,24 @@ public abstract class OctaveException extends RuntimeException {
         super(message, cause);
     }
 
+    /**
+     * Set to true on exceptions thrown from an Octave object when the reason for the exception is that the object has
+     * been asked to destroy its octave process.
+     */
+    private boolean destroyed = false;
+
+    /**
+     * @return destroyed
+     */
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    /**
+     * @param destroyed
+     */
+    public void setDestroyed(final boolean destroyed) {
+        this.destroyed = destroyed;
+    }
+
 }

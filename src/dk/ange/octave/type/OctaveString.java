@@ -19,7 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.OctaveException;
+import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exception.OctaveParseException;
 
 /**
  * @author kim
@@ -44,7 +46,7 @@ public class OctaveString extends OctaveType {
     /**
      * @param reader
      * @param close
-     *            whether to close the stream.
+     *                whether to close the stream.
      * @throws OctaveException
      */
     public OctaveString(final BufferedReader reader, final boolean close) throws OctaveException {
@@ -52,15 +54,15 @@ public class OctaveString extends OctaveType {
             String line;
             line = readerReadLine(reader);
             if (!line.equals("# type: string")) {
-                throw new OctaveException("Wrong type of variable");
+                throw new OctaveParseException("Wrong type of variable");
             }
             line = readerReadLine(reader);
             if (!line.equals("# elements: 1")) {
-                throw new OctaveException("Only implementet for single-line strings '" + line + "'");
+                throw new OctaveParseException("Only implementet for single-line strings '" + line + "'");
             }
             line = readerReadLine(reader);
             if (!line.startsWith("# length: ")) {
-                throw new OctaveException("Parse error in String");
+                throw new OctaveParseException("Parse error in String");
             }
             value = readerReadLine(reader);
 
@@ -68,7 +70,7 @@ public class OctaveString extends OctaveType {
                 reader.close();
             }
         } catch (final IOException e) {
-            throw new OctaveException(e);
+            throw new OctaveIOException(e);
         }
     }
 
