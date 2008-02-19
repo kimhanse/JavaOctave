@@ -1,0 +1,13 @@
+The exceptions here are still very close tied to the implemetation 
+of the JavaOctave package, it would be better if they were more related 
+to what the use of the Octave object needed.
+
+I need more experience with the current exception befor I do the rewrite.
+
+I expect to get down to three kinds of exception:
+  * internal errors in the Octave object
+  * lost connection to octave process
+  * user error, this should be recoverable
+
+The reason that it could be nice to distinguish between the different types 
+of error is that the user error could be recoverable in some cases.  
