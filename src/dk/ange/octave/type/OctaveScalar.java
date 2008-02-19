@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 
+import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 
@@ -52,7 +53,7 @@ public class OctaveScalar extends OctaveNdMatrix {
                 throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">\n");
             }
             line = reader.readLine();
-            value = parseDouble(line);
+            value = OctaveReadHelper.parseDouble(line);
             if (close) {
                 reader.close();
             }

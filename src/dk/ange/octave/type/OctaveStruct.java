@@ -21,6 +21,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 
@@ -57,12 +58,12 @@ public class OctaveStruct extends OctaveType {
             String line;
             final String TYPE_STRUCT = "# type: struct";
             final String TYPE_GLOBAL_STRUCT = "# type: global struct";
-            line = readerReadLine(reader);
+            line = OctaveReadHelper.readerReadLine(reader);
             if (!line.equals(TYPE_STRUCT) && !line.equals(TYPE_GLOBAL_STRUCT)) {
                 throw new OctaveParseException("Variable was not a struct or global struct, " + line);
             }
             // # length: 4
-            line = readerReadLine(reader);
+            line = OctaveReadHelper.readerReadLine(reader);
 
             final String LENGTH = "# length: ";
             if (!line.startsWith(LENGTH)) {
@@ -73,7 +74,7 @@ public class OctaveStruct extends OctaveType {
             for (int i = 0; i < length; i++) {
                 // # name: elemmatrix
                 final String NAME = "# name: ";
-                line = readerReadLine(reader);
+                line = OctaveReadHelper.readerReadLine(reader);
                 if (!line.startsWith(NAME)) {
                     throw new OctaveParseException("Expected <" + NAME + "> got <" + line + ">");
                 }

@@ -258,7 +258,7 @@ public final class Octave {
     public void set(final Map<String, OctaveType> values) {
         assert check();
         try {
-            final Reader resultReader = executeReader(OctaveType.octaveReader(values));
+            final Reader resultReader = executeReader(OctaveWriteHelper.octaveReader(values));
             final char[] cbuf = new char[BUFFERSIZE];
             final int len = resultReader.read(cbuf);
             if (len != -1) {

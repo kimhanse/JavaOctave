@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 
+import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 
@@ -49,19 +50,19 @@ public class OctaveString extends OctaveType {
     public OctaveString(final BufferedReader reader, final boolean close) {
         try {
             String line;
-            line = readerReadLine(reader);
+            line = OctaveReadHelper.readerReadLine(reader);
             if (!line.equals("# type: string")) {
                 throw new OctaveParseException("Wrong type of variable");
             }
-            line = readerReadLine(reader);
+            line = OctaveReadHelper.readerReadLine(reader);
             if (!line.equals("# elements: 1")) {
                 throw new OctaveParseException("Only implementet for single-line strings '" + line + "'");
             }
-            line = readerReadLine(reader);
+            line = OctaveReadHelper.readerReadLine(reader);
             if (!line.startsWith("# length: ")) {
                 throw new OctaveParseException("Parse error in String");
             }
-            value = readerReadLine(reader);
+            value = OctaveReadHelper.readerReadLine(reader);
 
             if (close) {
                 reader.close();
