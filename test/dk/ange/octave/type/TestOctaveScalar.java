@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
+import dk.ange.octave.OctaveIO;
 
 /**
  * @author Kim Hansen
@@ -32,7 +33,7 @@ public class TestOctaveScalar extends TestCase {
      */
     public void testToString() throws Exception {
         final OctaveType integer = new OctaveScalar(42);
-        Assert.assertEquals(integer.toString(), "# name: ans\n# type: scalar\n42.0\n\n");
+        Assert.assertEquals("# name: ans\n# type: scalar\n42.0\n\n", OctaveIO.toText(integer));
     }
 
     /**
@@ -40,7 +41,7 @@ public class TestOctaveScalar extends TestCase {
      */
     public void testToOctave() throws Exception {
         final OctaveType integer = new OctaveScalar(43);
-        Assert.assertEquals(integer.toText("tre"), "# name: tre\n# type: scalar\n43.0\n\n");
+        Assert.assertEquals("# name: tre\n# type: scalar\n43.0\n\n", integer.toText("tre"));
     }
 
     /**

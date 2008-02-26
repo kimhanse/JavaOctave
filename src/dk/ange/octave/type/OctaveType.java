@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * @author Kim Hansen
+ */
 package dk.ange.octave.type;
 
 import java.io.IOException;
@@ -20,31 +23,18 @@ import java.io.Serializable;
 import java.io.StringWriter;
 
 import dk.ange.octave.OctaveIO;
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 
 /**
- * @author Kim Hansen
- * 
  * Common interface for the octave types.
  */
 public abstract class OctaveType implements Serializable {
-
-    @Override
-    public String toString() {
-        try {
-            return toText("ans");
-        } catch (final OctaveException e) {
-            e.printStackTrace();
-            return "[invalid octavetype: " + e.getMessage() + "]";
-        }
-    }
 
     /**
      * @param name
      * @return Text to feed to 'load -text -' to define the variable
      */
-    // FIXME @deprecate this method
+    // FIXME @deprecate this method, use OctaveIO.toText(octaveType, name)
     public String toText(final String name) {
         try {
             final StringWriter writer = new StringWriter();

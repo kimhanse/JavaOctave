@@ -212,4 +212,27 @@ public final class OctaveIO {
         write(writer, octaveType);
     }
 
+    /**
+     * @param octaveType
+     * @param name
+     * @return The result from saving the value octaveType in octave -text format
+     */
+    public static String toText(final OctaveType octaveType, final String name) {
+        try {
+            final Writer writer = new java.io.StringWriter();
+            write(writer, name, octaveType);
+            return writer.toString();
+        } catch (final IOException e) {
+            throw new OctaveIOException(e);
+        }
+    }
+
+    /**
+     * @param octaveType
+     * @return toText(octaveType, "ans")
+     */
+    public static String toText(final OctaveType octaveType) {
+        return toText(octaveType, "ans");
+    }
+
 }

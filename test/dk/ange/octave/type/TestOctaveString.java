@@ -18,6 +18,7 @@ package dk.ange.octave.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
+import dk.ange.octave.OctaveIO;
 
 /**
  * @author Kim Hansen
@@ -29,7 +30,8 @@ public class TestOctaveString extends TestCase {
      */
     public void testToString() throws Exception {
         final OctaveType string = new OctaveString("tekst");
-        Assert.assertEquals("# name: ans\n# type: string\n# elements: 1\n# length: 5\ntekst\n\n", string.toString());
+        Assert.assertEquals("# name: ans\n# type: string\n# elements: 1\n# length: 5\ntekst\n\n", OctaveIO
+                .toText(string));
     }
 
     /**
@@ -37,8 +39,8 @@ public class TestOctaveString extends TestCase {
      */
     public void testToOctave() throws Exception {
         final OctaveType string = new OctaveString("mytekst");
-        Assert.assertEquals("# name: tre\n# type: string\n# elements: 1\n# length: 7\nmytekst\n\n", string
-                .toText("tre"));
+        Assert.assertEquals("# name: tre\n# type: string\n# elements: 1\n# length: 7\nmytekst\n\n", OctaveIO.toText(
+                string, "tre"));
     }
 
     /**

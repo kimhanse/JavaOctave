@@ -113,7 +113,7 @@ public class TestOctaveCell extends TestCase {
     public void testOctaveConnection() throws Exception {
         final OctaveCell cell = new OctaveCell();
         cell.set(1, 1, new OctaveScalar(42));
-        OctaveCell cell2 = new OctaveCell();
+        final OctaveCell cell2 = new OctaveCell();
         cell2.set(1, 1, new OctaveString("mystring"));
         cell.set(3, 2, cell2);
 

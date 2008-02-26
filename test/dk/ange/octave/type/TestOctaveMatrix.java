@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
+import dk.ange.octave.OctaveIO;
 
 /**
  * @author Kim Hansen
@@ -181,7 +182,7 @@ public class TestOctaveMatrix extends TestCase {
         octave.set("in", in);
         octave.execute("out=in;");
         final OctaveNdMatrix out = octave.get("out");
-        Assert.assertEquals(in.toString(), out.toString());
+        Assert.assertEquals(OctaveIO.toText(in), OctaveIO.toText(out));
         octave.execute("slicerow=in(2,:); slicecol=in(:,2);");
         final OctaveNdMatrix slicerow = octave.get("slicerow");
         final OctaveNdMatrix slicecol = octave.get("slicecol");
