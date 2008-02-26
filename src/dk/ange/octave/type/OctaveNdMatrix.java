@@ -15,14 +15,7 @@
  */
 package dk.ange.octave.type;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Arrays;
-
-import dk.ange.octave.OctaveReadHelper;
-import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.exception.OctaveParseException;
 
 /**
  * @author Kim Hansen
@@ -40,111 +33,6 @@ public class OctaveNdMatrix extends OctaveType {
      * The dimensions, rows x columns x depth x ....
      */
     protected int[] size;
-
-    /**
-     * @param reader
-     */
-    public OctaveNdMatrix(final BufferedReader reader) {
-        this(reader, true);
-    }
-
-    /**
-     * @param reader
-     * @param close
-     *                whether to close the stream
-     */
-    public OctaveNdMatrix(final BufferedReader reader, final boolean close) {
-        try {
-            String line;
-            // # type: matrix
-            line = OctaveReadHelper.readerReadLine(reader);
-            if (line.equals("# type: scalar")) {
-                readScalarMatrix(reader);
-            } else if (line.equals("# type: matrix")) {
-                // 2d or 2d+?
-                line = OctaveReadHelper.readerPeekLine(reader);
-                if (line.startsWith("# rows: ")) {
-                    read2dmatrix(reader);
-                } else if (line.startsWith("# ndims: ")) {
-                    readVectorizedMatrix(reader);
-                } else {
-                    throw new OctaveParseException("Expected <# rows: > or <# ndims: >, but got <" + line + ">");
-                }
-            } else {
-                throw new OctaveParseException("Wrong type of variable, " + line);
-            }
-            if (close) {
-                reader.close();
-            }
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
-    }
-
-    private void readScalarMatrix(final BufferedReader reader) {
-        final String line = OctaveReadHelper.readerReadLine(reader);
-        size = new int[2];
-        size[0] = 1;
-        size[1] = 1;
-        data = new double[1];
-        data[0] = OctaveReadHelper.parseDouble(line);
-    }
-
-    private void readVectorizedMatrix(final BufferedReader reader) {
-        String line;
-        final String NDIMS = "# ndims: ";
-        line = OctaveReadHelper.readerReadLine(reader);
-        if (!line.startsWith(NDIMS)) {
-            throw new OctaveParseException("Expected <" + NDIMS + ">, but got <" + line + ">");
-        }
-        final int ndims = Integer.parseInt(line.substring(NDIMS.length()));
-        line = OctaveReadHelper.readerReadLine(reader);
-        final String[] split = line.substring(1).split(" ");
-        if (split.length != ndims) {
-            throw new OctaveParseException("Expected " + ndims + " dimesion, but got " + (split.length)
-                    + " (line was <" + line + ">)");
-        }
-        size = new int[split.length];
-        for (int dim = 0; dim < split.length; dim++) {
-            size[dim] = Integer.parseInt(split[dim]);
-        }
-        data = new double[product(size)];
-        for (int idx = 0; idx < data.length; idx++) {
-            line = OctaveReadHelper.readerReadLine(reader);
-            data[idx] = OctaveReadHelper.parseDouble(line);
-        }
-    }
-
-    private void read2dmatrix(final BufferedReader reader) {
-        String line;
-        // # rows: 1
-        line = OctaveReadHelper.readerReadLine(reader);
-        if (!line.startsWith("# rows: ")) {
-            throw new OctaveParseException("Expected <# rows: > got <" + line + ">");
-        }
-        final int rows = Integer.valueOf(line.substring(8));
-        // # columns: 3
-        line = OctaveReadHelper.readerReadLine(reader);
-        if (!line.startsWith("# columns: ")) {
-            throw new OctaveParseException("Expected <# columns: > got <" + line + ">");
-        }
-        final int columns = Integer.valueOf(line.substring(11));
-        // 1 2 3
-        size = new int[2];
-        size[0] = rows;
-        size[1] = columns;
-        data = new double[rows * columns];
-        for (int r = 1; r <= rows; ++r) {
-            line = OctaveReadHelper.readerReadLine(reader);
-            final String[] split = line.split(" ");
-            if (split.length != columns + 1) {
-                throw new OctaveParseException("Error in matrix-format: '" + line + "'");
-            }
-            for (int c = 1; c < split.length; c++) {
-                set(OctaveReadHelper.parseDouble(split[c]), r, c);
-            }
-        }
-    }
 
     /**
      * @return the data
@@ -233,45 +121,6 @@ public class OctaveNdMatrix extends OctaveType {
         data[pos2ind(pos)] = value;
     }
 
-    /**
-     * TODO move this to a dedicated OctaveDataWriter
-     * 
-     * @param writer
-     * @throws IOException
-     */
-    public void save(final Writer writer) throws IOException {
-        writer.write("# type: matrix\n");
-        if (size.length > 2) {
-            saveDataVectorized(writer);
-        } else {
-            saveData2d(writer);
-        }
-    }
-
-    private void saveData2d(final Writer writer) throws IOException {
-        final int nrows = size[0];
-        final int ncols = size.length > 1 ? size[1] : 1;
-        writer.write("# rows: " + nrows + "\n# columns: " + ncols + "\n");
-        for (int row = 0; row < nrows; row++) {
-            for (int col = 0; col < ncols; col++) {
-                writer.write(" " + data[row + col * nrows]);
-            }
-            writer.write('\n');
-        }
-        writer.write("\n");
-    }
-
-    private void saveDataVectorized(final Writer writer) throws IOException {
-        writer.write("# ndims: " + size.length + "\n");
-        for (final int sdim : size) {
-            writer.write(" " + sdim);
-        }
-        for (final double d : data) {
-            writer.write("\n " + d);
-        }
-        writer.write("\n\n");
-    }
-
     @Override
     public OctaveNdMatrix makecopy() {
         return new OctaveNdMatrix(data, size);
@@ -301,16 +150,6 @@ public class OctaveNdMatrix extends OctaveType {
      */
     public double get(final int... pos) {
         return data[pos2ind(pos)];
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof OctaveNdMatrix) {
-            final OctaveNdMatrix matrix = (OctaveNdMatrix) obj;
-            return Arrays.equals(matrix.size, size) && Arrays.equals(matrix.data, data);
-        } else {
-            return false;
-        }
     }
 
     private void resize(final int... pos) {
@@ -396,6 +235,36 @@ public class OctaveNdMatrix extends OctaveType {
      */
     public int rows() {
         return size[0];
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(data);
+        result = prime * result + Arrays.hashCode(size);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OctaveNdMatrix other = (OctaveNdMatrix) obj;
+        if (!Arrays.equals(data, other.data)) {
+            return false;
+        }
+        if (!Arrays.equals(size, other.size)) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -33,9 +33,42 @@ public final class MatrixWriter implements OctaveDataWriter {
         return OctaveNdMatrix.class;
     }
 
-    @SuppressWarnings("deprecation")
-    public void write(final Writer writer, final OctaveType data) throws IOException {
-        ((OctaveNdMatrix) data).save(writer);
+    public void write(final Writer writer, final OctaveType octaveType) throws IOException {
+        final OctaveNdMatrix octaveNdMatrix = (OctaveNdMatrix) octaveType;
+        writer.write("# type: matrix\n");
+        if (octaveNdMatrix.getSize().length > 2) {
+            saveDataVectorized(writer, octaveNdMatrix);
+        } else {
+            saveData2d(writer, octaveNdMatrix);
+        }
+    }
+
+    private void saveData2d(final Writer writer, final OctaveNdMatrix octaveNdMatrix) throws IOException {
+        final int[] size = octaveNdMatrix.getSize();
+        final double[] data = octaveNdMatrix.getData();
+        final int nrows = size[0];
+        final int ncols = size.length > 1 ? size[1] : 1;
+        writer.write("# rows: " + nrows + "\n# columns: " + ncols + "\n");
+        for (int row = 0; row < nrows; row++) {
+            for (int col = 0; col < ncols; col++) {
+                writer.write(" " + data[row + col * nrows]);
+            }
+            writer.write('\n');
+        }
+        writer.write("\n");
+    }
+
+    private void saveDataVectorized(final Writer writer, final OctaveNdMatrix octaveNdMatrix) throws IOException {
+        final int[] size = octaveNdMatrix.getSize();
+        final double[] data = octaveNdMatrix.getData();
+        writer.write("# ndims: " + size.length + "\n");
+        for (final int sdim : size) {
+            writer.write(" " + sdim);
+        }
+        for (final double d : data) {
+            writer.write("\n " + d);
+        }
+        writer.write("\n\n");
     }
 
 }
