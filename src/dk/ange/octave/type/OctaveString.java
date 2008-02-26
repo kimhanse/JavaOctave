@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * @author kim
+ */
 package dk.ange.octave.type;
 
 import java.io.BufferedReader;
@@ -24,8 +27,6 @@ import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 
 /**
- * @author kim
- * 
  * http://www.octave.org/mailing-lists/octave-maintainers/2005/258
  * http://www.octave.org/octave-lists/archive/octave-maintainers.2005/msg00280.html
  */
@@ -80,9 +81,14 @@ public class OctaveString extends OctaveType {
     }
 
     @Override
-    public void save(final String name, final Writer writer) throws IOException {
-        writer.write("# name: " + name + "\n# type: string\n# elements: 1\n# length: " + value.length() + "\n" + value
-                + "\n\n");
+    public void save(final Writer writer) throws IOException {
+        writer.write("" //
+                + "# type: string\n" //
+                + "# elements: 1\n" //
+                + "# length: " + value.length() + "\n" //
+                + value + "\n" //
+                + "\n" //
+                + "");
     }
 
     @Override

@@ -109,8 +109,8 @@ public class OctaveStruct extends OctaveType {
     }
 
     @Override
-    public void save(final String name, final Writer writer) throws IOException {
-        writer.write("# name: " + name + "\n# type: struct\n# length: " + data.size() + "\n");
+    public void save(final Writer writer) throws IOException {
+        writer.write("# type: struct\n# length: " + data.size() + "\n");
         for (final Map.Entry<String, OctaveType> entry : data.entrySet()) {
             final String subname = entry.getKey();
             final OctaveType value = entry.getValue();

@@ -234,8 +234,8 @@ public class OctaveNdMatrix extends OctaveType {
     }
 
     @Override
-    public void save(final String name, final Writer writer) throws IOException {
-        writer.write("# name: " + name + "\n# type: matrix\n");
+    public void save(final Writer writer) throws IOException {
+        writer.write("# type: matrix\n");
         if (size.length > 2) {
             saveDataVectorized(writer);
         } else {

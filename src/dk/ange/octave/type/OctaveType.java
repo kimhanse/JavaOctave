@@ -62,7 +62,18 @@ public abstract class OctaveType implements Serializable {
      * @param writer
      * @throws IOException
      */
-    abstract public void save(String name, Writer writer) throws IOException;
+    public final void save(final String name, final Writer writer) throws IOException {
+        writer.write("# name: " + name + "\n");
+        save(writer);
+    }
+
+    /**
+     * Dumps this value to writer in octave -text format without the name header
+     * 
+     * @param writer
+     * @throws IOException
+     */
+    abstract public void save(Writer writer) throws IOException;
 
     /**
      * @param type

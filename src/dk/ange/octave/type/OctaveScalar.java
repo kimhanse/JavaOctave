@@ -109,8 +109,8 @@ public class OctaveScalar extends OctaveNdMatrix {
     }
 
     @Override
-    public void save(final String name, final Writer writer) throws IOException {
-        writer.write("# name: " + name + "\n# type: scalar\n" + value + "\n\n");
+    public void save(final Writer writer) throws IOException {
+        writer.write("# type: scalar\n" + value + "\n\n");
     }
 
     @Override
