@@ -38,10 +38,10 @@ public interface OctaveDataWriter {
     /**
      * @param writer
      *                the Writer to write to
-     * @param data
+     * @param octaveType
      *                the value to write
      * @throws IOException
      */
-    public void write(Writer writer, OctaveType data) throws IOException;
+    public void write(Writer writer, OctaveType octaveType) throws IOException;
 
 }

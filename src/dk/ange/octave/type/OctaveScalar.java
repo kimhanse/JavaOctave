@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dk.ange.octave.type;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Writer;
-
-import dk.ange.octave.OctaveReadHelper;
-import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.exception.OctaveParseException;
-
 /**
  * @author Kim Hansen
+ */
+package dk.ange.octave.type;
+
+/**
+ * Scalar that inherits from 1x1 matrix
  */
 public class OctaveScalar extends OctaveNdMatrix {
 
@@ -33,50 +28,11 @@ public class OctaveScalar extends OctaveNdMatrix {
     private double value;
 
     /**
-     * @param reader
-     */
-    public OctaveScalar(final BufferedReader reader) {
-        this(reader, true);
-    }
-
-    /**
-     * @param reader
-     * @param close
-     *                whether to close the stream. Really should be true by default
-     */
-    public OctaveScalar(final BufferedReader reader, final boolean close) {
-        super(1, 1);
-        try {
-            String line = reader.readLine();
-            final String token = "# type: scalar";
-            if (!line.equals(token)) {
-                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">\n");
-            }
-            line = reader.readLine();
-            value = OctaveReadHelper.parseDouble(line);
-            if (close) {
-                reader.close();
-            }
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
-    }
-
-    /**
      * @param value
      */
     public OctaveScalar(final double value) {
         super(1, 1);
         this.value = value;
-    }
-
-    @Override
-    public boolean equals(final Object thatObject) {
-        if (!(thatObject instanceof OctaveScalar)) {
-            return false;
-        }
-        final OctaveScalar that = (OctaveScalar) thatObject;
-        return this.value == that.value;
     }
 
     /**
@@ -109,11 +65,6 @@ public class OctaveScalar extends OctaveNdMatrix {
     }
 
     @Override
-    public void save(final Writer writer) throws IOException {
-        writer.write("# type: scalar\n" + value + "\n\n");
-    }
-
-    @Override
     public OctaveScalar makecopy() {
         return new OctaveScalar(value);
     }
@@ -125,6 +76,34 @@ public class OctaveScalar extends OctaveNdMatrix {
      */
     public void set(final double value) {
         this.value = value;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(value);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OctaveScalar other = (OctaveScalar) obj;
+        if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value)) {
+            return false;
+        }
+        return true;
     }
 
 }
