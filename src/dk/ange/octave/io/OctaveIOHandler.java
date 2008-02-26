@@ -18,15 +18,15 @@
  */
 package dk.ange.octave.io;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.Writer;
 
 import dk.ange.octave.type.OctaveType;
 
 /**
  * Interface for the IO handler that can read and write OctaveTypes
  */
-public interface OctaveIO {
+public interface OctaveIOHandler {
 
     /**
      * Could be 'text' or 'hdf5'
@@ -43,18 +43,18 @@ public interface OctaveIO {
     public Class<? extends OctaveType> type();
 
     /**
-     * @param stream
-     *                the stream to read from
+     * @param reader
+     *                the Reader to read from
      * @return the value read
      */
-    public OctaveType read(InputStream stream);
+    public OctaveType read(BufferedReader reader);
 
     /**
-     * @param stream
-     *                the stream to write to
+     * @param writer
+     *                the Writer to write to
      * @param data
      *                the value to write
      */
-    public void write(OutputStream stream, OctaveType data);
+    public void write(Writer writer, OctaveType data);
 
 }
