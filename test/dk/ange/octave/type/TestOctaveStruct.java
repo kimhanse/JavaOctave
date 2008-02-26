@@ -18,6 +18,7 @@ package dk.ange.octave.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
+import dk.ange.octave.OctaveIO;
 
 /**
  * @author Kim Hansen
@@ -29,7 +30,7 @@ public class TestOctaveStruct extends TestCase {
      */
     public void testConstructor() throws Exception {
         final OctaveType struct = new OctaveStruct();
-        Assert.assertEquals("# name: mystruct\n# type: struct\n# length: 0\n", struct.toText("mystruct"));
+        Assert.assertEquals("# name: mystruct\n# type: struct\n# length: 0\n", OctaveIO.toText(struct, "mystruct"));
     }
 
     /**
@@ -49,7 +50,7 @@ public class TestOctaveStruct extends TestCase {
                 "# name: <cell-element>\n" + //
                 "# type: scalar\n" + //
                 "42.0\n\n" // 
-        , struct1.toText("mystruct"));
+        , OctaveIO.toText(struct1, "mystruct"));
         final OctaveStruct struct2 = new OctaveStruct();
         final OctaveCell octaveCell = new OctaveCell();
         octaveCell.set(1, 1, new OctaveScalar(42));
@@ -69,7 +70,7 @@ public class TestOctaveStruct extends TestCase {
                 "# name: <cell-element>\n" + //
                 "# type: scalar\n" + //
                 "42.0\n\n\n" // 
-        , struct2.toText("mystruct"));
+        , OctaveIO.toText(struct2, "mystruct"));
     }
 
     /**

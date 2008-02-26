@@ -41,7 +41,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# rows: 0\n" + //
                 "# columns: 0\n" + //
                 "\n" //
-        , matrix.toText("matrix"));
+        , OctaveIO.toText(matrix, "matrix"));
     }
 
     /**
@@ -59,7 +59,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 1.0 3.0 5.0\n" + //
                 " 2.0 4.0 6.0\n\n" //
-        , matrix.toText("mymatrix"));
+        , OctaveIO.toText(matrix, "mymatrix"));
     }
 
     /**
@@ -76,7 +76,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 0.0 0.0 0.0\n" + //
                 " 0.0 0.0 0.0\n\n" //
-        , matrix.toText("matrix"));
+        , OctaveIO.toText(matrix, "matrix"));
         matrix.set(42, 1, 2);
         Assert.assertEquals("" + //
                 "# name: myother\n" + //
@@ -85,7 +85,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 0.0 42.0 0.0\n" + //
                 " 0.0 0.0 0.0\n\n" //
-        , matrix.toText("myother"));
+        , OctaveIO.toText(matrix, "myother"));
         matrix.set(2, 2, 1);
         Assert.assertEquals("" + //
                 "# name: myother\n" + //
@@ -94,7 +94,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 0.0 42.0 0.0\n" + //
                 " 2.0 0.0 0.0\n\n" //
-        , matrix.toText("myother"));
+        , OctaveIO.toText(matrix, "myother"));
         matrix.set(4.0, 2, 2);
         Assert.assertEquals("" + //
                 "# name: myother\n" + //
@@ -103,7 +103,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 0.0 42.0 0.0\n" + //
                 " 2.0 4.0 0.0\n\n" //
-        , matrix.toText("myother"));
+        , OctaveIO.toText(matrix, "myother"));
     }
 
     /**
@@ -118,7 +118,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# type: matrix\n" + //
                 "# rows: 0\n" + //
                 "# columns: 0\n\n" //
-        , matrix.toText("matrix"));
+        , OctaveIO.toText(matrix, "matrix"));
         matrix.set(1, 1, 1);
         Assert.assertEquals(1, matrix.rows());
         Assert.assertEquals(1, matrix.columns());
@@ -128,7 +128,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# rows: 1\n" + //
                 "# columns: 1\n" + //
                 " 1.0\n\n" //
-        , matrix.toText("matrix"));
+        , OctaveIO.toText(matrix, "matrix"));
         matrix.set(3, 3, 1);
         Assert.assertEquals(3, matrix.rows());
         Assert.assertEquals(1, matrix.columns());
@@ -140,7 +140,7 @@ public class TestOctaveMatrix extends TestCase {
                 " 1.0\n" + //
                 " 0.0\n" + //
                 " 3.0\n\n" //
-        , matrix.toText("matrix"));
+        , OctaveIO.toText(matrix, "matrix"));
 
         final OctaveNdMatrix matrix2 = new OctaveNdMatrix(0, 0);
         matrix2.set(3.0, 1, 3);
@@ -151,7 +151,7 @@ public class TestOctaveMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 0.0 0.0 3.0\n" + //
                 "\n" //
-        , matrix2.toText("matrix"));
+        , OctaveIO.toText(matrix2, "matrix"));
     }
 
     /**
@@ -169,7 +169,7 @@ public class TestOctaveMatrix extends TestCase {
                 " 1.0 2.0\n" + //
                 " 3.0 4.0\n" + //
                 "\n" //
-        , m.toText("m"));
+        , OctaveIO.toText(m, "m"));
     }
 
     /**

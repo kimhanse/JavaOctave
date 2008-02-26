@@ -18,32 +18,12 @@
  */
 package dk.ange.octave.type;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringWriter;
-
-import dk.ange.octave.OctaveIO;
-import dk.ange.octave.exception.OctaveIOException;
 
 /**
  * Common interface for the octave types.
  */
 public abstract class OctaveType implements Serializable {
-
-    /**
-     * @param name
-     * @return Text to feed to 'load -text -' to define the variable
-     */
-    // FIXME @deprecate this method, use OctaveIO.toText(octaveType, name)
-    public String toText(final String name) {
-        try {
-            final StringWriter writer = new StringWriter();
-            OctaveIO.write(writer, name, this);
-            return writer.toString();
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
-    }
 
     /**
      * @param type

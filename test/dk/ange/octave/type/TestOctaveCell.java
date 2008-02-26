@@ -18,6 +18,7 @@ package dk.ange.octave.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
+import dk.ange.octave.OctaveIO;
 
 /**
  * @author Kim Hansen
@@ -31,7 +32,7 @@ public class TestOctaveCell extends TestCase {
         final OctaveCell cell = new OctaveCell();
         Assert.assertEquals(0, cell.getRowDimension());
         Assert.assertEquals(0, cell.getColumnDimension());
-        Assert.assertEquals("# name: ans\n# type: cell\n# rows: 0\n# columns: 0\n", cell.toText("ans"));
+        Assert.assertEquals("# name: ans\n# type: cell\n# rows: 0\n# columns: 0\n", OctaveIO.toText(cell, "ans"));
     }
 
     /**
@@ -44,7 +45,7 @@ public class TestOctaveCell extends TestCase {
         Assert.assertEquals(1, cell.getColumnDimension());
         Assert.assertEquals("# name: mycell2\n# type: cell\n# rows: 1\n# columns: 1\n"
                 + "# name: <cell-element>\n# type: scalar\n42.0\n\n\n" //
-        , cell.toText("mycell2"));
+        , OctaveIO.toText(cell, "mycell2"));
     }
 
     /**
@@ -61,7 +62,7 @@ public class TestOctaveCell extends TestCase {
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "\n" //
-        , cell.toText("mycell22"));
+        , OctaveIO.toText(cell, "mycell22"));
     }
 
     /**
@@ -90,7 +91,7 @@ public class TestOctaveCell extends TestCase {
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: matrix\n# rows: 0\n# columns: 0\n\n" + //
                 "# name: <cell-element>\n# type: scalar\n42.0\n\n\n" //
-        , cell.toText("mycell"));
+        , OctaveIO.toText(cell, "mycell"));
     }
 
     /**

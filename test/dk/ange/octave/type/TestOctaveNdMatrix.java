@@ -19,6 +19,7 @@ import java.util.TreeMap;
 
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
+import dk.ange.octave.OctaveIO;
 
 /**
  * @author Esben Mose Hansen
@@ -175,14 +176,14 @@ public class TestOctaveNdMatrix extends TestCase {
                 "# type: matrix\n" + //
                 "# rows: 0\n" + //
                 "# columns: 0\n\n" //
-        , matrixzero2d.toText("matrixzero2d"));
+        , OctaveIO.toText(matrixzero2d, "matrixzero2d"));
 
         assertEquals("" + //
                 "# name: matrixzero\n" + //
                 "# type: matrix\n" + //
                 "# ndims: 4\n" + //
                 " 0 0 0 0\n\n" // 
-        , matrixzero.toText("matrixzero"));
+        , OctaveIO.toText(matrixzero, "matrixzero"));
 
         assertEquals("" + //
                 "# name: matrixscalar\n" + //
@@ -190,7 +191,7 @@ public class TestOctaveNdMatrix extends TestCase {
                 "# rows: 1\n" + //
                 "# columns: 1\n" + //
                 " 42.0\n\n" //
-        , matrixscalar.toText("matrixscalar"));
+        , OctaveIO.toText(matrixscalar, "matrixscalar"));
 
         assertEquals("" + //
                 "# name: matrix2d\n" + //
@@ -199,7 +200,7 @@ public class TestOctaveNdMatrix extends TestCase {
                 "# columns: 3\n" + //
                 " 1.0 3.0 8.0\n" + //
                 " 2.0 5.0 13.0\n\n" //
-        , matrix2d.toText("matrix2d"));
+        , OctaveIO.toText(matrix2d, "matrix2d"));
 
         assertEquals("" + //
                 "# name: bigmatrix\n" + //
@@ -230,7 +231,7 @@ public class TestOctaveNdMatrix extends TestCase {
                 " 22.0\n" + //
                 " 23.0\n" + //
                 " 24.0\n\n" //
-        , bigmatrix.toText("bigmatrix"));
+        , OctaveIO.toText(bigmatrix, "bigmatrix"));
         octave.close();
     }
 
