@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * @author Kim Hansen
+ */
 package dk.ange.octave;
 
 import java.io.BufferedReader;
@@ -27,8 +30,6 @@ import dk.ange.octave.util.StringUtil;
 /**
  * Reader that passes the reading on to the output from the octave process until the spacer reached, then it returns
  * EOF.
- * 
- * @author Kim Hansen
  */
 final class OctaveExecuteReader extends Reader {
 

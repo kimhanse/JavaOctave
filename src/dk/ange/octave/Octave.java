@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * @author Kim Hansen
+ */
 package dk.ange.octave;
 
 import java.io.BufferedReader;
@@ -40,7 +43,7 @@ import dk.ange.octave.util.ReaderWriterPipeThread;
 import dk.ange.octave.util.TeeWriter;
 
 /**
- * @author Kim Hansen
+ * The object connecting to the octave process
  */
 public final class Octave {
 
