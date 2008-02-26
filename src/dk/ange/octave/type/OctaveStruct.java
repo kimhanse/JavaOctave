@@ -13,91 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dk.ange.octave.type;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
-
-import dk.ange.octave.OctaveIO;
-import dk.ange.octave.OctaveReadHelper;
-import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.exception.OctaveParseException;
-
 /**
  * @author Kim Hansen
  * @author Esben Mose Hansen
+ */
+package dk.ange.octave.type;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 1x1 struct
  */
 public class OctaveStruct extends OctaveType {
 
     private static final long serialVersionUID = 430390185317050230L;
 
-    private Map<String, OctaveType> data = new HashMap<String, OctaveType>();
+    private final Map<String, OctaveType> data;
 
     /**
+     * Create empty struct
      */
     public OctaveStruct() {
-        // Stupid warning suppression
+        data = new HashMap<String, OctaveType>();
     }
 
     /**
-     * @param reader
+     * Create struct from data
+     * 
+     * @param data
+     *                this data will be referenced, not copied
      */
-    public OctaveStruct(final BufferedReader reader) {
-        this(reader, true);
-    }
-
-    /**
-     * @param reader
-     * @param close
-     *                whether to close the stream. Really should be true by default
-     */
-    public OctaveStruct(final BufferedReader reader, final boolean close) {
-        try {
-            String line;
-            final String TYPE_STRUCT = "# type: struct";
-            final String TYPE_GLOBAL_STRUCT = "# type: global struct";
-            line = OctaveReadHelper.readerReadLine(reader);
-            if (!line.equals(TYPE_STRUCT) && !line.equals(TYPE_GLOBAL_STRUCT)) {
-                throw new OctaveParseException("Variable was not a struct or global struct, " + line);
-            }
-            // # length: 4
-            line = OctaveReadHelper.readerReadLine(reader);
-
-            final String LENGTH = "# length: ";
-            if (!line.startsWith(LENGTH)) {
-                throw new OctaveParseException("Expected <" + LENGTH + "> got <" + line + ">");
-            }
-            final int length = Integer.valueOf(line.substring(LENGTH.length())); // only used during conversion
-
-            for (int i = 0; i < length; i++) {
-                // # name: elemmatrix
-                final String NAME = "# name: ";
-                line = OctaveReadHelper.readerReadLine(reader);
-                if (!line.startsWith(NAME)) {
-                    throw new OctaveParseException("Expected <" + NAME + "> got <" + line + ">");
-                }
-                final String subname = line.substring(NAME.length());
-                final OctaveCell cell = new OctaveCell(reader, false);
-                // If the cell is a 1x1, move up the value
-                if (cell.getRowDimension() == 1 && cell.getColumnDimension() == 1) {
-                    final OctaveType value = cell.get(1, 1);
-                    data.put(subname, value);
-                } else {
-                    data.put(subname, cell);
-                }
-            }
-            if (close) {
-                reader.close();
-            }
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
-    }
-
-    private OctaveStruct(final Map<String, OctaveType> data) {
+    public OctaveStruct(final Map<String, OctaveType> data) {
         this.data = data;
     }
 
@@ -110,27 +57,18 @@ public class OctaveStruct extends OctaveType {
     }
 
     /**
-     * TODO move this to a dedicated OctaveDataWriter
-     * 
-     * @param writer
-     * @throws IOException
-     */
-    public void save(final Writer writer) throws IOException {
-        writer.write("# type: struct\n# length: " + data.size() + "\n");
-        for (final Map.Entry<String, OctaveType> entry : data.entrySet()) {
-            final String subname = entry.getKey();
-            final OctaveType value = entry.getValue();
-            writer.write("# name: " + subname + "\n# type: cell\n# rows: 1\n# columns: 1\n");
-            OctaveIO.write(writer, "<cell-element>", value);
-        }
-    }
-
-    /**
      * @param key
      * @return (shallow copy of) value for this key, or null if key isn't there.
      */
     public OctaveType get(final String key) {
         return OctaveType.copy(data.get(key));
+    }
+
+    /**
+     * @return reference to internal map
+     */
+    public Map<String, OctaveType> getData() {
+        return data;
     }
 
     @Override
@@ -139,13 +77,28 @@ public class OctaveStruct extends OctaveType {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof OctaveStruct) {
-            final OctaveStruct struct = (OctaveStruct) obj;
-            return data.equals(struct.data);
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((data == null) ? 0 : data.hashCode());
+        return result;
+    }
 
-        }
-        return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final OctaveStruct other = (OctaveStruct) obj;
+        if (data == null) {
+            if (other.data != null)
+                return false;
+        } else if (!data.equals(other.data))
+            return false;
+        return true;
     }
 
 }

@@ -20,7 +20,9 @@ package dk.ange.octave.io;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
 
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.type.OctaveStruct;
 import dk.ange.octave.type.OctaveType;
 
@@ -33,8 +35,16 @@ public final class StructWriter implements OctaveDataWriter {
         return OctaveStruct.class;
     }
 
-    public void write(final Writer writer, final OctaveType data) throws IOException {
-        ((OctaveStruct) data).save(writer);
+    public void write(final Writer writer, final OctaveType octaveType) throws IOException {
+        final OctaveStruct octaveStruct = (OctaveStruct) octaveType;
+        final Map<String, OctaveType> data = octaveStruct.getData();
+        writer.write("# type: struct\n# length: " + data.size() + "\n");
+        for (final Map.Entry<String, OctaveType> entry : data.entrySet()) {
+            final String subname = entry.getKey();
+            final OctaveType value = entry.getValue();
+            writer.write("# name: " + subname + "\n# type: cell\n# rows: 1\n# columns: 1\n");
+            OctaveIO.write(writer, "<cell-element>", value);
+        }
     }
 
 }
