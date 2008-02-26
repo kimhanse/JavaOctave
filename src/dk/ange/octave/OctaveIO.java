@@ -20,6 +20,8 @@ package dk.ange.octave;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PipedReader;
+import java.io.PipedWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
@@ -61,7 +63,7 @@ public final class OctaveIO {
     public void set(final Map<String, OctaveType> values) {
         assert octaveExec.check();
         try {
-            final Reader resultReader = octaveExec.executeReader(OctaveWriteHelper.octaveReader(values));
+            final Reader resultReader = octaveExec.executeReader(octaveReader(values));
             final char[] cbuf = new char[BUFFERSIZE];
             final int len = resultReader.read(cbuf);
             if (len != -1) {
@@ -77,6 +79,23 @@ public final class OctaveIO {
             throw octaveException;
         }
         assert octaveExec.check();
+    }
+
+    /**
+     * @param values
+     * @return Returns a Reader from which the octave input version of values can be read.
+     */
+    static public Reader octaveReader(final Map<String, OctaveType> values) {
+        final PipedReader pipedReader = new PipedReader();
+        final PipedWriter pipedWriter = new PipedWriter();
+        try {
+            pipedWriter.connect(pipedReader);
+        } catch (final IOException e) {
+            throw new OctaveIOException(e);
+        }
+        final ToOctaveMultiWriterThread toOctaveWriter = new ToOctaveMultiWriterThread(values, pipedWriter);
+        toOctaveWriter.start();
+        return pipedReader;
     }
 
     private BufferedReader getVarReader(final String name) {
