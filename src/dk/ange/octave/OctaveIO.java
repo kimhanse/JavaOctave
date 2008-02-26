@@ -29,13 +29,17 @@ import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.io.CellReader;
+import dk.ange.octave.io.CellWriter;
 import dk.ange.octave.io.MatrixReader;
+import dk.ange.octave.io.MatrixWriter;
 import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveDataWriter;
 import dk.ange.octave.io.ScalarReader;
 import dk.ange.octave.io.ScalarWriter;
 import dk.ange.octave.io.StringReader;
+import dk.ange.octave.io.StringWriter;
 import dk.ange.octave.io.StructReader;
+import dk.ange.octave.io.StructWriter;
 import dk.ange.octave.type.OctaveType;
 
 /**
@@ -177,7 +181,11 @@ public final class OctaveIO {
 
     static {
         writers = new HashMap<Class<? extends OctaveType>, OctaveDataWriter>();
+        registerWriter(new CellWriter());
+        registerWriter(new MatrixWriter());
         registerWriter(new ScalarWriter());
+        registerWriter(new StringWriter());
+        registerWriter(new StructWriter());
     }
 
     /**
@@ -185,8 +193,17 @@ public final class OctaveIO {
      * @param octaveType
      * @throws IOException
      */
+    @SuppressWarnings("deprecation")
     public static void write(final Writer writer, final OctaveType octaveType) throws IOException {
-        octaveType.save(writer);
+        final OctaveDataWriter dataWriter = writers.get(octaveType.getClass());
+        // if (dataWriter == null) {
+        // octaveType.save(writer);
+        // return;
+        // }
+        if (dataWriter == null) {
+            throw new OctaveParseException("Unknown type, " + octaveType.getClass());
+        }
+        dataWriter.write(writer, octaveType);
     }
 
     /**
@@ -195,9 +212,9 @@ public final class OctaveIO {
      * @param octaveType
      * @throws IOException
      */
-    @SuppressWarnings("deprecation")
     public static void write(final Writer writer, final String name, final OctaveType octaveType) throws IOException {
-        octaveType.save(name, writer);
+        writer.write("# name: " + name + "\n");
+        write(writer, octaveType);
     }
 
 }

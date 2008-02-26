@@ -33,8 +33,9 @@ public final class ScalarWriter implements OctaveDataWriter {
         return OctaveScalar.class;
     }
 
-    public void write(Writer writer, OctaveType data) throws IOException {
-        data.save(writer);
+    @SuppressWarnings("deprecation")
+    public void write(final Writer writer, final OctaveType data) throws IOException {
+        ((OctaveScalar) data).save(writer);
     }
 
 }

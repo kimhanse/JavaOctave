@@ -32,7 +32,7 @@ public final class StringReader implements OctaveDataReader {
         return "string";
     }
 
-    public OctaveType read(BufferedReader reader) {
+    public OctaveType read(final BufferedReader reader) {
         return new OctaveString(reader, false);
     }
 

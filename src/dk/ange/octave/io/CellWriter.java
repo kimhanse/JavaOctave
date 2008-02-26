@@ -18,22 +18,24 @@
  */
 package dk.ange.octave.io;
 
-import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Writer;
 
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveType;
 
 /**
- * The reader of cell
+ * The writer of OctaveCell
  */
-public final class CellReader implements OctaveDataReader {
+public final class CellWriter implements OctaveDataWriter {
 
-    public String octaveType() {
-        return "cell";
+    public Class<? extends OctaveType> javaType() {
+        return OctaveCell.class;
     }
 
-    public OctaveType read(final BufferedReader reader) {
-        return new OctaveCell(reader, false);
+    @SuppressWarnings("deprecation")
+    public void write(final Writer writer, final OctaveType data) throws IOException {
+        ((OctaveCell) data).save(writer);
     }
 
 }

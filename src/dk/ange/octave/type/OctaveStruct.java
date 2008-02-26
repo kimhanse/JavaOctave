@@ -109,7 +109,12 @@ public class OctaveStruct extends OctaveType {
         data.put(name, value);
     }
 
-    @Override
+    /**
+     * TODO move this to a dedicated OctaveDataWriter
+     * 
+     * @param writer
+     * @throws IOException
+     */
     public void save(final Writer writer) throws IOException {
         writer.write("# type: struct\n# length: " + data.size() + "\n");
         for (final Map.Entry<String, OctaveType> entry : data.entrySet()) {

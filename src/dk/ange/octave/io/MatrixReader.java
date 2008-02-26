@@ -32,7 +32,7 @@ public final class MatrixReader implements OctaveDataReader {
         return "matrix";
     }
 
-    public OctaveType read(BufferedReader reader) {
+    public OctaveType read(final BufferedReader reader) {
         return new OctaveNdMatrix(reader, false);
     }
 

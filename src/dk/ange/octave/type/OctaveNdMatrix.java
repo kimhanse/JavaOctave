@@ -233,7 +233,12 @@ public class OctaveNdMatrix extends OctaveType {
         data[pos2ind(pos)] = value;
     }
 
-    @Override
+    /**
+     * TODO move this to a dedicated OctaveDataWriter
+     * 
+     * @param writer
+     * @throws IOException
+     */
     public void save(final Writer writer) throws IOException {
         writer.write("# type: matrix\n");
         if (size.length > 2) {

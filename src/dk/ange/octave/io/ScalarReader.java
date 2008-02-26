@@ -32,7 +32,7 @@ public final class ScalarReader implements OctaveDataReader {
         return "scalar";
     }
 
-    public OctaveType read(BufferedReader reader) {
+    public OctaveType read(final BufferedReader reader) {
         return new OctaveScalar(reader, false);
     }
 

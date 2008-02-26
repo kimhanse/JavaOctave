@@ -32,7 +32,7 @@ public final class StructReader implements OctaveDataReader {
         return "struct";
     }
 
-    public OctaveType read(BufferedReader reader) {
+    public OctaveType read(final BufferedReader reader) {
         return new OctaveStruct(reader, false);
     }
 

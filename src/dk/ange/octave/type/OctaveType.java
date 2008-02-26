@@ -18,7 +18,6 @@ package dk.ange.octave.type;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.io.Writer;
 
 import dk.ange.octave.OctaveIO;
 import dk.ange.octave.exception.OctaveException;
@@ -55,28 +54,6 @@ public abstract class OctaveType implements Serializable {
             throw new OctaveIOException(e);
         }
     }
-
-    /**
-     * Dumps this value to writer in format suitable for reading by Octave with load("-text", ...)
-     * 
-     * @param name
-     * 
-     * @param writer
-     * @throws IOException
-     */
-    @Deprecated
-    public final void save(final String name, final Writer writer) throws IOException {
-        writer.write("# name: " + name + "\n");
-        save(writer);
-    }
-
-    /**
-     * Dumps this value to writer in octave -text format without the name header
-     * 
-     * @param writer
-     * @throws IOException
-     */
-    abstract public void save(Writer writer) throws IOException;
 
     /**
      * @param type

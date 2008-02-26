@@ -73,8 +73,7 @@ final class OctaveWriteHelper {
                 // Push the data into octave
                 for (final Map.Entry<String, OctaveType> entry : octaveTypes.entrySet()) {
                     final String name = entry.getKey();
-                    pipedWriter.write("# name: " + name + "\n");
-                    entry.getValue().save(pipedWriter);
+                    OctaveIO.write(pipedWriter, name, entry.getValue());
                 }
                 // Exit octave from read data mode
                 pipedWriter.write("# name: \n");

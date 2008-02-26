@@ -80,7 +80,12 @@ public class OctaveString extends OctaveType {
         this.value = value;
     }
 
-    @Override
+    /**
+     * TODO move this to a dedicated OctaveDataWriter
+     * 
+     * @param writer
+     * @throws IOException
+     */
     public void save(final Writer writer) throws IOException {
         writer.write("" //
                 + "# type: string\n" //
