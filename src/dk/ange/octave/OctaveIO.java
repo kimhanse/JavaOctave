@@ -193,13 +193,8 @@ public final class OctaveIO {
      * @param octaveType
      * @throws IOException
      */
-    @SuppressWarnings("deprecation")
     public static void write(final Writer writer, final OctaveType octaveType) throws IOException {
         final OctaveDataWriter dataWriter = writers.get(octaveType.getClass());
-        // if (dataWriter == null) {
-        // octaveType.save(writer);
-        // return;
-        // }
         if (dataWriter == null) {
             throw new OctaveParseException("Unknown type, " + octaveType.getClass());
         }
