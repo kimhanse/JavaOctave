@@ -33,11 +33,13 @@ import dk.ange.octave.type.OctaveType;
  */
 public final class StructReader implements OctaveDataReader {
 
+    private final static CellReader cellReader = new CellReader();
+
     public String octaveType() {
         return "struct";
     }
 
-    public OctaveType read(final BufferedReader reader) {
+    public OctaveStruct read(final BufferedReader reader) {
         String line;
         final String TYPE_STRUCT = "# type: struct";
         final String TYPE_GLOBAL_STRUCT = "# type: global struct";
@@ -45,15 +47,17 @@ public final class StructReader implements OctaveDataReader {
         if (!line.equals(TYPE_STRUCT) && !line.equals(TYPE_GLOBAL_STRUCT)) {
             throw new OctaveParseException("Variable was not a struct or global struct, " + line);
         }
+
         // # length: 4
         line = OctaveReadHelper.readerReadLine(reader);
-
         final String LENGTH = "# length: ";
         if (!line.startsWith(LENGTH)) {
             throw new OctaveParseException("Expected <" + LENGTH + "> got <" + line + ">");
         }
         final int length = Integer.valueOf(line.substring(LENGTH.length())); // only used during conversion
+
         final Map<String, OctaveType> data = new HashMap<String, OctaveType>();
+
         for (int i = 0; i < length; i++) {
             // # name: elemmatrix
             final String NAME = "# name: ";
@@ -62,15 +66,17 @@ public final class StructReader implements OctaveDataReader {
                 throw new OctaveParseException("Expected <" + NAME + "> got <" + line + ">");
             }
             final String subname = line.substring(NAME.length());
-            final OctaveCell cell = new OctaveCell(reader, false);
+            final OctaveCell cell = cellReader.read(reader);
             // If the cell is a 1x1, move up the value
             if (cell.getRowDimension() == 1 && cell.getColumnDimension() == 1) {
                 final OctaveType value = cell.get(1, 1);
                 data.put(subname, value);
             } else {
+                // XXX do we support this ?
                 data.put(subname, cell);
             }
         }
+
         return new OctaveStruct(data);
     }
 

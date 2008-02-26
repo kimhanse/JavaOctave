@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dk.ange.octave.type;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-
-import dk.ange.octave.OctaveIO;
-import dk.ange.octave.OctaveReadHelper;
-import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.exception.OctaveParseException;
-
 /**
  * @author Kim Hansen
+ */
+package dk.ange.octave.type;
+
+import java.util.ArrayList;
+
+/**
+ * 2d cells
  */
 public class OctaveCell extends OctaveType {
 
@@ -47,80 +42,6 @@ public class OctaveCell extends OctaveType {
         data = new ArrayList<ArrayList<OctaveType>>();
         rows = 0;
         columns = 0;
-    }
-
-    /**
-     * Create cell from reader, closes the Reader
-     * 
-     * @param reader
-     */
-    public OctaveCell(final BufferedReader reader) {
-        this(reader, true);
-    }
-
-    /**
-     * Create cell from reader
-     * 
-     * @param reader
-     * @param close
-     *                whether to close the stream. Really should be true by default
-     */
-    public OctaveCell(final BufferedReader reader, final boolean close) {
-        this();
-        try {
-            String line;
-            String token;
-            line = OctaveReadHelper.readerReadLine(reader);
-            token = "# type: cell";
-            if (!line.equals(token)) {
-                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-            }
-
-            line = OctaveReadHelper.readerReadLine(reader);
-            token = "# rows: ";
-            if (!line.startsWith(token)) {
-                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-            }
-            final int nrows = Integer.parseInt(line.substring(token.length()));
-
-            line = OctaveReadHelper.readerReadLine(reader);
-            token = "# columns: ";
-            if (!line.startsWith(token)) {
-                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-            }
-            final int ncols = Integer.parseInt(line.substring(token.length()));
-            for (int col = 1; col <= ncols; col++) {
-                for (int row = 1; row <= nrows; row++) {
-                    line = OctaveReadHelper.readerReadLine(reader);
-                    token = "# name: <cell-element>";
-                    if (!line.equals(token)) {
-                        throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-                    }
-                    final OctaveType octaveType = OctaveIO.read(reader, false);
-                    set(row, col, octaveType);
-                }
-                line = OctaveReadHelper.readerReadLine(reader);
-                token = "";
-                if (!line.equals(token)) {
-                    throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-                }
-            }
-            if (close) {
-                reader.close();
-            }
-
-            // Post conditions
-            if (rows != data.size()) {
-                throw new IllegalStateException("After read, number of rows doesn't match the number read");
-            }
-            for (final ArrayList<OctaveType> row : data) {
-                if (columns != row.size()) {
-                    throw new IllegalStateException("After read, number of columns doesn't match the number read");
-                }
-            }
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
     }
 
     /**
@@ -208,23 +129,6 @@ public class OctaveCell extends OctaveType {
         return columns;
     }
 
-    /**
-     * TODO move this to a dedicated OctaveDataWriter
-     * 
-     * @param writer
-     * @throws IOException
-     */
-    public void save(final Writer writer) throws IOException {
-        writer.write("# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
-        for (int c = 0; c < columns; ++c) {
-            for (int r = 0; r < rows; ++r) {
-                final OctaveType value = data.get(r).get(c);
-                OctaveIO.write(writer, "<cell-element>", value);
-            }
-            writer.write("\n");
-        }
-    }
-
     @Override
     public OctaveCell makecopy() {
         return new OctaveCell(rows, columns, data);
@@ -258,6 +162,11 @@ public class OctaveCell extends OctaveType {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
 }

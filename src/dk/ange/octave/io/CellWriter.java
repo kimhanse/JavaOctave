@@ -21,6 +21,7 @@ package dk.ange.octave.io;
 import java.io.IOException;
 import java.io.Writer;
 
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveType;
 
@@ -33,9 +34,18 @@ public final class CellWriter implements OctaveDataWriter {
         return OctaveCell.class;
     }
 
-    @SuppressWarnings("deprecation")
-    public void write(final Writer writer, final OctaveType data) throws IOException {
-        ((OctaveCell) data).save(writer);
+    public void write(final Writer writer, final OctaveType octaveType) throws IOException {
+        final OctaveCell octaveCell = (OctaveCell) octaveType;
+        final int rows = octaveCell.getRowDimension();
+        final int columns = octaveCell.getColumnDimension();
+        writer.write("# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
+        for (int c = 1; c <= columns; ++c) {
+            for (int r = 1; r <= rows; ++r) {
+                final OctaveType value = octaveCell.get(r, c);
+                OctaveIO.write(writer, "<cell-element>", value);
+            }
+            writer.write("\n");
+        }
     }
 
 }
