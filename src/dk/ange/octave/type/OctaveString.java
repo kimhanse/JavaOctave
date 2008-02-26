@@ -18,14 +18,6 @@
  */
 package dk.ange.octave.type;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Writer;
-
-import dk.ange.octave.OctaveReadHelper;
-import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.exception.OctaveParseException;
-
 /**
  * http://www.octave.org/mailing-lists/octave-maintainers/2005/258
  * http://www.octave.org/octave-lists/archive/octave-maintainers.2005/msg00280.html
@@ -37,72 +29,55 @@ public class OctaveString extends OctaveType {
     private String value;
 
     /**
-     * @param reader
+     * @param string
      */
-    public OctaveString(final BufferedReader reader) {
-        this(reader, true);
+    public OctaveString(final String string) {
+        this.value = string;
     }
 
     /**
-     * @param reader
-     * @param close
-     *                whether to close the stream.
+     * @return the string
      */
-    public OctaveString(final BufferedReader reader, final boolean close) {
-        try {
-            String line;
-            line = OctaveReadHelper.readerReadLine(reader);
-            if (!line.equals("# type: string")) {
-                throw new OctaveParseException("Wrong type of variable");
-            }
-            line = OctaveReadHelper.readerReadLine(reader);
-            if (!line.equals("# elements: 1")) {
-                throw new OctaveParseException("Only implementet for single-line strings '" + line + "'");
-            }
-            line = OctaveReadHelper.readerReadLine(reader);
-            if (!line.startsWith("# length: ")) {
-                throw new OctaveParseException("Parse error in String");
-            }
-            value = OctaveReadHelper.readerReadLine(reader);
-
-            if (close) {
-                reader.close();
-            }
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
+    public String getString() {
+        return value;
     }
 
     /**
-     * @param value
+     * @param string
+     *                the string to set
      */
-    public OctaveString(final String value) {
-        this.value = value;
-    }
-
-    /**
-     * TODO move this to a dedicated OctaveDataWriter
-     * 
-     * @param writer
-     * @throws IOException
-     */
-    public void save(final Writer writer) throws IOException {
-        writer.write("" //
-                + "# type: string\n" //
-                + "# elements: 1\n" //
-                + "# length: " + value.length() + "\n" //
-                + value + "\n" //
-                + "\n" //
-                + "");
+    public void setString(final String string) {
+        this.value = string;
     }
 
     @Override
-    public boolean equals(final Object thatObject) {
-        if (!(thatObject instanceof OctaveString)) {
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        final OctaveString that = (OctaveString) thatObject;
-        return this.value.equals(that.value);
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OctaveString other = (OctaveString) obj;
+        if (value == null) {
+            if (other.value != null) {
+                return false;
+            }
+        } else if (!value.equals(other.value)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

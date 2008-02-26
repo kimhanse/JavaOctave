@@ -33,8 +33,16 @@ public final class StringWriter implements OctaveDataWriter {
         return OctaveString.class;
     }
 
-    public void write(final Writer writer, final OctaveType data) throws IOException {
-        ((OctaveString) data).save(writer);
+    public void write(final Writer writer, final OctaveType octaveType) throws IOException {
+        final OctaveString octaveString = (OctaveString) octaveType;
+        final String string = octaveString.getString();
+        writer.write("" //
+                + "# type: string\n" //
+                + "# elements: 1\n" //
+                + "# length: " + string.length() + "\n" //
+                + string + "\n" //
+                + "\n" //
+                + "");
     }
 
 }
