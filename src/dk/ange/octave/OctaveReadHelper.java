@@ -23,13 +23,6 @@ import java.io.IOException;
 
 import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.type.OctaveCell;
-import dk.ange.octave.type.OctaveNdMatrix;
-import dk.ange.octave.type.OctaveScalar;
-import dk.ange.octave.type.OctaveString;
-import dk.ange.octave.type.OctaveStruct;
-import dk.ange.octave.type.OctaveType;
 
 /**
  * Utility class for static functions related to reading octave values
@@ -38,46 +31,6 @@ public final class OctaveReadHelper {
 
     private OctaveReadHelper() {
         throw new UnsupportedOperationException("Do not instantiate");
-    }
-
-    /**
-     * @param reader
-     * @param close
-     *                whether to close the stream. Really should be true by default
-     * @return octavetype read from reader
-     */
-    public static OctaveType readOctaveType(final BufferedReader reader, final boolean close) {
-        final String line = OctaveReadHelper.readerPeekLine(reader);
-        final String TYPE = "# type: ";
-        if (!line.startsWith(TYPE)) {
-            throw new OctaveParseException("Expected <" + TYPE + "> got <" + line + ">");
-        }
-        final String type = line.substring(TYPE.length());
-        final OctaveType rv;
-        if ("struct".equals(type)) {
-            rv = new OctaveStruct(reader, close);
-        } else if ("matrix".equals(type)) {
-            rv = new OctaveNdMatrix(reader, close);
-        } else if ("scalar".equals(type)) {
-            rv = new OctaveScalar(reader, close);
-        } else if ("string".equals(type)) {
-            rv = new OctaveString(reader, close);
-        } else if ("cell".equals(type)) {
-            rv = new OctaveCell(reader, close);
-        } else {
-            rv = null;
-        }
-        return rv;
-    }
-
-    /**
-     * Calls readOctaveType(reader, true)
-     * 
-     * @param reader
-     * @return octavetype read from reader
-     */
-    public static OctaveType readOctaveType(final BufferedReader reader) {
-        return readOctaveType(reader, true);
     }
 
     /**

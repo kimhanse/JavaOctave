@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
@@ -95,7 +96,7 @@ public class OctaveCell extends OctaveType {
                     if (!line.equals(token)) {
                         throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
                     }
-                    final OctaveType octaveType = OctaveReadHelper.readOctaveType(reader, false);
+                    final OctaveType octaveType = OctaveIO.read(reader, false);
                     set(row, col, octaveType);
                 }
                 line = OctaveReadHelper.readerReadLine(reader);

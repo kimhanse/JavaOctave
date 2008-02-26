@@ -36,7 +36,7 @@ public interface OctaveDataReader {
 
     /**
      * @param reader
-     *                the Reader to read from
+     *                the Reader to read from, will not close reader
      * @return the value read
      */
     public OctaveType read(BufferedReader reader);

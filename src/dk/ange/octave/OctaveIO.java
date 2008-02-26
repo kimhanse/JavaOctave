@@ -21,18 +21,24 @@ package dk.ange.octave;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
 
 import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
+import dk.ange.octave.io.CellReader;
+import dk.ange.octave.io.MatrixReader;
+import dk.ange.octave.io.OctaveDataReader;
+import dk.ange.octave.io.ScalarReader;
+import dk.ange.octave.io.StringReader;
+import dk.ange.octave.io.StructReader;
 import dk.ange.octave.type.OctaveType;
 
 /**
  * The object controlling IO of Octave data
  */
-final class OctaveIO {
+public final class OctaveIO {
 
     private static final int BUFFERSIZE = 8192;
 
@@ -68,7 +74,7 @@ final class OctaveIO {
 
     private BufferedReader getVarReader(final String name) {
         assert octaveExec.check();
-        final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new StringReader(
+        final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new java.io.StringReader(
                 "save -text - " + name)));
         try {
             String line = octaveExec.processReader.readLine();
@@ -106,7 +112,7 @@ final class OctaveIO {
      */
     @SuppressWarnings("unchecked")
     public <T extends OctaveType> T get(final String name) {
-        final OctaveType ot = OctaveReadHelper.readOctaveType(getVarReader(name));
+        final OctaveType ot = read(getVarReader(name), true);
         T t;
         try {
             t = (T) ot;
@@ -114,6 +120,49 @@ final class OctaveIO {
             throw new OctaveClassCastException(e);
         }
         return t;
+    }
+
+    /**
+     * @param reader
+     * @param close
+     *                whether to close the stream. Really should be true by default
+     * @return octavetype read from reader
+     */
+    public static OctaveType read(final BufferedReader reader, final boolean close) {
+        final String line = OctaveReadHelper.readerPeekLine(reader);
+        final String TYPE = "# type: ";
+        if (!line.startsWith(TYPE)) {
+            throw new OctaveParseException("Expected <" + TYPE + "> got <" + line + ">");
+        }
+        final String type = line.substring(TYPE.length());
+        final OctaveDataReader dataReader = readers.get(type);
+        final OctaveType ot;
+        if (dataReader == null) {
+            throw new OctaveParseException("Unknown octave type, type='" + type + "'");
+        }
+        ot = dataReader.read(reader);
+        if (close) {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                throw new OctaveIOException(e);
+            }
+        }
+        return ot;
+    }
+
+    private static final Map<String, OctaveDataReader> readers = new HashMap<String, OctaveDataReader>();
+
+    private static void registerReader(final OctaveDataReader octaveDataReader) {
+        readers.put(octaveDataReader.octaveType(), octaveDataReader);
+    }
+
+    static {
+        registerReader(new CellReader());
+        registerReader(new MatrixReader());
+        registerReader(new ScalarReader());
+        registerReader(new StringReader());
+        registerReader(new StructReader());
     }
 
 }
