@@ -43,20 +43,20 @@ final class OctaveInputThread extends Thread {
 
     private final String spacer;
 
-    private final Octave octave;
+    private final OctaveExec octaveExec;
 
     /**
      * @param inputReader
      * @param octaveWriter
      * @param spacer
-     * @param octave
+     * @param octaveExec
      */
     public OctaveInputThread(final Reader inputReader, final Writer octaveWriter, final String spacer,
-            final Octave octave) {
+            final OctaveExec octaveExec) {
         this.inputReader = inputReader;
         this.octaveWriter = octaveWriter;
         this.spacer = spacer;
-        this.octave = octave;
+        this.octaveExec = octaveExec;
     }
 
     @Override
@@ -77,7 +77,7 @@ final class OctaveInputThread extends Thread {
             inputReader.close();
             octaveWriter.write("\nprintf(\"%s\\n\", \"" + spacer + "\");\n");
             octaveWriter.flush();
-            octave.setExecuteState(Octave.ExecuteState.WRITER_OK);
+            octaveExec.setExecuteState(OctaveExec.ExecuteState.WRITER_OK);
         } catch (final IOException e) {
             System.err.println("Unexpected IOException in OctaveInputThread");
             e.printStackTrace();
