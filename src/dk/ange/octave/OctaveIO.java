@@ -21,6 +21,7 @@ package dk.ange.octave;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +31,9 @@ import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.io.CellReader;
 import dk.ange.octave.io.MatrixReader;
 import dk.ange.octave.io.OctaveDataReader;
+import dk.ange.octave.io.OctaveDataWriter;
 import dk.ange.octave.io.ScalarReader;
+import dk.ange.octave.io.ScalarWriter;
 import dk.ange.octave.io.StringReader;
 import dk.ange.octave.io.StructReader;
 import dk.ange.octave.type.OctaveType;
@@ -44,7 +47,7 @@ public final class OctaveIO {
 
     private final OctaveExec octaveExec;
 
-    OctaveIO(OctaveExec octaveExec) {
+    OctaveIO(final OctaveExec octaveExec) {
         this.octaveExec = octaveExec;
     }
 
@@ -116,7 +119,7 @@ public final class OctaveIO {
         T t;
         try {
             t = (T) ot;
-        } catch (ClassCastException e) {
+        } catch (final ClassCastException e) {
             throw new OctaveClassCastException(e);
         }
         return t;
@@ -144,25 +147,57 @@ public final class OctaveIO {
         if (close) {
             try {
                 reader.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new OctaveIOException(e);
             }
         }
         return ot;
     }
 
-    private static final Map<String, OctaveDataReader> readers = new HashMap<String, OctaveDataReader>();
+    private static final Map<String, OctaveDataReader> readers;
 
     private static void registerReader(final OctaveDataReader octaveDataReader) {
         readers.put(octaveDataReader.octaveType(), octaveDataReader);
     }
 
     static {
+        readers = new HashMap<String, OctaveDataReader>();
         registerReader(new CellReader());
         registerReader(new MatrixReader());
         registerReader(new ScalarReader());
         registerReader(new StringReader());
         registerReader(new StructReader());
+    }
+
+    private static final Map<Class<? extends OctaveType>, OctaveDataWriter> writers;
+
+    private static void registerWriter(final OctaveDataWriter octaveDataWriter) {
+        writers.put(octaveDataWriter.javaType(), octaveDataWriter);
+    }
+
+    static {
+        writers = new HashMap<Class<? extends OctaveType>, OctaveDataWriter>();
+        registerWriter(new ScalarWriter());
+    }
+
+    /**
+     * @param writer
+     * @param octaveType
+     * @throws IOException
+     */
+    public static void write(final Writer writer, final OctaveType octaveType) throws IOException {
+        octaveType.save(writer);
+    }
+
+    /**
+     * @param writer
+     * @param name
+     * @param octaveType
+     * @throws IOException
+     */
+    @SuppressWarnings("deprecation")
+    public static void write(final Writer writer, final String name, final OctaveType octaveType) throws IOException {
+        octaveType.save(name, writer);
     }
 
 }

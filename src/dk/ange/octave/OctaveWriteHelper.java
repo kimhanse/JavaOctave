@@ -72,7 +72,9 @@ final class OctaveWriteHelper {
                 pipedWriter.write("load(\"-text\", \"-\")\n");
                 // Push the data into octave
                 for (final Map.Entry<String, OctaveType> entry : octaveTypes.entrySet()) {
-                    entry.getValue().save(entry.getKey(), pipedWriter);
+                    final String name = entry.getKey();
+                    pipedWriter.write("# name: " + name + "\n");
+                    entry.getValue().save(pipedWriter);
                 }
                 // Exit octave from read data mode
                 pipedWriter.write("# name: \n");

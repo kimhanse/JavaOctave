@@ -213,7 +213,8 @@ public class OctaveCell extends OctaveType {
         writer.write("# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
         for (int c = 0; c < columns; ++c) {
             for (int r = 0; r < rows; ++r) {
-                data.get(r).get(c).save("<cell-element>", writer);
+                final OctaveType value = data.get(r).get(c);
+                OctaveIO.write(writer, "<cell-element>", value);
             }
             writer.write("\n");
         }

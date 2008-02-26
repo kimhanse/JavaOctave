@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 
@@ -44,14 +45,15 @@ public abstract class OctaveType implements Serializable {
      * @param name
      * @return Text to feed to 'load -text -' to define the variable
      */
+    // FIXME @deprecate this method
     public String toText(final String name) {
-        final StringWriter writer = new StringWriter();
         try {
-            save(name, writer);
+            final StringWriter writer = new StringWriter();
+            OctaveIO.write(writer, name, this);
+            return writer.toString();
         } catch (final IOException e) {
             throw new OctaveIOException(e);
         }
-        return writer.getBuffer().toString();
     }
 
     /**
@@ -62,6 +64,7 @@ public abstract class OctaveType implements Serializable {
      * @param writer
      * @throws IOException
      */
+    @Deprecated
     public final void save(final String name, final Writer writer) throws IOException {
         writer.write("# name: " + name + "\n");
         save(writer);

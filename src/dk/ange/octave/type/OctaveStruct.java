@@ -21,6 +21,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
@@ -115,9 +116,8 @@ public class OctaveStruct extends OctaveType {
             final String subname = entry.getKey();
             final OctaveType value = entry.getValue();
             writer.write("# name: " + subname + "\n# type: cell\n# rows: 1\n# columns: 1\n");
-            value.save("<cell-element>", writer);
+            OctaveIO.write(writer, "<cell-element>", value);
         }
-
     }
 
     /**
