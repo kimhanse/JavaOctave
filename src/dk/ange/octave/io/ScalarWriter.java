@@ -18,33 +18,23 @@
  */
 package dk.ange.octave.io;
 
-import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.Writer;
 
 import dk.ange.octave.type.OctaveScalar;
 import dk.ange.octave.type.OctaveType;
 
 /**
- * The IO handler for OctaveScalar
+ * The writer of OctaveScalar
  */
-public final class Scalar implements OctaveIOHandler {
+public final class ScalarWriter implements OctaveDataWriter {
 
-    public String format() {
-        return "text";
-    }
-
-    public Class<? extends OctaveType> type() {
+    public Class<? extends OctaveType> javaType() {
         return OctaveScalar.class;
     }
 
-    public OctaveType read(BufferedReader reader) {
-        return new OctaveScalar(reader);
-    }
-
-    public void write(Writer writer, OctaveType data) {
-        // FIXME data.save(???, writer);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not implemented");
+    public void write(Writer writer, OctaveType data) throws IOException {
+        data.save(writer);
     }
 
 }

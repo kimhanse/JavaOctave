@@ -19,28 +19,20 @@
 package dk.ange.octave.io;
 
 import java.io.BufferedReader;
-import java.io.Writer;
 
 import dk.ange.octave.type.OctaveType;
 
 /**
  * Interface for the IO handler that can read and write OctaveTypes
  */
-public interface OctaveIOHandler {
+public interface OctaveDataReader {
 
     /**
-     * Could be 'text' or 'hdf5'
-     * 
-     * @return the format that this IO handler load and saves
-     */
-    public String format();
-
-    /**
-     * Could be OctaveScalar or OctaveMatrix
+     * Could be "scalar" or "string"
      * 
      * @return the OctaveType that this IO handler loads and saves
      */
-    public Class<? extends OctaveType> type();
+    public String octaveType();
 
     /**
      * @param reader
@@ -48,13 +40,5 @@ public interface OctaveIOHandler {
      * @return the value read
      */
     public OctaveType read(BufferedReader reader);
-
-    /**
-     * @param writer
-     *                the Writer to write to
-     * @param data
-     *                the value to write
-     */
-    public void write(Writer writer, OctaveType data);
 
 }
