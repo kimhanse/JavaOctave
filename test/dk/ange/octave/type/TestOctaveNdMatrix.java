@@ -159,11 +159,11 @@ public class TestOctaveNdMatrix extends TestCase {
         vars.put("matrixzero", new OctaveNdMatrix(0, 0, 0, 0));
         vars.put("matrixzero2d", new OctaveNdMatrix(0, 0));
         octave.set(vars);
-        final OctaveNdMatrix matrixzero = new OctaveNdMatrix(octave.get("matrixzero"));
-        final OctaveNdMatrix matrix2d = new OctaveNdMatrix(octave.get("matrix2d"));
-        final OctaveNdMatrix bigmatrix = new OctaveNdMatrix(octave.get("bigmatrix"));
-        final OctaveNdMatrix matrixzero2d = new OctaveNdMatrix(octave.get("matrixzero2d"));
-        final OctaveNdMatrix matrixscalar = new OctaveNdMatrix(octave.get("matrixscalar"));
+        final OctaveNdMatrix matrixzero = octave.get("matrixzero");
+        final OctaveNdMatrix matrix2d = octave.get("matrix2d");
+        final OctaveNdMatrix bigmatrix = octave.get("bigmatrix");
+        final OctaveNdMatrix matrixzero2d = octave.get("matrixzero2d");
+        final OctaveNdMatrix matrixscalar = octave.get("matrixscalar");
         assertEquals(matrixzero, vars.get("matrixzero"));
         assertEquals(matrixzero2d, vars.get("matrixzero2d"));
         assertEquals(matrixscalar, vars.get("matrixscalar"));
@@ -270,7 +270,7 @@ public class TestOctaveNdMatrix extends TestCase {
         octave.execute("s.one=1;");
         octave.execute("s.two=[2 3];");
 
-        final OctaveStruct cell = new OctaveStruct(octave.get("s"));
+        final OctaveStruct cell = octave.get("s");
 
         final OctaveNdMatrix two = (OctaveNdMatrix) cell.get("two");
         assertEquals(1, two.rows());

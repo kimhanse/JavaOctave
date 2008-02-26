@@ -83,10 +83,10 @@ public class TestOctave3dMatrix extends TestCase {
         octave.execute("x2 = matrix3d(:,:,2);");
         octave.execute("x3 = matrix3d(:,3,:);");
         octave.execute("x4 = matrix3d(3,:,:);");
-        final OctaveNdMatrix x1 = new OctaveNdMatrix(octave.get("x1"));
-        final OctaveNdMatrix x2 = new OctaveNdMatrix(octave.get("x2"));
-        final OctaveNdMatrix x3 = new OctaveNdMatrix(octave.get("x3"));
-        final OctaveNdMatrix x4 = new OctaveNdMatrix(octave.get("x4"));
+        final OctaveNdMatrix x1 = octave.get("x1");
+        final OctaveNdMatrix x2 = octave.get("x2");
+        final OctaveNdMatrix x3 = octave.get("x3");
+        final OctaveNdMatrix x4 = octave.get("x4");
         assertEquals(0.0, x1.get(1, 3));
         assertEquals(-1.0, x1.get(3, 1));
         assertEquals(42.0, x2.get(1, 3));

@@ -33,6 +33,7 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.exception.OctaveStateException;
@@ -279,11 +280,7 @@ public final class Octave {
         assert check();
     }
 
-    /**
-     * @param name
-     * @return Returns a Reader that will return the value of the variable name in the octave-text format
-     */
-    public BufferedReader get(final String name) {
+    private BufferedReader getVarReader(final String name) {
         assert check();
         final BufferedReader resultReader = new BufferedReader(executeReader(new StringReader("save -text - " + name)));
         try {
@@ -313,6 +310,23 @@ public final class Octave {
             throw octaveException;
         }
         return resultReader;
+    }
+
+    /**
+     * @param <T>
+     * @param name
+     * @return Returns the value of the variable from octave
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends OctaveType> T get(final String name) {
+        final OctaveType ot = OctaveReadHelper.readOctaveType(getVarReader(name));
+        T t;
+        try {
+            t = (T) ot;
+        } catch (ClassCastException e) {
+            throw new OctaveClassCastException(e);
+        }
+        return t;
     }
 
     /**

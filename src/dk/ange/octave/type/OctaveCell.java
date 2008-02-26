@@ -40,7 +40,7 @@ public class OctaveCell extends OctaveType {
     private int columns;
 
     /**
-     * 
+     * Create empty cell
      */
     public OctaveCell() {
         data = new ArrayList<ArrayList<OctaveType>>();
@@ -49,14 +49,8 @@ public class OctaveCell extends OctaveType {
     }
 
     /**
-     * @param value
-     */
-    public OctaveCell(final OctaveType value) {
-        this();
-        set(1, 1, value);
-    }
-
-    /**
+     * Create cell from reader, closes the Reader
+     * 
      * @param reader
      */
     public OctaveCell(final BufferedReader reader) {
@@ -64,6 +58,8 @@ public class OctaveCell extends OctaveType {
     }
 
     /**
+     * Create cell from reader
+     * 
      * @param reader
      * @param close
      *                whether to close the stream. Really should be true by default
@@ -127,6 +123,8 @@ public class OctaveCell extends OctaveType {
     }
 
     /**
+     * Create cell of size rows x columns with empty cells
+     * 
      * @param rows
      * @param columns
      */

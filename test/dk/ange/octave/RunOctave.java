@@ -33,9 +33,9 @@ public class RunOctave {
         try {
             octave.set("a", new OctaveScalar(42));
             octave.execute("a");
-            System.out.println("Java: a = " + new OctaveScalar(octave.get("a")).getDouble());
+            System.out.println("Java: a = " + octave.get("a"));
             octave.execute("a=a+10");
-            System.out.println("Java: a = " + new OctaveScalar(octave.get("a")).getDouble());
+            System.out.println("Java: a = " + octave.get("a"));
 
             final Reader outputReader = octave.executeReader(new StringReader("a\na=a+10;\na"));
             while (true) {

@@ -71,6 +71,8 @@ public final class OctaveReadHelper {
     }
 
     /**
+     * Calls readOctaveType(reader, true)
+     * 
      * @param reader
      * @return octavetype read from reader
      */

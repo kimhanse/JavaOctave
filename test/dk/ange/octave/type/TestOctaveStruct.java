@@ -51,7 +51,9 @@ public class TestOctaveStruct extends TestCase {
                 "42.0\n\n" // 
         , struct1.toText("mystruct"));
         final OctaveStruct struct2 = new OctaveStruct();
-        struct2.set("mycell", new OctaveCell(new OctaveScalar(42)));
+        final OctaveCell octaveCell = new OctaveCell();
+        octaveCell.set(1, 1, new OctaveScalar(42));
+        struct2.set("mycell", octaveCell);
         Assert.assertEquals("" + //
                 "# name: mystruct\n" + //
                 "# type: struct\n" + //
@@ -82,7 +84,7 @@ public class TestOctaveStruct extends TestCase {
 
         final Octave octave = new Octave();
         octave.set("mystruct", struct);
-        final OctaveStruct mystruct_copy = new OctaveStruct(octave.get("mystruct"));
+        final OctaveStruct mystruct_copy = octave.get("mystruct");
         Assert.assertEquals(struct, mystruct_copy);
     }
 
@@ -119,12 +121,12 @@ public class TestOctaveStruct extends TestCase {
                 }
             }
         }
-        final OctaveStruct s1 = new OctaveStruct(octave.get("s"));
+        final OctaveStruct s1 = octave.get("s");
         octave.set("s1", s1);
         octave.execute("t = 1.0*isequal(s, s1);"); // "1.0*" is a typecast from bool to scalar
-        final OctaveScalar t = new OctaveScalar(octave.get("t"));
+        final OctaveScalar t = octave.get("t");
         assertEquals(1.0, t.getDouble());
-        final OctaveStruct s2 = new OctaveStruct(octave.get("s1"));
+        final OctaveStruct s2 = octave.get("s1");
         assertEquals(s1, s2);
         octave.close();
     }

@@ -75,11 +75,11 @@ public class TestOctave extends TestCase {
         typelist.put("z", Z);
 
         octave.set(typelist);
-        OctaveScalar x = new OctaveScalar(octave.get("x"));
+        OctaveScalar x = octave.get("x");
         Assert.assertEquals(42.0, x.getDouble(), 0.0);
 
         octave.execute("x = x + 10;");
-        x = new OctaveScalar(octave.get("x"));
+        x = octave.get("x");
         Assert.assertEquals(52.0, x.getDouble(), 0.0);
         octave.close();
     }
@@ -93,7 +93,8 @@ public class TestOctave extends TestCase {
         final Octave octave = new Octave();
         octave.set("x", new OctaveScalar(42));
         octave.execute(new StringReader("x=x+10;"));
-        final double x = new OctaveScalar(octave.get("x")).getDouble();
+        final OctaveScalar octaveScalar = octave.get("x");
+        final double x = octaveScalar.getDouble();
         assertEquals(52.0, x, 0.0);
         octave.close();
     }

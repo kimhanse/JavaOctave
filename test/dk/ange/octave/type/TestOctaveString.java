@@ -48,7 +48,7 @@ public class TestOctaveString extends TestCase {
         final OctaveType s1 = new OctaveString("tekst");
         final Octave octave = new Octave();
         octave.set("st", s1);
-        final OctaveString s2 = new OctaveString(octave.get("st"));
+        final OctaveString s2 = octave.get("st");
         Assert.assertEquals(s1, s2);
     }
 

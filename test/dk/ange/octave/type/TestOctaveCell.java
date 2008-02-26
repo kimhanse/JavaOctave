@@ -38,7 +38,8 @@ public class TestOctaveCell extends TestCase {
      * @throws Exception
      */
     public void testConstructorValue() throws Exception {
-        final OctaveCell cell = new OctaveCell(new OctaveScalar(42));
+        final OctaveCell cell = new OctaveCell();
+        cell.set(1, 1, new OctaveScalar(42));
         Assert.assertEquals(1, cell.getRowDimension());
         Assert.assertEquals(1, cell.getColumnDimension());
         Assert.assertEquals("# name: mycell2\n# type: cell\n# rows: 1\n# columns: 1\n"
@@ -98,7 +99,8 @@ public class TestOctaveCell extends TestCase {
      * @throws Exception
      */
     public void testReturnCopy() throws Exception {
-        final OctaveCell cell = new OctaveCell(new OctaveScalar(2.0));
+        final OctaveCell cell = new OctaveCell();
+        cell.set(1, 1, new OctaveScalar(2));
         final OctaveScalar scalar = (OctaveScalar) cell.get(1, 1);
         scalar.set(10.0);
         assertEquals(scalar.getDouble(), 10.0);
@@ -109,12 +111,15 @@ public class TestOctaveCell extends TestCase {
      * @throws Exception
      */
     public void testOctaveConnection() throws Exception {
-        final OctaveCell cell = new OctaveCell(new OctaveScalar(42));
-        cell.set(3, 2, new OctaveCell(new OctaveString("mystring")));
+        final OctaveCell cell = new OctaveCell();
+        cell.set(1, 1, new OctaveScalar(42));
+        OctaveCell cell2 = new OctaveCell();
+        cell2.set(1, 1, new OctaveString("mystring"));
+        cell.set(3, 2, cell2);
 
         final Octave octave = new Octave();
         octave.set("mycell", cell);
-        final OctaveCell mycell_copy = new OctaveCell(octave.get("mycell"));
+        final OctaveCell mycell_copy = octave.get("mycell");
         assertEquals(cell, mycell_copy);
     }
 
@@ -134,7 +139,7 @@ public class TestOctaveCell extends TestCase {
         octave.execute("cell_octave=cell(); for r=1:2 for c=1:3 cell_octave{r,c}=r+0.1*c; endfor endfor");
         octave.execute("assert(cell_octave, cell_java);");
         // Assert that the returned value is the same as the original
-        assertEquals(cell, new OctaveCell(octave.get("cell_java")));
+        assertEquals(cell, octave.get("cell_java"));
         octave.close();
     }
 
