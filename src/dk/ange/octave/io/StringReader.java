@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.type.OctaveString;
-import dk.ange.octave.type.OctaveType;
 
 /**
  * The reader of string
@@ -34,19 +33,15 @@ public final class StringReader implements OctaveDataReader {
         return "string";
     }
 
-    public OctaveType read(final BufferedReader reader) {
+    public OctaveString read(final BufferedReader reader) {
         String line;
-        line = OctaveReadHelper.readerReadLine(reader);
-        if (!line.equals("# type: string")) {
-            throw new OctaveParseException("Wrong type of variable");
-        }
         line = OctaveReadHelper.readerReadLine(reader);
         if (!line.equals("# elements: 1")) {
             throw new OctaveParseException("Only implementet for single-line strings '" + line + "'");
         }
         line = OctaveReadHelper.readerReadLine(reader);
         if (!line.startsWith("# length: ")) {
-            throw new OctaveParseException("Parse error in String");
+            throw new OctaveParseException("Parse error in String, line='" + line + "'");
         }
         final String string = OctaveReadHelper.readerReadLine(reader);
         return new OctaveString(string);

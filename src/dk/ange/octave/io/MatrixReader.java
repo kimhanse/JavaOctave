@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.type.OctaveNdMatrix;
-import dk.ange.octave.type.OctaveType;
 
 /**
  * The reader of matrix
@@ -34,28 +33,23 @@ public final class MatrixReader implements OctaveDataReader {
         return "matrix";
     }
 
-    public OctaveType read(final BufferedReader reader) {
+    public OctaveNdMatrix read(final BufferedReader reader) {
         String line;
-        // # type: matrix
-        line = OctaveReadHelper.readerReadLine(reader);
-        if (!line.equals("# type: matrix")) {
-            throw new OctaveParseException("Wrong type of variable, " + line);
-        }
         // 2d or 2d+?
-        line = OctaveReadHelper.readerPeekLine(reader);
+        line = OctaveReadHelper.readerReadLine(reader);
         if (line.startsWith("# rows: ")) {
-            return read2dmatrix(reader);
+            return read2dmatrix(reader, line);
         } else if (line.startsWith("# ndims: ")) {
-            return readVectorizedMatrix(reader);
+            return readVectorizedMatrix(reader, line);
         } else {
             throw new OctaveParseException("Expected <# rows: > or <# ndims: >, but got <" + line + ">");
         }
     }
 
-    private OctaveNdMatrix readVectorizedMatrix(final BufferedReader reader) {
+    private OctaveNdMatrix readVectorizedMatrix(final BufferedReader reader, final String ndimsLine) {
         String line;
         final String NDIMS = "# ndims: ";
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = ndimsLine;
         if (!line.startsWith(NDIMS)) {
             throw new OctaveParseException("Expected <" + NDIMS + ">, but got <" + line + ">");
         }
@@ -78,10 +72,10 @@ public final class MatrixReader implements OctaveDataReader {
         return new OctaveNdMatrix(data, size);
     }
 
-    private OctaveNdMatrix read2dmatrix(final BufferedReader reader) {
+    private OctaveNdMatrix read2dmatrix(final BufferedReader reader, final String rowsLine) {
         String line;
         // # rows: 1
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = rowsLine;
         if (!line.startsWith("# rows: ")) {
             throw new OctaveParseException("Expected <# rows: > got <" + line + ">");
         }

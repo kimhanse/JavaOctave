@@ -155,7 +155,7 @@ public final class OctaveIO {
      * @return octavetype read from reader
      */
     public static OctaveType read(final BufferedReader reader, final boolean close) {
-        final String line = OctaveReadHelper.readerPeekLine(reader);
+        final String line = OctaveReadHelper.readerReadLine(reader);
         final String TYPE = "# type: ";
         if (!line.startsWith(TYPE)) {
             throw new OctaveParseException("Expected <" + TYPE + "> got <" + line + ">");

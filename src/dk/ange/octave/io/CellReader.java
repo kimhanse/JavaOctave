@@ -38,11 +38,6 @@ public final class CellReader implements OctaveDataReader {
     public OctaveCell read(final BufferedReader reader) {
         String line;
         String token;
-        line = OctaveReadHelper.readerReadLine(reader);
-        token = "# type: cell";
-        if (!line.equals(token)) {
-            throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-        }
 
         line = OctaveReadHelper.readerReadLine(reader);
         token = "# rows: ";

@@ -21,9 +21,7 @@ package dk.ange.octave.io;
 import java.io.BufferedReader;
 
 import dk.ange.octave.OctaveReadHelper;
-import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.type.OctaveScalar;
-import dk.ange.octave.type.OctaveType;
 
 /**
  * The reader of scalar
@@ -34,13 +32,8 @@ public final class ScalarReader implements OctaveDataReader {
         return "scalar";
     }
 
-    public OctaveType read(final BufferedReader reader) {
+    public OctaveScalar read(final BufferedReader reader) {
         String line;
-        line = OctaveReadHelper.readerReadLine(reader);
-        final String token = "# type: scalar";
-        if (!line.equals(token)) {
-            throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">\n");
-        }
         line = OctaveReadHelper.readerReadLine(reader);
         final double value = OctaveReadHelper.parseDouble(line);
         return new OctaveScalar(value);

@@ -68,27 +68,4 @@ public final class OctaveReadHelper {
         }
     }
 
-    /**
-     * Utility function
-     * 
-     * @param reader
-     * @return next line from reader without modifying the "file pointer", meaning that the next call to readLine or
-     *         peekLine will return the same line.
-     * @throws OctaveException
-     *                 Note: The line to be read must be less than 1000 characters.
-     */
-    public static String readerPeekLine(final BufferedReader reader) {
-        try {
-            reader.mark(1000);
-            final String line = reader.readLine();
-            reader.reset();
-            if (line == null) {
-                throw new OctaveIOException("Pipe to octave-process broken");
-            }
-            return line;
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
-    }
-
 }

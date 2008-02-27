@@ -41,12 +41,6 @@ public final class StructReader implements OctaveDataReader {
 
     public OctaveStruct read(final BufferedReader reader) {
         String line;
-        final String TYPE_STRUCT = "# type: struct";
-        final String TYPE_GLOBAL_STRUCT = "# type: global struct";
-        line = OctaveReadHelper.readerReadLine(reader);
-        if (!line.equals(TYPE_STRUCT) && !line.equals(TYPE_GLOBAL_STRUCT)) {
-            throw new OctaveParseException("Variable was not a struct or global struct, " + line);
-        }
 
         // # length: 4
         line = OctaveReadHelper.readerReadLine(reader);
@@ -66,6 +60,13 @@ public final class StructReader implements OctaveDataReader {
                 throw new OctaveParseException("Expected <" + NAME + "> got <" + line + ">");
             }
             final String subname = line.substring(NAME.length());
+
+            final String CELL = "# type: cell";
+            line = OctaveReadHelper.readerReadLine(reader);
+            if (!line.equals(CELL)) {
+                throw new OctaveParseException("Expected <" + CELL + "> got <" + line + ">");
+            }
+
             final OctaveCell cell = cellReader.read(reader);
             // If the cell is a 1x1, move up the value
             if (cell.getRowDimension() == 1 && cell.getColumnDimension() == 1) {
