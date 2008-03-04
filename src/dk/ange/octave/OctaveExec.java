@@ -31,6 +31,7 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveStateException;
 import dk.ange.octave.util.InputStreamSinkThread;
@@ -48,8 +49,6 @@ final class OctaveExec {
     private static final String[] CMD_ARRAY = { "octave", "--no-history", "--no-init-file", "--no-line-editing",
             "--no-site-file", "--silent" };
 
-    private static final int BUFFERSIZE = 8192;
-
     private final Process process;
 
     private final Writer processWriter;
@@ -57,6 +56,8 @@ final class OctaveExec {
     final BufferedReader processReader;
 
     private final Writer stdoutLog;
+
+    private final InputThread inputThread;
 
     /*
      * TODO We should wait() on this thread before stderrLog is close()'d
@@ -105,6 +106,7 @@ final class OctaveExec {
             errorStreamThread = null;
         } else {
             errorStreamThread = new ReaderWriterPipeThread(new InputStreamReader(process.getErrorStream()), stderrLog);
+            errorStreamThread.setName(Thread.currentThread().getName() + "-ErrorPipe");
             errorStreamThread.start();
         }
         // Connect stdout
@@ -121,6 +123,7 @@ final class OctaveExec {
             processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
                     new OutputStreamWriter(process.getOutputStream()));
         }
+        inputThread = InputThread.factory(this, processWriter);
     }
 
     /**
@@ -147,6 +150,10 @@ final class OctaveExec {
         this(null, new OutputStreamWriter(System.out), new OutputStreamWriter(System.err));
     }
 
+    /*
+     * Spacer
+     */
+
     private final Random random = new Random();
 
     private String generateSpacer() {
@@ -157,11 +164,94 @@ final class OctaveExec {
         return string.matches("-=\\+X\\+=- Octave\\.java spacer -=\\+X\\+=- .* -=\\+X\\+=-");
     }
 
+    /*
+     * New execute
+     */
+
+    private boolean inputIsWritten = true;
+
+    // XXX private Thread threadToNotify;
+
+    /**
+     * Called by InputThread
+     */
+    synchronized void markInputWritten() {
+        if (inputIsWritten) {
+            throw new IllegalStateException("inputIsWritten == true");
+        }
+        inputIsWritten = false;
+        // XXX threadToNotify.notify();
+    }
+
+    /**
+     * @param command
+     * @param output
+     */
+    public void execute2(final Reader command, final Writer output) {
+        try {
+            final String spacer = generateSpacer();
+            inputIsWritten = false;
+            // XXX threadToNotify = Thread.currentThread();
+            // Start write
+            inputThread.startWrite(command, spacer);
+            // Read
+            read2(output, spacer);
+            // Wait
+            // while (!inputIsWritten) {
+            // // TODO check thread safety here
+            // // XXX Thread.yield();
+            // }
+        } catch (final OctaveException e) {
+            if (getExecuteState() == ExecuteState.DESTROYED) {
+                e.setDestroyed(true);
+            }
+            throw e;
+        }
+    }
+
+    private void read2(final Writer output, final String spacer) {
+        try {
+            while (true) {
+                final String line = processReader.readLine();
+                if (line == null) {
+                    throw new OctaveIOException("EOF in processReader");
+                }
+                if (line.equals(spacer)) {
+                    break;
+                }
+                output.write(line);
+            }
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Not implemented");
+        }
+    }
+
+    /**
+     * @param command
+     */
+    public void execute2(final Reader command) {
+        execute2(command, stdoutLog);
+    }
+
+    /**
+     * @param command
+     */
+    public void execute2(final String command) {
+        execute2(new StringReader(command));
+    }
+
+    /*
+     * Old execute
+     */
+
     /**
      * @param inputReader
      * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
      */
-    public Reader executeReader(final Reader inputReader) {
+    // Used in OctaveIO
+    Reader executeReader(final Reader inputReader) {
         assert check();
         final String spacer = generateSpacer();
         assert isSpacer(spacer);
@@ -170,58 +260,6 @@ final class OctaveExec {
         setExecuteState(ExecuteState.BOTH_RUNNING);
         octaveInputThread.start();
         return outputReader;
-    }
-
-    /**
-     * @param inputReader
-     * @param echo
-     */
-    public void execute(final Reader inputReader, final boolean echo) {
-        assert check();
-        final Reader resultReader = executeReader(inputReader);
-        try {
-            final char[] cbuf = new char[BUFFERSIZE];
-            while (true) {
-                final int len = resultReader.read(cbuf);
-                if (len == -1) {
-                    break;
-                }
-                if (echo) {
-                    stdoutLog.write(cbuf, 0, len);
-                    stdoutLog.flush();
-                }
-            }
-            resultReader.close();
-        } catch (final IOException e) {
-            final OctaveIOException octaveException = new OctaveIOException(e);
-            if (getExecuteState() == ExecuteState.DESTROYED) {
-                octaveException.setDestroyed(true);
-            }
-            throw octaveException;
-        }
-        assert check();
-    }
-
-    /**
-     * @param reader
-     */
-    public void execute(final Reader reader) {
-        execute(reader, true);
-    }
-
-    /**
-     * @param cmd
-     * @param echo
-     */
-    public void execute(final String cmd, final boolean echo) {
-        execute(new StringReader(cmd), echo);
-    }
-
-    /**
-     * @param cmd
-     */
-    public void execute(final String cmd) {
-        execute(cmd, true);
     }
 
     /**
@@ -246,6 +284,7 @@ final class OctaveExec {
             System.err.println("getExecuteState() : " + getExecuteState());
             throw octaveException;
         }
+        inputThread.close();
         setExecuteState(ExecuteState.CLOSED);
     }
 
@@ -277,6 +316,7 @@ final class OctaveExec {
         } catch (final IOException e) {
             throw new OctaveIOException(e);
         }
+        inputThread.close();
     }
 
     @SuppressWarnings("all")

@@ -21,7 +21,6 @@ package dk.ange.octave;
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
@@ -90,41 +89,17 @@ public final class Octave {
     }
 
     /**
-     * @param inputReader
-     * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
-     */
-    public Reader executeReader(final Reader inputReader) {
-        return octaveExec.executeReader(inputReader);
-    }
-
-    /**
-     * @param inputReader
-     * @param echo
-     */
-    public void execute(final Reader inputReader, final boolean echo) {
-        octaveExec.execute(inputReader, echo);
-    }
-
-    /**
      * @param reader
      */
     public void execute(final Reader reader) {
-        execute(reader, true);
-    }
-
-    /**
-     * @param cmd
-     * @param echo
-     */
-    public void execute(final String cmd, final boolean echo) {
-        execute(new StringReader(cmd), echo);
+        octaveExec.execute2(reader);
     }
 
     /**
      * @param cmd
      */
     public void execute(final String cmd) {
-        execute(cmd, true);
+        octaveExec.execute2(cmd);
     }
 
     /**

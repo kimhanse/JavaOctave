@@ -15,9 +15,6 @@
  */
 package dk.ange.octave;
 
-import java.io.Reader;
-import java.io.StringReader;
-
 import dk.ange.octave.type.OctaveScalar;
 
 /**
@@ -29,28 +26,16 @@ public class RunOctave {
      * @param args
      */
     public static void main(final String[] args) {
+        System.out.println("BEGIN");
         final Octave octave = new Octave();
-        try {
-            octave.set("a", new OctaveScalar(42));
-            octave.execute("a");
-            System.out.println("Java: a = " + octave.get("a"));
-            octave.execute("a=a+10");
-            System.out.println("Java: a = " + octave.get("a"));
 
-            final Reader outputReader = octave.executeReader(new StringReader("a\na=a+10;\na"));
-            while (true) {
-                final int c = outputReader.read();
-                if (c == -1) {
-                    break;
-                }
-                System.out.print((char) c);
-            }
-            outputReader.close();
+        octave.set("a", new OctaveScalar(42));
+        octave.execute("a");
+        System.out.println("Java: a = " + octave.get("a"));
+        octave.execute("a=a+10");
+        System.out.println("Java: a = " + octave.get("a"));
 
-            octave.close();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        octave.close();
         System.out.println("END.");
     }
 

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.exception.OctaveException;
+import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.type.OctaveScalar;
 import dk.ange.octave.type.OctaveType;
 
@@ -177,7 +178,7 @@ public class TestOctave extends TestCase {
             octave2.execute("error('Test');");
             fail();
         } catch (final OctaveException e) {
-            assertTrue(e.getCause() instanceof IOException);
+            assertTrue(e instanceof OctaveIOException);
         }
     }
 
