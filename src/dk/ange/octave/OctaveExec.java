@@ -205,21 +205,24 @@ final class OctaveExec {
     }
 
     private void read(final Writer output, final String spacer) {
-        try {
-            while (true) {
-                final String line = processReader.readLine();
-                if (line == null) {
-                    throw new OctaveIOException("EOF in processReader");
-                }
-                if (line.equals(spacer)) {
-                    break;
-                }
-                output.write(line);
+        while (true) {
+            final String line;
+            try {
+                line = processReader.readLine();
+            } catch (final IOException e) {
+                throw new OctaveIOException("Read error", e);
             }
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new UnsupportedOperationException("Not implemented");
+            if (line == null) {
+                throw new OctaveIOException("EOF in processReader");
+            }
+            if (line.equals(spacer)) {
+                break;
+            }
+            try {
+                output.write(line);
+            } catch (final IOException e) {
+                throw new OctaveIOException("Write error", e);
+            }
         }
     }
 
@@ -245,7 +248,6 @@ final class OctaveExec {
      * @param inputReader
      * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
      */
-    // Used in OctaveIO
     Reader executeReader(final Reader inputReader) {
         assert check();
         final String spacer = generateSpacer();
