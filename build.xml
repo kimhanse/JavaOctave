@@ -66,6 +66,9 @@
       <classpath location="javaoctave.jar" />
       <src path="test" />
     </javac>
+    <copy todir="build/test">
+      <fileset dir="test" />
+    </copy>
     <junit fork="yes" haltonfailure="no">
       <classpath>
         <path refid="classpath"/>

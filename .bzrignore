@@ -1,3 +1,4 @@
 .settings/
 build/
 javaoctave.jar
+lib/log4j-1.2.13.jar
