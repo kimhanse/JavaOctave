@@ -123,7 +123,7 @@ final class OctaveExec {
             processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
                     new OutputStreamWriter(process.getOutputStream()));
         }
-        inputThread = InputThread.factory(this, processWriter);
+        inputThread = InputThread.factory(processWriter);
     }
 
     /**
@@ -168,18 +168,6 @@ final class OctaveExec {
      * New execute
      */
 
-    private boolean inputIsWritten = true;
-
-    /**
-     * Called by InputThread
-     */
-    synchronized void markInputWritten() {
-        if (inputIsWritten) {
-            throw new IllegalStateException("inputIsWritten == true");
-        }
-        inputIsWritten = false;
-    }
-
     /**
      * @param command
      * @param output
@@ -187,15 +175,10 @@ final class OctaveExec {
     public void execute(final Reader command, final Writer output) {
         try {
             final String spacer = generateSpacer();
-            inputIsWritten = false;
             // Start write
             inputThread.startWrite(command, spacer);
             // Read
             read(output, spacer);
-            // Check that inputIsWritten
-            // if (!inputIsWritten) {
-            // // TODO
-            // }
         } catch (final OctaveException e) {
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 e.setDestroyed(true);
@@ -258,6 +241,10 @@ final class OctaveExec {
         octaveInputThread.start();
         return outputReader;
     }
+
+    /*
+     * Close, destroy, etc.
+     */
 
     /**
      * Close the octave process in an orderly fasion.
