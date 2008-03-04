@@ -139,7 +139,7 @@ public final class OctaveIO {
     @SuppressWarnings("unchecked")
     public <T extends OctaveType> T get(final String name) {
         final OctaveType ot = read(getVarReader(name), true);
-        T t;
+        final T t;
         try {
             t = (T) ot;
         } catch (final ClassCastException e) {

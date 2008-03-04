@@ -170,8 +170,6 @@ final class OctaveExec {
 
     private boolean inputIsWritten = true;
 
-    // XXX private Thread threadToNotify;
-
     /**
      * Called by InputThread
      */
@@ -180,26 +178,23 @@ final class OctaveExec {
             throw new IllegalStateException("inputIsWritten == true");
         }
         inputIsWritten = false;
-        // XXX threadToNotify.notify();
     }
 
     /**
      * @param command
      * @param output
      */
-    public void execute2(final Reader command, final Writer output) {
+    public void execute(final Reader command, final Writer output) {
         try {
             final String spacer = generateSpacer();
             inputIsWritten = false;
-            // XXX threadToNotify = Thread.currentThread();
             // Start write
             inputThread.startWrite(command, spacer);
             // Read
-            read2(output, spacer);
-            // Wait
-            // while (!inputIsWritten) {
-            // // TODO check thread safety here
-            // // XXX Thread.yield();
+            read(output, spacer);
+            // Check that inputIsWritten
+            // if (!inputIsWritten) {
+            // // TODO
             // }
         } catch (final OctaveException e) {
             if (getExecuteState() == ExecuteState.DESTROYED) {
@@ -209,7 +204,7 @@ final class OctaveExec {
         }
     }
 
-    private void read2(final Writer output, final String spacer) {
+    private void read(final Writer output, final String spacer) {
         try {
             while (true) {
                 final String line = processReader.readLine();
@@ -231,15 +226,15 @@ final class OctaveExec {
     /**
      * @param command
      */
-    public void execute2(final Reader command) {
-        execute2(command, stdoutLog);
+    public void execute(final Reader command) {
+        execute(command, stdoutLog);
     }
 
     /**
      * @param command
      */
-    public void execute2(final String command) {
-        execute2(new StringReader(command));
+    public void execute(final String command) {
+        execute(new StringReader(command));
     }
 
     /*

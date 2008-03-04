@@ -89,17 +89,17 @@ public final class Octave {
     }
 
     /**
-     * @param reader
+     * @param command
      */
-    public void execute(final Reader reader) {
-        octaveExec.execute2(reader);
+    public void execute(final Reader command) {
+        octaveExec.execute(command);
     }
 
     /**
-     * @param cmd
+     * @param command
      */
-    public void execute(final String cmd) {
-        octaveExec.execute2(cmd);
+    public void execute(final String command) {
+        octaveExec.execute(command);
     }
 
     /**
@@ -126,7 +126,7 @@ public final class Octave {
      */
     @SuppressWarnings("unchecked")
     public <T extends OctaveType> T get(final String name) {
-        return (T) octaveIO.get(name); // Cast works around bug in Sum javac 1.5
+        return (T) octaveIO.get(name); // Cast works around bug in Sun javac 1.5
     }
 
     /**
