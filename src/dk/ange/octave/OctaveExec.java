@@ -123,7 +123,7 @@ final class OctaveExec {
             processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
                     new OutputStreamWriter(process.getOutputStream()));
         }
-        inputThread = InputThread.factory(processWriter);
+        inputThread = InputThread.factory(this, processWriter);
     }
 
     /**
@@ -170,15 +170,40 @@ final class OctaveExec {
 
     /**
      * @param command
+     * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
+     */
+    Reader executeReader(final Reader command) {
+        final OctaveExecuteReader outputReader;
+        assert check();
+        try {
+            final String spacer = generateSpacer();
+            // Read
+            outputReader = new OctaveExecuteReader(processReader, spacer, this);
+            setExecuteState(ExecuteState.BOTH_RUNNING);
+            // Start write
+            inputThread.startWrite(command, spacer);
+        } catch (final OctaveException e) {
+            if (getExecuteState() == ExecuteState.DESTROYED) {
+                e.setDestroyed(true);
+            }
+            throw e;
+        }
+        return outputReader;
+    }
+
+    /**
+     * @param command
      * @param output
      */
     public void execute(final Reader command, final Writer output) {
         try {
             final String spacer = generateSpacer();
+            setExecuteState(ExecuteState.BOTH_RUNNING);
             // Start write
             inputThread.startWrite(command, spacer);
             // Read
             read(output, spacer);
+            setExecuteState(ExecuteState.NONE);
         } catch (final OctaveException e) {
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 e.setDestroyed(true);
@@ -225,25 +250,6 @@ final class OctaveExec {
 
     /*
      * Old execute
-     */
-
-    /**
-     * @param inputReader
-     * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
-     */
-    Reader executeReader(final Reader inputReader) {
-        assert check();
-        final String spacer = generateSpacer();
-        assert isSpacer(spacer);
-        final OctaveInputThread octaveInputThread = new OctaveInputThread(inputReader, processWriter, spacer, this);
-        final OctaveExecuteReader outputReader = new OctaveExecuteReader(processReader, spacer, octaveInputThread, this);
-        setExecuteState(ExecuteState.BOTH_RUNNING);
-        octaveInputThread.start();
-        return outputReader;
-    }
-
-    /*
-     * Close, destroy, etc.
      */
 
     /**

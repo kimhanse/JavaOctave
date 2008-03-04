@@ -39,8 +39,6 @@ final class OctaveExecuteReader extends Reader {
 
     private final String spacer;
 
-    private final OctaveInputThread octaveInputThread;
-
     private final OctaveExec octaveExec;
 
     private StringBuffer buffer;
@@ -49,19 +47,15 @@ final class OctaveExecuteReader extends Reader {
 
     /**
      * This reader will read from octaveReader until a single line equal() spacer is read, after that this reader will
-     * return eof. When this reader is closed it will join() the octaveInputThread and update the state of octave to
-     * NONE.
+     * return eof. When this reader is closed it will update the state of octave to NONE.
      * 
      * @param octaveReader
      * @param spacer
-     * @param octaveInputThread
      * @param octaveExec
      */
-    public OctaveExecuteReader(final BufferedReader octaveReader, final String spacer,
-            final OctaveInputThread octaveInputThread, final OctaveExec octaveExec) {
+    public OctaveExecuteReader(final BufferedReader octaveReader, final String spacer, final OctaveExec octaveExec) {
         this.octaveReader = octaveReader;
         this.spacer = spacer;
-        this.octaveInputThread = octaveInputThread;
         this.octaveExec = octaveExec;
     }
 
@@ -97,11 +91,6 @@ final class OctaveExecuteReader extends Reader {
 
     @Override
     public void close() throws IOException {
-        try {
-            octaveInputThread.join();
-        } catch (final InterruptedException e) {
-            throw new IOException("InterruptedException: " + e);
-        }
         if (read() != -1) {
             throw new IOException("read hasn't finished");
         }

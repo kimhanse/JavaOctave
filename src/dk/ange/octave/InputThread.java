@@ -34,6 +34,8 @@ final class InputThread extends Thread {
 
     private static final int BUFFERSIZE = 4 * 1024;
 
+    private final OctaveExec octaveExec;
+
     private final Writer processWriter;
 
     private Reader currentInput;
@@ -43,11 +45,12 @@ final class InputThread extends Thread {
     private boolean close = false;
 
     /**
+     * @param octaveExec
      * @param processWriter
      * @return the constructed and started InputThread
      */
-    public static InputThread factory(final Writer processWriter) {
-        final InputThread inputThread = new InputThread(processWriter);
+    public static InputThread factory(final OctaveExec octaveExec, final Writer processWriter) {
+        final InputThread inputThread = new InputThread(octaveExec, processWriter);
         inputThread.setName(Thread.currentThread().getName() + "-InputThread");
         inputThread.start();
         return inputThread;
@@ -56,7 +59,8 @@ final class InputThread extends Thread {
     /**
      * @param processWriter
      */
-    private InputThread(final Writer processWriter) {
+    private InputThread(final OctaveExec octaveExec, final Writer processWriter) {
+        this.octaveExec = octaveExec;
         this.processWriter = processWriter;
     }
 
@@ -112,6 +116,7 @@ final class InputThread extends Thread {
             currentInput.close();
             processWriter.write("\nprintf(\"%s\\n\", \"" + currentSpacer + "\");\n");
             processWriter.flush();
+            octaveExec.setExecuteState(OctaveExec.ExecuteState.WRITER_OK);
         } catch (final IOException e) {
             log.error("Unexpected IOException in InputThread", e);
         }
