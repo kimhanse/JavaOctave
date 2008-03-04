@@ -24,6 +24,7 @@ import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,8 +51,6 @@ import dk.ange.octave.type.OctaveType;
  */
 public final class OctaveIO {
 
-    private static final int BUFFERSIZE = 8192;
-
     private final OctaveExec octaveExec;
 
     OctaveIO(final OctaveExec octaveExec) {
@@ -62,24 +61,12 @@ public final class OctaveIO {
      * @param values
      */
     public void set(final Map<String, OctaveType> values) {
-        assert octaveExec.check();
-        try {
-            final Reader resultReader = octaveExec.executeReader(octaveReader(values));
-            final char[] cbuf = new char[BUFFERSIZE];
-            final int len = resultReader.read(cbuf);
-            if (len != -1) {
-                final String buffer = new String(cbuf, 0, len);
-                throw new OctaveIOException("Unexpected output when setting variable in octave: " + buffer);
-            }
-            resultReader.close();
-        } catch (final IOException e) {
-            final OctaveIOException octaveException = new OctaveIOException(e);
-            if (octaveExec.getExecuteState() == OctaveExec.ExecuteState.DESTROYED) {
-                octaveException.setDestroyed(true);
-            }
-            throw octaveException;
+        final StringWriter outputWriter = new StringWriter();
+        octaveExec.execute(octaveReader(values), outputWriter);
+        final String output = outputWriter.toString();
+        if (output.length() != 0) {
+            throw new IllegalStateException("Unexpected output, " + output);
         }
-        assert octaveExec.check();
     }
 
     /**
