@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveStateException;
+import dk.ange.octave.util.IOUtils;
 import dk.ange.octave.util.InputStreamSinkThread;
 import dk.ange.octave.util.NoCloseWriter;
 import dk.ange.octave.util.ReaderWriterPipeThread;
@@ -196,41 +197,16 @@ final class OctaveExec {
      * @param output
      */
     public void execute(final Reader command, final Writer output) {
+        final Reader outputReader = executeReader(command);
         try {
-            final String spacer = generateSpacer();
-            setExecuteState(ExecuteState.BOTH_RUNNING);
-            // Start write
-            inputThread.startWrite(command, spacer);
-            // Read
-            read(output, spacer);
-            setExecuteState(ExecuteState.NONE);
-        } catch (final OctaveException e) {
+            IOUtils.copy(outputReader, output);
+            outputReader.close();
+        } catch (IOException e) {
+            OctaveException e2 = new OctaveIOException("IOUtils.copy(outputReader, output);", e);
             if (getExecuteState() == ExecuteState.DESTROYED) {
-                e.setDestroyed(true);
+                e2.setDestroyed(true);
             }
-            throw e;
-        }
-    }
-
-    private void read(final Writer output, final String spacer) {
-        while (true) {
-            final String line;
-            try {
-                line = processReader.readLine();
-            } catch (final IOException e) {
-                throw new OctaveIOException("Read error", e);
-            }
-            if (line == null) {
-                throw new OctaveIOException("EOF in processReader");
-            }
-            if (line.equals(spacer)) {
-                break;
-            }
-            try {
-                output.write(line);
-            } catch (final IOException e) {
-                throw new OctaveIOException("Write error", e);
-            }
+            throw e2;
         }
     }
 
