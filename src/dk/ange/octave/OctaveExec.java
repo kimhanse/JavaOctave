@@ -121,23 +121,6 @@ final class OctaveExec {
             processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
                     new OutputStreamWriter(process.getOutputStream()));
         }
-        // Setup octave process
-        // readSetup();
-    }
-
-    @SuppressWarnings("unused")
-    private void readSetup() {
-        try {
-            final InputStreamReader setup = new InputStreamReader(getClass().getResourceAsStream("setup.m"));
-            final char[] buffer = new char[4096];
-            int len;
-            while ((len = setup.read(buffer)) != -1) {
-                processWriter.write(buffer, 0, len);
-            }
-            setup.close();
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
     }
 
     /**
