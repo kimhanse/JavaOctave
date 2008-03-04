@@ -39,11 +39,11 @@ public final class IOUtils {
      * @return The total chars copied
      * @throws IOException
      */
-    public static long copy(Reader reader, Writer writer) throws IOException {
+    public static long copy(final Reader reader, final Writer writer) throws IOException {
         final char[] buffer = new char[BUFFER_SIZE];
         long total = 0;
         while (true) {
-            int charsRead = reader.read(buffer, 0, BUFFER_SIZE);
+            final int charsRead = reader.read(buffer, 0, BUFFER_SIZE);
             if (charsRead == -1) {
                 break;
             }

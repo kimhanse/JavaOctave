@@ -201,8 +201,8 @@ final class OctaveExec {
         try {
             IOUtils.copy(outputReader, output);
             outputReader.close();
-        } catch (IOException e) {
-            OctaveException e2 = new OctaveIOException("IOUtils.copy(outputReader, output);", e);
+        } catch (final IOException e) {
+            final OctaveException e2 = new OctaveIOException("IOUtils.copy(outputReader, output);", e);
             if (getExecuteState() == ExecuteState.DESTROYED) {
                 e2.setDestroyed(true);
             }

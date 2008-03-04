@@ -62,7 +62,7 @@ public final class CellReader implements OctaveDataReader {
                 if (!line.equals(token)) {
                     throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
                 }
-                final OctaveType octaveType = OctaveIO.read(reader, false);
+                final OctaveType octaveType = OctaveIO.read(reader);
                 octaveCell.set(row, col, octaveType);
             }
             line = OctaveReadHelper.readerReadLine(reader);

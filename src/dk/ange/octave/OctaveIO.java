@@ -37,10 +37,10 @@ import dk.ange.octave.io.MatrixReader;
 import dk.ange.octave.io.MatrixWriter;
 import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveDataWriter;
-import dk.ange.octave.io.ScalarReader;
-import dk.ange.octave.io.ScalarWriter;
 import dk.ange.octave.io.OctaveStringReader;
 import dk.ange.octave.io.OctaveStringWriter;
+import dk.ange.octave.io.ScalarReader;
+import dk.ange.octave.io.ScalarWriter;
 import dk.ange.octave.io.StructReader;
 import dk.ange.octave.io.StructWriter;
 import dk.ange.octave.type.OctaveType;
@@ -139,7 +139,13 @@ public final class OctaveIO {
      */
     @SuppressWarnings("unchecked")
     public <T extends OctaveType> T get(final String name) {
-        final OctaveType ot = read(getVarReader(name), true);
+        final BufferedReader varReader = getVarReader(name);
+        final OctaveType ot = read(varReader);
+        try {
+            varReader.close();
+        } catch (final IOException e) {
+            throw new OctaveIOException("varReader.close()", e);
+        }
         final T t;
         try {
             t = (T) ot;
@@ -151,11 +157,9 @@ public final class OctaveIO {
 
     /**
      * @param reader
-     * @param close
-     *                whether to close the stream. Really should be true by default
      * @return octavetype read from reader
      */
-    public static OctaveType read(final BufferedReader reader, final boolean close) {
+    public static OctaveType read(final BufferedReader reader) {
         final String line = OctaveReadHelper.readerReadLine(reader);
         final String TYPE = "# type: ";
         if (!line.startsWith(TYPE)) {
@@ -163,19 +167,10 @@ public final class OctaveIO {
         }
         final String type = line.substring(TYPE.length());
         final OctaveDataReader dataReader = readers.get(type);
-        final OctaveType ot;
         if (dataReader == null) {
             throw new OctaveParseException("Unknown octave type, type='" + type + "'");
         }
-        ot = dataReader.read(reader);
-        if (close) {
-            try {
-                reader.close();
-            } catch (final IOException e) {
-                throw new OctaveIOException(e);
-            }
-        }
-        return ot;
+        return dataReader.read(reader);
     }
 
     private static final Map<String, OctaveDataReader> readers;
