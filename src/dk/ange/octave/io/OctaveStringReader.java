@@ -27,7 +27,7 @@ import dk.ange.octave.type.OctaveString;
 /**
  * The reader of string
  */
-public final class StringReader implements OctaveDataReader {
+public final class OctaveStringReader implements OctaveDataReader {
 
     public String octaveType() {
         return "string";

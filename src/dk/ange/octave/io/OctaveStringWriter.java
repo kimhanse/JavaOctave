@@ -27,7 +27,7 @@ import dk.ange.octave.type.OctaveType;
 /**
  * The writer of OctaveString
  */
-public final class StringWriter implements OctaveDataWriter {
+public final class OctaveStringWriter implements OctaveDataWriter {
 
     public Class<? extends OctaveType> javaType() {
         return OctaveString.class;

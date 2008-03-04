@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,8 +39,8 @@ import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveDataWriter;
 import dk.ange.octave.io.ScalarReader;
 import dk.ange.octave.io.ScalarWriter;
-import dk.ange.octave.io.StringReader;
-import dk.ange.octave.io.StringWriter;
+import dk.ange.octave.io.OctaveStringReader;
+import dk.ange.octave.io.OctaveStringWriter;
 import dk.ange.octave.io.StructReader;
 import dk.ange.octave.io.StructWriter;
 import dk.ange.octave.type.OctaveType;
@@ -100,7 +101,7 @@ public final class OctaveIO {
 
     private BufferedReader getVarReader(final String name) {
         assert octaveExec.check();
-        final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new java.io.StringReader(
+        final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new StringReader(
                 "save -text - " + name)));
         try {
             String line = octaveExec.processReader.readLine();
@@ -188,7 +189,7 @@ public final class OctaveIO {
         registerReader(new CellReader());
         registerReader(new MatrixReader());
         registerReader(new ScalarReader());
-        registerReader(new StringReader());
+        registerReader(new OctaveStringReader());
         registerReader(new StructReader());
     }
 
@@ -203,7 +204,7 @@ public final class OctaveIO {
         registerWriter(new CellWriter());
         registerWriter(new MatrixWriter());
         registerWriter(new ScalarWriter());
-        registerWriter(new StringWriter());
+        registerWriter(new OctaveStringWriter());
         registerWriter(new StructWriter());
     }
 
