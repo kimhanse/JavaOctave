@@ -20,9 +20,6 @@ package dk.ange.octave;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PipedReader;
-import java.io.PipedWriter;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -62,34 +59,17 @@ public final class OctaveIO {
      */
     public void set(final Map<String, OctaveType> values) {
         final StringWriter outputWriter = new StringWriter();
-        octaveExec.execute(octaveReader(values), outputWriter);
+        octaveExec.execute(new DataWriteFunctor(values), outputWriter);
         final String output = outputWriter.toString();
         if (output.length() != 0) {
             throw new IllegalStateException("Unexpected output, " + output);
         }
     }
 
-    /**
-     * @param values
-     * @return Returns a Reader from which the octave input version of values can be read.
-     */
-    static public Reader octaveReader(final Map<String, OctaveType> values) {
-        final PipedReader pipedReader = new PipedReader();
-        final PipedWriter pipedWriter = new PipedWriter();
-        try {
-            pipedWriter.connect(pipedReader);
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
-        final ToOctaveMultiWriterThread toOctaveWriter = new ToOctaveMultiWriterThread(values, pipedWriter);
-        toOctaveWriter.start();
-        return pipedReader;
-    }
-
     private BufferedReader getVarReader(final String name) {
         assert octaveExec.check();
-        final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new StringReader(
-                "save -text - " + name)));
+        final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new InputWriteFunctor(
+                new StringReader("save -text - " + name))));
         try {
             String line = octaveExec.processReader.readLine();
             if (line == null || !line.startsWith("# Created by Octave")) {

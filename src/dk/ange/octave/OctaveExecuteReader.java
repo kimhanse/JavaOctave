@@ -97,8 +97,8 @@ final class OctaveExecuteReader extends Reader {
         if (octaveReader.ready()) {
             throw new IOException("octaveReader is ready()");
         }
-        octaveExec.setExecuteState(OctaveExec.ExecuteState.NONE);
         log.debug("Reader closed()");
+        octaveExec.setExecuteState(OctaveExec.ExecuteState.NONE);
     }
 
 }

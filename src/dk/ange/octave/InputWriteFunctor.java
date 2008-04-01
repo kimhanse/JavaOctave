@@ -22,10 +22,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
+import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.util.StringUtil;
 
 /**
- * 
+ * Write commands read from a Reader
  */
 public final class InputWriteFunctor implements WriteFunctor {
 
@@ -43,11 +44,12 @@ public final class InputWriteFunctor implements WriteFunctor {
         this.currentInput = currentInput;
     }
 
-    public void doWrite(final Writer processWriter) {
+    public void doWrite(final Writer writer) {
         log.debug("Enter doWrite()");
         try {
             final char[] cbuf = new char[BUFFERSIZE];
             while (true) {
+                // FIXME change loop to IOUtils.copy()
                 final int c = currentInput.read(cbuf);
                 if (c < 0) {
                     break;
@@ -55,12 +57,14 @@ public final class InputWriteFunctor implements WriteFunctor {
                 if (log.isTraceEnabled()) {
                     log.trace("octaveWriter.write(" + StringUtil.jQuote(cbuf, c) + ", 0, " + c + ")");
                 }
-                processWriter.write(cbuf, 0, c);
-                processWriter.flush();
+                writer.write(cbuf, 0, c);
+                writer.flush();
             }
             currentInput.close();
         } catch (final IOException e) {
-            log.error("Unexpected IOException in InputThread", e);
+            final String message = "Unexpected IOException";
+            log.error(message, e);
+            throw new OctaveIOException(message, e);
         }
     }
 

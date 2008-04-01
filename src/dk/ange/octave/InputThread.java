@@ -19,8 +19,9 @@
 package dk.ange.octave;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
+
+import dk.ange.octave.exception.OctaveIOException;
 
 /**
  * Thread that writes to the octave process
@@ -100,9 +101,13 @@ final class InputThread extends Thread {
         try {
             processWriter.write("\nprintf(\"%s\\n\", \"" + currentSpacer + "\");\n");
             processWriter.flush();
+            log.debug("Has written all");
+            // FIXME the output could finish here and change state to .NONE, this will cause an exception
             octaveExec.setExecuteState(OctaveExec.ExecuteState.WRITER_OK);
         } catch (final IOException e) {
-            log.error("Unexpected IOException in InputThread", e);
+            final String message = "Unexpected IOException in InputThread";
+            log.error(message, e);
+            throw new OctaveIOException(message, e);
         }
     }
 
@@ -110,7 +115,7 @@ final class InputThread extends Thread {
      * @param input
      * @param spacer
      */
-    public synchronized void startWrite(final Reader input, final String spacer) {
+    public synchronized void startWrite(final WriteFunctor input, final String spacer) {
         if (input == null) {
             throw new NullPointerException("input == null");
         }
@@ -124,7 +129,7 @@ final class InputThread extends Thread {
             throw new IllegalStateException("currentSpacer != null");
         }
         log.trace("Start the InputThread " + this);
-        currentInput = new InputWriteFunctor(input);
+        currentInput = input;
         currentSpacer = spacer;
         this.notifyAll();
     }

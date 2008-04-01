@@ -173,7 +173,7 @@ final class OctaveExec {
      * @param command
      * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
      */
-    Reader executeReader(final Reader command) {
+    Reader executeReader(final WriteFunctor command) {
         final OctaveExecuteReader outputReader;
         assert check();
         try {
@@ -193,11 +193,11 @@ final class OctaveExec {
     }
 
     /**
-     * @param command
+     * @param writeFunctor
      * @param output
      */
-    public void execute(final Reader command, final Writer output) {
-        final Reader outputReader = executeReader(command);
+    public void execute(final WriteFunctor writeFunctor, final Writer output) {
+        final Reader outputReader = executeReader(writeFunctor);
         try {
             IOUtils.copy(outputReader, output);
             outputReader.close();
@@ -208,6 +208,14 @@ final class OctaveExec {
             }
             throw e2;
         }
+    }
+
+    /**
+     * @param command
+     * @param output
+     */
+    public void execute(final Reader command, final Writer output) {
+        execute(new InputWriteFunctor(command), output);
     }
 
     /**

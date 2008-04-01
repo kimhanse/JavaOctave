@@ -19,41 +19,46 @@
 package dk.ange.octave;
 
 import java.io.IOException;
-import java.io.PipedWriter;
+import java.io.Writer;
 import java.util.Map;
 
+import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.type.OctaveType;
 
-class ToOctaveMultiWriterThread extends Thread {
+/**
+ * Write data from OctaveType in a Map
+ */
+public final class DataWriteFunctor implements WriteFunctor {
+
+    private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
+            .getLog(DataWriteFunctor.class);
 
     final Map<String, OctaveType> octaveTypes;
 
-    final PipedWriter pipedWriter;
-
     /**
      * @param octaveTypes
-     * @param pipedWriter
      */
-    public ToOctaveMultiWriterThread(final Map<String, OctaveType> octaveTypes, final PipedWriter pipedWriter) {
+    public DataWriteFunctor(final Map<String, OctaveType> octaveTypes) {
         this.octaveTypes = octaveTypes;
-        this.pipedWriter = pipedWriter;
     }
 
-    @Override
-    public void run() {
+    public void doWrite(final Writer writer) {
         try {
             // Enter octave in "read data from input mode"
-            pipedWriter.write("load(\"-text\", \"-\")\n");
+            writer.write("load(\"-text\", \"-\")\n");
             // Push the data into octave
             for (final Map.Entry<String, OctaveType> entry : octaveTypes.entrySet()) {
                 final String name = entry.getKey();
-                OctaveIO.write(pipedWriter, name, entry.getValue());
+                OctaveIO.write(writer, name, entry.getValue());
             }
             // Exit octave from read data mode
-            pipedWriter.write("# name: \n");
-            pipedWriter.close();
-        } catch (final IOException e1) {
-            e1.printStackTrace();
+            writer.write("# name: \n");
+            writer.flush();
+        } catch (final IOException e) {
+            final String message = "Unexpected IOException";
+            log.error(message, e);
+            throw new OctaveIOException(message, e);
         }
     }
+
 }
