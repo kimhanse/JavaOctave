@@ -58,7 +58,7 @@ public final class OctaveIO {
     /**
      * @param values
      */
-    public void set(final Map<String, OctaveType> values) {
+    void set(final Map<String, OctaveType> values) {
         final StringWriter outputWriter = new StringWriter();
         octaveExec.execute(new DataWriteFunctor(values), outputWriter);
         final String output = outputWriter.toString();
@@ -72,18 +72,18 @@ public final class OctaveIO {
         final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new InputWriteFunctor(
                 new StringReader("save -text - " + name))));
         try {
-            String line = octaveExec.processReader.readLine();
+            String line = resultReader.readLine();
             if (line == null || !line.startsWith("# Created by Octave")) {
                 throw new OctaveParseException("Not created by Octave?: '" + line + "'");
             }
-            line = octaveExec.processReader.readLine();
+            line = resultReader.readLine();
+            if (line == null) {
+                resultReader.close(); // Should .close() be done by caller?
+                throw new OctaveParseException("no such variable '" + name + "'");
+            }
             final String token = "# name: ";
             if (!line.startsWith(token)) {
-                if (OctaveExec.isSpacer(line)) {
-                    throw new OctaveParseException("no such variable '" + name + "'");
-                } else {
-                    throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-                }
+                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
             }
             final String readname = line.substring(token.length());
             if (!name.equals(readname)) {
@@ -106,7 +106,7 @@ public final class OctaveIO {
      * @return Returns the value of the variable from octave
      */
     @SuppressWarnings("unchecked")
-    public <T extends OctaveType> T get(final String name) {
+    <T extends OctaveType> T get(final String name) {
         final BufferedReader varReader = getVarReader(name);
         final OctaveType ot = read(varReader);
         try {

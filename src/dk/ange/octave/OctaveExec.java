@@ -54,7 +54,7 @@ final class OctaveExec {
 
     private final Writer processWriter;
 
-    final BufferedReader processReader;
+    private final BufferedReader processReader;
 
     private final Writer stdoutLog;
 
@@ -159,10 +159,6 @@ final class OctaveExec {
 
     private String generateSpacer() {
         return "-=+X+=- Octave.java spacer -=+X+=- " + random.nextLong() + " -=+X+=-";
-    }
-
-    static boolean isSpacer(final String string) {
-        return string.matches("-=\\+X\\+=- Octave\\.java spacer -=\\+X\\+=- .* -=\\+X\\+=-");
     }
 
     /*
