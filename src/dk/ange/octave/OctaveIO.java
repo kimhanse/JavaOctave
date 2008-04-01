@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dk.ange.octave.exception.OctaveClassCastException;
+import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.io.CellReader;
@@ -123,11 +124,30 @@ public final class OctaveIO {
     }
 
     /**
+     * Utility function.
+     * 
+     * @param reader
+     * @return next line from reader
+     * @throws OctaveException
+     */
+    public static String readerReadLine(final BufferedReader reader) {
+        try {
+            final String line = reader.readLine();
+            if (line == null) {
+                throw new OctaveIOException("Pipe to octave-process broken");
+            }
+            return line;
+        } catch (final IOException e) {
+            throw new OctaveIOException(e);
+        }
+    }
+
+    /**
      * @param reader
      * @return octavetype read from reader
      */
     public static OctaveType read(final BufferedReader reader) {
-        final String line = OctaveReadHelper.readerReadLine(reader);
+        final String line = OctaveIO.readerReadLine(reader);
         final String TYPE = "# type: ";
         if (!line.startsWith(TYPE)) {
             throw new OctaveParseException("Expected <" + TYPE + "> got <" + line + ">");

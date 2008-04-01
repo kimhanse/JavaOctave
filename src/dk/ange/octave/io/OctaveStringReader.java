@@ -20,7 +20,7 @@ package dk.ange.octave.io;
 
 import java.io.BufferedReader;
 
-import dk.ange.octave.OctaveReadHelper;
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.type.OctaveString;
 
@@ -35,15 +35,15 @@ public final class OctaveStringReader implements OctaveDataReader {
 
     public OctaveString read(final BufferedReader reader) {
         String line;
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         if (!line.equals("# elements: 1")) {
             throw new OctaveParseException("Only implementet for single-line strings '" + line + "'");
         }
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         if (!line.startsWith("# length: ")) {
             throw new OctaveParseException("Parse error in String, line='" + line + "'");
         }
-        final String string = OctaveReadHelper.readerReadLine(reader);
+        final String string = OctaveIO.readerReadLine(reader);
         return new OctaveString(string);
     }
 

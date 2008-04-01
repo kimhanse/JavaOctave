@@ -20,7 +20,7 @@ package dk.ange.octave.io;
 
 import java.io.BufferedReader;
 
-import dk.ange.octave.OctaveReadHelper;
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.type.OctaveNdMatrix;
 
@@ -36,7 +36,7 @@ public final class MatrixReader implements OctaveDataReader {
     public OctaveNdMatrix read(final BufferedReader reader) {
         String line;
         // 2d or 2d+?
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         if (line.startsWith("# rows: ")) {
             return read2dmatrix(reader, line);
         } else if (line.startsWith("# ndims: ")) {
@@ -54,7 +54,7 @@ public final class MatrixReader implements OctaveDataReader {
             throw new OctaveParseException("Expected <" + NDIMS + ">, but got <" + line + ">");
         }
         final int ndims = Integer.parseInt(line.substring(NDIMS.length()));
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         final String[] split = line.substring(1).split(" ");
         if (split.length != ndims) {
             throw new OctaveParseException("Expected " + ndims + " dimesion, but got " + (split.length)
@@ -66,8 +66,8 @@ public final class MatrixReader implements OctaveDataReader {
         }
         final double[] data = new double[product(size)];
         for (int idx = 0; idx < data.length; idx++) {
-            line = OctaveReadHelper.readerReadLine(reader);
-            data[idx] = OctaveReadHelper.parseDouble(line);
+            line = OctaveIO.readerReadLine(reader);
+            data[idx] = ScalarReader.parseDouble(line);
         }
         return new OctaveNdMatrix(data, size);
     }
@@ -81,7 +81,7 @@ public final class MatrixReader implements OctaveDataReader {
         }
         final int rows = Integer.valueOf(line.substring(8));
         // # columns: 3
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         if (!line.startsWith("# columns: ")) {
             throw new OctaveParseException("Expected <# columns: > got <" + line + ">");
         }
@@ -92,13 +92,13 @@ public final class MatrixReader implements OctaveDataReader {
         size[1] = columns;
         final double[] data = new double[rows * columns];
         for (int r = 1; r <= rows; ++r) {
-            line = OctaveReadHelper.readerReadLine(reader);
+            line = OctaveIO.readerReadLine(reader);
             final String[] split = line.split(" ");
             if (split.length != columns + 1) {
                 throw new OctaveParseException("Error in matrix-format: '" + line + "'");
             }
             for (int c = 1; c < split.length; c++) {
-                data[(r - 1) + (c - 1) * rows] = OctaveReadHelper.parseDouble(split[c]);
+                data[(r - 1) + (c - 1) * rows] = ScalarReader.parseDouble(split[c]);
             }
         }
         return new OctaveNdMatrix(data, size);

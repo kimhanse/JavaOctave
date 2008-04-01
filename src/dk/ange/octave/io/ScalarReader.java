@@ -20,7 +20,7 @@ package dk.ange.octave.io;
 
 import java.io.BufferedReader;
 
-import dk.ange.octave.OctaveReadHelper;
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.type.OctaveScalar;
 
 /**
@@ -34,9 +34,25 @@ public final class ScalarReader implements OctaveDataReader {
 
     public OctaveScalar read(final BufferedReader reader) {
         String line;
-        line = OctaveReadHelper.readerReadLine(reader);
-        final double value = OctaveReadHelper.parseDouble(line);
+        line = OctaveIO.readerReadLine(reader);
+        final double value = ScalarReader.parseDouble(line);
         return new OctaveScalar(value);
+    }
+
+    /**
+     * This is almost the same as Double.parseDouble(), but it handles a few more versions of infinity
+     * 
+     * @param string
+     * @return The parsed Double
+     */
+    public static final double parseDouble(final String string) {
+        if ("Inf".equals(string)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        if ("-Inf".equals(string)) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        return Double.parseDouble(string);
     }
 
 }

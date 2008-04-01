@@ -21,7 +21,6 @@ package dk.ange.octave.io;
 import java.io.BufferedReader;
 
 import dk.ange.octave.OctaveIO;
-import dk.ange.octave.OctaveReadHelper;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveType;
@@ -39,14 +38,14 @@ public final class CellReader implements OctaveDataReader {
         String line;
         String token;
 
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         token = "# rows: ";
         if (!line.startsWith(token)) {
             throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
         }
         final int nrows = Integer.parseInt(line.substring(token.length()));
 
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         token = "# columns: ";
         if (!line.startsWith(token)) {
             throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
@@ -57,7 +56,7 @@ public final class CellReader implements OctaveDataReader {
 
         for (int col = 1; col <= ncols; col++) {
             for (int row = 1; row <= nrows; row++) {
-                line = OctaveReadHelper.readerReadLine(reader);
+                line = OctaveIO.readerReadLine(reader);
                 token = "# name: <cell-element>";
                 if (!line.equals(token)) {
                     throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
@@ -65,7 +64,7 @@ public final class CellReader implements OctaveDataReader {
                 final OctaveType octaveType = OctaveIO.read(reader);
                 octaveCell.set(row, col, octaveType);
             }
-            line = OctaveReadHelper.readerReadLine(reader);
+            line = OctaveIO.readerReadLine(reader);
             token = "";
             if (!line.equals(token)) {
                 throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");

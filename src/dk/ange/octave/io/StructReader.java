@@ -22,7 +22,7 @@ import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import dk.ange.octave.OctaveReadHelper;
+import dk.ange.octave.OctaveIO;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveStruct;
@@ -43,7 +43,7 @@ public final class StructReader implements OctaveDataReader {
         String line;
 
         // # length: 4
-        line = OctaveReadHelper.readerReadLine(reader);
+        line = OctaveIO.readerReadLine(reader);
         final String LENGTH = "# length: ";
         if (!line.startsWith(LENGTH)) {
             throw new OctaveParseException("Expected <" + LENGTH + "> got <" + line + ">");
@@ -55,14 +55,14 @@ public final class StructReader implements OctaveDataReader {
         for (int i = 0; i < length; i++) {
             // # name: elemmatrix
             final String NAME = "# name: ";
-            line = OctaveReadHelper.readerReadLine(reader);
+            line = OctaveIO.readerReadLine(reader);
             if (!line.startsWith(NAME)) {
                 throw new OctaveParseException("Expected <" + NAME + "> got <" + line + ">");
             }
             final String subname = line.substring(NAME.length());
 
             final String CELL = "# type: cell";
-            line = OctaveReadHelper.readerReadLine(reader);
+            line = OctaveIO.readerReadLine(reader);
             if (!line.equals(CELL)) {
                 throw new OctaveParseException("Expected <" + CELL + "> got <" + line + ">");
             }
