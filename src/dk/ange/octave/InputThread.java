@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import dk.ange.octave.util.StringUtil;
-
 /**
  * Thread that writes to the octave process
  */
@@ -32,13 +30,11 @@ final class InputThread extends Thread {
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
             .getLog(InputThread.class);
 
-    private static final int BUFFERSIZE = 4 * 1024;
-
     private final OctaveExec octaveExec;
 
     private final Writer processWriter;
 
-    private Reader currentInput;
+    private WriteFunctor currentInput;
 
     private String currentSpacer;
 
@@ -100,20 +96,8 @@ final class InputThread extends Thread {
 
     private void doWrite() {
         log.debug("Enter doWrite()");
+        currentInput.doWrite(processWriter);
         try {
-            final char[] cbuf = new char[BUFFERSIZE];
-            while (true) {
-                final int c = currentInput.read(cbuf);
-                if (c < 0) {
-                    break;
-                }
-                if (log.isTraceEnabled()) {
-                    log.trace("octaveWriter.write(" + StringUtil.jQuote(cbuf, c) + ", 0, " + c + ")");
-                }
-                processWriter.write(cbuf, 0, c);
-                processWriter.flush();
-            }
-            currentInput.close();
             processWriter.write("\nprintf(\"%s\\n\", \"" + currentSpacer + "\");\n");
             processWriter.flush();
             octaveExec.setExecuteState(OctaveExec.ExecuteState.WRITER_OK);
@@ -140,7 +124,7 @@ final class InputThread extends Thread {
             throw new IllegalStateException("currentSpacer != null");
         }
         log.trace("Start the InputThread " + this);
-        currentInput = input;
+        currentInput = new InputWriteFunctor(input);
         currentSpacer = spacer;
         this.notifyAll();
     }
