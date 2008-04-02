@@ -137,14 +137,6 @@ public final class Octave {
     }
 
     /**
-     * @return Returns always true, return value is needed in order for this to be used in assert statements. If there
-     *         was an error OctaveException would be thrown.
-     */
-    public boolean check() {
-        return octaveExec.check();
-    }
-
-    /**
      * Kill the octave process without remorse
      */
     public void destroy() {

@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dk.ange.octave.exception.OctaveClassCastException;
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.io.CellReader;
@@ -68,34 +67,29 @@ public final class OctaveIO {
     }
 
     private BufferedReader getVarReader(final String name) {
-        assert octaveExec.check();
         final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new InputWriteFunctor(
                 new StringReader("save -text - " + name))));
-        try {
-            String line = resultReader.readLine();
-            if (line == null || !line.startsWith("# Created by Octave")) {
-                throw new OctaveParseException("Not created by Octave?: '" + line + "'");
-            }
-            line = resultReader.readLine();
-            if (line == null) {
+        String line = readerReadLine(resultReader);
+        if (line == null || !line.startsWith("# Created by Octave")) {
+            throw new OctaveParseException("Not created by Octave?: '" + line + "'");
+        }
+        line = readerReadLine(resultReader);
+        if (line == null) {
+            try {
                 resultReader.close(); // Should .close() be done by caller?
-                throw new OctaveParseException("no such variable '" + name + "'");
+            } catch (final IOException e) {
+                throw new OctaveIOException(e);
             }
-            final String token = "# name: ";
-            if (!line.startsWith(token)) {
-                throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-            }
-            final String readname = line.substring(token.length());
-            if (!name.equals(readname)) {
-                throw new OctaveParseException("Expected variable named \"" + name + "\" but got one named \""
-                        + readname + "\"");
-            }
-        } catch (final IOException e) {
-            final OctaveIOException octaveException = new OctaveIOException(e);
-            if (octaveExec.getExecuteState() == OctaveExec.ExecuteState.DESTROYED) {
-                octaveException.setDestroyed(true);
-            }
-            throw octaveException;
+            throw new OctaveParseException("no such variable '" + name + "'");
+        }
+        final String token = "# name: ";
+        if (!line.startsWith(token)) {
+            throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
+        }
+        final String readname = line.substring(token.length());
+        if (!name.equals(readname)) {
+            throw new OctaveParseException("Expected variable named \"" + name + "\" but got one named \"" + readname
+                    + "\"");
         }
         return resultReader;
     }
@@ -128,15 +122,10 @@ public final class OctaveIO {
      * 
      * @param reader
      * @return next line from reader
-     * @throws OctaveException
      */
     public static String readerReadLine(final BufferedReader reader) {
         try {
-            final String line = reader.readLine();
-            if (line == null) {
-                throw new OctaveIOException("Pipe to octave-process broken");
-            }
-            return line;
+            return reader.readLine();
         } catch (final IOException e) {
             throw new OctaveIOException(e);
         }

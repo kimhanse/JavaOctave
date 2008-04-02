@@ -169,8 +169,8 @@ final class OctaveExec {
      * @param command
      * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
      */
-    Reader executeReader(final WriteFunctor command) {
-        final OctaveExecuteReader outputReader;
+    public Reader executeReader(final WriteFunctor command) {
+        final Reader outputReader;
         assert check();
         try {
             final String spacer = generateSpacer();
@@ -259,23 +259,6 @@ final class OctaveExec {
     }
 
     /**
-     * @return Returns always true, return value is needed in order for this to be used in assert statements. If there
-     *         was an error OctaveException would be thrown. '
-     */
-    public boolean check() {
-        final ExecuteState executeState2 = getExecuteState();
-        if (executeState2 != ExecuteState.NONE) {
-            final OctaveStateException octaveException = new OctaveStateException("Failed check(), executeState="
-                    + executeState2);
-            if (executeState2 == ExecuteState.DESTROYED) {
-                octaveException.setDestroyed(true);
-            }
-            throw octaveException;
-        }
-        return true;
-    }
-
-    /**
      * Kill the octave process without remorse
      */
     public void destroy() {
@@ -287,6 +270,23 @@ final class OctaveExec {
             throw new OctaveIOException(e);
         }
         inputThread.close();
+    }
+
+    /**
+     * @return Returns always true, return value is needed in order for this to be used in assert statements. If there
+     *         was an error OctaveException would be thrown. '
+     */
+    private boolean check() {
+        final ExecuteState executeState2 = getExecuteState();
+        if (executeState2 != ExecuteState.NONE) {
+            final OctaveStateException octaveException = new OctaveStateException("Failed check(), executeState="
+                    + executeState2);
+            if (executeState2 == ExecuteState.DESTROYED) {
+                octaveException.setDestroyed(true);
+            }
+            throw octaveException;
+        }
+        return true;
     }
 
     @SuppressWarnings("all")
