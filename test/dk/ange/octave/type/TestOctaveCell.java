@@ -18,7 +18,7 @@ package dk.ange.octave.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
-import dk.ange.octave.OctaveIO;
+import dk.ange.octave.io.OctaveIO;
 
 /**
  * @author Kim Hansen

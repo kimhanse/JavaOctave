@@ -43,7 +43,7 @@ import dk.ange.octave.util.TeeWriter;
 /**
  * The object connecting to the octave process
  */
-final class OctaveExec {
+public final class OctaveExec {
 
     private static final Log log = LogFactory.getLog(OctaveExec.class);
 

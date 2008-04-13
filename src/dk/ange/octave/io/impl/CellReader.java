@@ -20,9 +20,9 @@ package dk.ange.octave.io.impl;
 
 import java.io.BufferedReader;
 
-import dk.ange.octave.OctaveIO;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.io.OctaveDataReader;
+import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveType;
 

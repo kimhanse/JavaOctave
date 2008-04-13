@@ -19,7 +19,7 @@ import java.util.TreeMap;
 
 import junit.framework.TestCase;
 import dk.ange.octave.Octave;
-import dk.ange.octave.OctaveIO;
+import dk.ange.octave.io.OctaveIO;
 
 /**
  * @author Esben Mose Hansen

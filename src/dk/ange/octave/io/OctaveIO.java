@@ -16,7 +16,7 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave;
+package dk.ange.octave.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,11 +26,11 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import dk.ange.octave.InputWriteFunctor;
+import dk.ange.octave.OctaveExec;
 import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.io.OctaveDataReader;
-import dk.ange.octave.io.OctaveDataWriter;
 import dk.ange.octave.io.impl.CellReader;
 import dk.ange.octave.io.impl.CellWriter;
 import dk.ange.octave.io.impl.MatrixReader;
@@ -50,14 +50,17 @@ public final class OctaveIO {
 
     private final OctaveExec octaveExec;
 
-    OctaveIO(final OctaveExec octaveExec) {
+    /**
+     * @param octaveExec
+     */
+    public OctaveIO(final OctaveExec octaveExec) {
         this.octaveExec = octaveExec;
     }
 
     /**
      * @param values
      */
-    void set(final Map<String, OctaveType> values) {
+    public void set(final Map<String, OctaveType> values) {
         final StringWriter outputWriter = new StringWriter();
         octaveExec.execute(new DataWriteFunctor(values), outputWriter);
         final String output = outputWriter.toString();
@@ -96,11 +99,14 @@ public final class OctaveIO {
 
     /**
      * @param <T>
+     *                Type of return value
      * @param name
      * @return Returns the value of the variable from octave
+     * @throws OctaveClassCastException
+     *                 if the value can not be cast to T
      */
     @SuppressWarnings("unchecked")
-    <T extends OctaveType> T get(final String name) {
+    public <T extends OctaveType> T get(final String name) {
         final BufferedReader varReader = getVarReader(name);
         final OctaveType ot = read(varReader);
         try {
@@ -110,6 +116,7 @@ public final class OctaveIO {
         }
         final T t;
         try {
+            // This is the "unchecked" cast
             t = (T) ot;
         } catch (final ClassCastException e) {
             throw new OctaveClassCastException(e);

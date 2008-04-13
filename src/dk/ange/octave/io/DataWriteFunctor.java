@@ -16,19 +16,20 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave;
+package dk.ange.octave.io;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
+import dk.ange.octave.WriteFunctor;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.type.OctaveType;
 
 /**
  * Write data from OctaveType in a Map
  */
-public final class DataWriteFunctor implements WriteFunctor {
+final class DataWriteFunctor implements WriteFunctor {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
             .getLog(DataWriteFunctor.class);
