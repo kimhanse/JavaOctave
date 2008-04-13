@@ -21,12 +21,14 @@ package dk.ange.octave;
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
 
 import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.type.OctaveType;
+import dk.ange.octave.util.TeeWriter;
 
 /**
  * Interface object
@@ -36,6 +38,8 @@ public final class Octave {
     private final OctaveExec octaveExec;
 
     private final OctaveIO octaveIO;
+
+    private final Writer stdoutLog;
 
     /**
      * Will start the octave process.
@@ -61,7 +65,12 @@ public final class Octave {
      */
     public Octave(final Writer stdinLog, final Writer stdoutLog, final Writer stderrLog, final File octaveProgram,
             final String[] environment, final File workingDir) {
-        octaveExec = new OctaveExec(stdinLog, stdoutLog, stderrLog, octaveProgram, environment, workingDir);
+        if (stdoutLog == null) {
+            this.stdoutLog = new TeeWriter();
+        } else {
+            this.stdoutLog = stdoutLog;
+        }
+        octaveExec = new OctaveExec(stdinLog, stderrLog, octaveProgram, environment, workingDir);
         octaveIO = new OctaveIO(octaveExec);
     }
 
@@ -91,16 +100,24 @@ public final class Octave {
 
     /**
      * @param command
+     * @param output
+     */
+    private void execute(final Reader command, final Writer output) {
+        octaveExec.execute(new InputWriteFunctor(command), output);
+    }
+
+    /**
+     * @param command
      */
     public void execute(final Reader command) {
-        octaveExec.execute(command);
+        execute(command, stdoutLog);
     }
 
     /**
      * @param command
      */
     public void execute(final String command) {
-        octaveExec.execute(command);
+        execute(new StringReader(command));
     }
 
     /**

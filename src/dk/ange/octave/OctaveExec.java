@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.util.Random;
 
@@ -56,8 +55,6 @@ public final class OctaveExec {
 
     private final BufferedReader processReader;
 
-    private final Writer stdoutLog;
-
     private final InputThread inputThread;
 
     /*
@@ -70,9 +67,6 @@ public final class OctaveExec {
      * 
      * @param stdinLog
      *                This writer will capture all that is written to the octave process via stdin, if null the data
-     *                will not be captured.
-     * @param stdoutLog
-     *                This writer will capture all that is written from the octave process on stdout, if null the data
      *                will not be captured.
      * @param stderrLog
      *                This writer will capture all that is written from the octave process on stderr, if null the data
@@ -87,7 +81,7 @@ public final class OctaveExec {
      *                This will be the working dir for the octave process, if null the process will inherit the working
      *                dir of the current process.
      */
-    public OctaveExec(final Writer stdinLog, final Writer stdoutLog, final Writer stderrLog, final File octaveProgram,
+    public OctaveExec(final Writer stdinLog, final Writer stderrLog, final File octaveProgram,
             final String[] environment, final File workingDir) {
         final String[] cmdArray;
         if (octaveProgram == null) {
@@ -111,11 +105,6 @@ public final class OctaveExec {
             errorStreamThread.start();
         }
         // Connect stdout
-        if (stdoutLog == null) {
-            this.stdoutLog = new TeeWriter();
-        } else {
-            this.stdoutLog = stdoutLog;
-        }
         processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         // Connect stdin
         if (stdinLog == null) {
@@ -126,34 +115,6 @@ public final class OctaveExec {
         }
         inputThread = InputThread.factory(this, processWriter);
     }
-
-    /**
-     * Will start the octave process in a standard environment.
-     * 
-     * @param stdinLog
-     *                This writer will capture all that is written to the octave process via stdin, if null the data
-     *                will not be captured.
-     * @param stdoutLog
-     *                This writer will capture all that is written from the octave process on stdout, if null the data
-     *                will not be captured.
-     * @param stderrLog
-     *                This writer will capture all that is written from the octave process on stderr, if null the data
-     *                will not be captured.
-     */
-    public OctaveExec(final Writer stdinLog, final Writer stdoutLog, final Writer stderrLog) {
-        this(stdinLog, stdoutLog, stderrLog, null, null, null);
-    }
-
-    /**
-     * Will start the octave process with its output connected to System.out and System.err.
-     */
-    public OctaveExec() {
-        this(null, new OutputStreamWriter(System.out), new OutputStreamWriter(System.err));
-    }
-
-    /*
-     * Spacer
-     */
 
     private final Random random = new Random();
 
@@ -204,28 +165,6 @@ public final class OctaveExec {
             }
             throw e2;
         }
-    }
-
-    /**
-     * @param command
-     * @param output
-     */
-    public void execute(final Reader command, final Writer output) {
-        execute(new InputWriteFunctor(command), output);
-    }
-
-    /**
-     * @param command
-     */
-    public void execute(final Reader command) {
-        execute(command, stdoutLog);
-    }
-
-    /**
-     * @param command
-     */
-    public void execute(final String command) {
-        execute(new StringReader(command));
     }
 
     /*
