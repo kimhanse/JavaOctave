@@ -16,11 +16,12 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave.io;
+package dk.ange.octave.io.impl;
 
 import java.io.IOException;
 import java.io.Writer;
 
+import dk.ange.octave.io.OctaveDataWriter;
 import dk.ange.octave.type.OctaveScalar;
 import dk.ange.octave.type.OctaveType;
 

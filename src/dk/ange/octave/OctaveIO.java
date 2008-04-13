@@ -29,18 +29,18 @@ import java.util.Map;
 import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.io.CellReader;
-import dk.ange.octave.io.CellWriter;
-import dk.ange.octave.io.MatrixReader;
-import dk.ange.octave.io.MatrixWriter;
 import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveDataWriter;
-import dk.ange.octave.io.OctaveStringReader;
-import dk.ange.octave.io.OctaveStringWriter;
-import dk.ange.octave.io.ScalarReader;
-import dk.ange.octave.io.ScalarWriter;
-import dk.ange.octave.io.StructReader;
-import dk.ange.octave.io.StructWriter;
+import dk.ange.octave.io.impl.CellReader;
+import dk.ange.octave.io.impl.CellWriter;
+import dk.ange.octave.io.impl.MatrixReader;
+import dk.ange.octave.io.impl.MatrixWriter;
+import dk.ange.octave.io.impl.OctaveStringReader;
+import dk.ange.octave.io.impl.OctaveStringWriter;
+import dk.ange.octave.io.impl.ScalarReader;
+import dk.ange.octave.io.impl.ScalarWriter;
+import dk.ange.octave.io.impl.StructReader;
+import dk.ange.octave.io.impl.StructWriter;
 import dk.ange.octave.type.OctaveType;
 
 /**

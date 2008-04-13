@@ -16,35 +16,35 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave.io;
+package dk.ange.octave.io.impl;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
 
 import dk.ange.octave.OctaveIO;
-import dk.ange.octave.type.OctaveCell;
+import dk.ange.octave.io.OctaveDataWriter;
+import dk.ange.octave.type.OctaveStruct;
 import dk.ange.octave.type.OctaveType;
 
 /**
- * The writer of OctaveCell
+ * The writer of OctaveStruct
  */
-public final class CellWriter implements OctaveDataWriter {
+public final class StructWriter implements OctaveDataWriter {
 
     public Class<? extends OctaveType> javaType() {
-        return OctaveCell.class;
+        return OctaveStruct.class;
     }
 
     public void write(final Writer writer, final OctaveType octaveType) throws IOException {
-        final OctaveCell octaveCell = (OctaveCell) octaveType;
-        final int rows = octaveCell.getRowDimension();
-        final int columns = octaveCell.getColumnDimension();
-        writer.write("# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
-        for (int c = 1; c <= columns; ++c) {
-            for (int r = 1; r <= rows; ++r) {
-                final OctaveType value = octaveCell.get(r, c);
-                OctaveIO.write(writer, "<cell-element>", value);
-            }
-            writer.write("\n");
+        final OctaveStruct octaveStruct = (OctaveStruct) octaveType;
+        final Map<String, OctaveType> data = octaveStruct.getData();
+        writer.write("# type: struct\n# length: " + data.size() + "\n");
+        for (final Map.Entry<String, OctaveType> entry : data.entrySet()) {
+            final String subname = entry.getKey();
+            final OctaveType value = entry.getValue();
+            writer.write("# name: " + subname + "\n# type: cell\n# rows: 1\n# columns: 1\n");
+            OctaveIO.write(writer, "<cell-element>", value);
         }
     }
 

@@ -16,7 +16,7 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave.io;
+package dk.ange.octave.io.impl;
 
 import java.io.BufferedReader;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import dk.ange.octave.OctaveIO;
 import dk.ange.octave.exception.OctaveParseException;
+import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveStruct;
 import dk.ange.octave.type.OctaveType;

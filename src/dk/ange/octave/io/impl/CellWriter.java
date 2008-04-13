@@ -16,33 +16,37 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave.io;
+package dk.ange.octave.io.impl;
 
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.type.OctaveString;
+import dk.ange.octave.OctaveIO;
+import dk.ange.octave.io.OctaveDataWriter;
+import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveType;
 
 /**
- * The writer of OctaveString
+ * The writer of OctaveCell
  */
-public final class OctaveStringWriter implements OctaveDataWriter {
+public final class CellWriter implements OctaveDataWriter {
 
     public Class<? extends OctaveType> javaType() {
-        return OctaveString.class;
+        return OctaveCell.class;
     }
 
     public void write(final Writer writer, final OctaveType octaveType) throws IOException {
-        final OctaveString octaveString = (OctaveString) octaveType;
-        final String string = octaveString.getString();
-        writer.write("" //
-                + "# type: string\n" //
-                + "# elements: 1\n" //
-                + "# length: " + string.length() + "\n" //
-                + string + "\n" //
-                + "\n" //
-                + "");
+        final OctaveCell octaveCell = (OctaveCell) octaveType;
+        final int rows = octaveCell.getRowDimension();
+        final int columns = octaveCell.getColumnDimension();
+        writer.write("# type: cell\n# rows: " + rows + "\n# columns: " + columns + "\n");
+        for (int c = 1; c <= columns; ++c) {
+            for (int r = 1; r <= rows; ++r) {
+                final OctaveType value = octaveCell.get(r, c);
+                OctaveIO.write(writer, "<cell-element>", value);
+            }
+            writer.write("\n");
+        }
     }
 
 }
