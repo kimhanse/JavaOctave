@@ -55,7 +55,7 @@ public final class OctaveExec {
 
     private final BufferedReader processReader;
 
-    private final InputThread inputThread;
+    private final OctaveInputThread inputThread;
 
     /*
      * TODO We should wait() on this thread before stderrLog is close()'d
@@ -113,7 +113,7 @@ public final class OctaveExec {
             processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
                     new OutputStreamWriter(process.getOutputStream()));
         }
-        inputThread = InputThread.factory(this, processWriter);
+        inputThread = OctaveInputThread.factory(this, processWriter);
     }
 
     private final Random random = new Random();

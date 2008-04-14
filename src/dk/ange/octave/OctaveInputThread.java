@@ -26,10 +26,10 @@ import dk.ange.octave.exception.OctaveIOException;
 /**
  * Thread that writes to the octave process
  */
-final class InputThread extends Thread {
+final class OctaveInputThread extends Thread {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
-            .getLog(InputThread.class);
+            .getLog(OctaveInputThread.class);
 
     private final OctaveExec octaveExec;
 
@@ -44,11 +44,11 @@ final class InputThread extends Thread {
     /**
      * @param octaveExec
      * @param processWriter
-     * @return the constructed and started InputThread
+     * @return the constructed and started OctaveInputThread
      */
-    public static InputThread factory(final OctaveExec octaveExec, final Writer processWriter) {
-        final InputThread inputThread = new InputThread(octaveExec, processWriter);
-        inputThread.setName(Thread.currentThread().getName() + "-InputThread");
+    public static OctaveInputThread factory(final OctaveExec octaveExec, final Writer processWriter) {
+        final OctaveInputThread inputThread = new OctaveInputThread(octaveExec, processWriter);
+        inputThread.setName(Thread.currentThread().getName() + "-OctaveInputThread");
         inputThread.start();
         return inputThread;
     }
@@ -56,7 +56,7 @@ final class InputThread extends Thread {
     /**
      * @param processWriter
      */
-    private InputThread(final OctaveExec octaveExec, final Writer processWriter) {
+    private OctaveInputThread(final OctaveExec octaveExec, final Writer processWriter) {
         this.octaveExec = octaveExec;
         this.processWriter = processWriter;
     }
@@ -105,7 +105,7 @@ final class InputThread extends Thread {
             // FIXME the output could finish here and change state to .NONE, this will cause an exception
             octaveExec.setExecuteState(OctaveExec.ExecuteState.WRITER_OK);
         } catch (final IOException e) {
-            final String message = "Unexpected IOException in InputThread";
+            final String message = "Unexpected IOException in OctaveInputThread";
             log.error(message, e);
             throw new OctaveIOException(message, e);
         }
@@ -128,7 +128,7 @@ final class InputThread extends Thread {
         if (currentSpacer != null) {
             throw new IllegalStateException("currentSpacer != null");
         }
-        log.trace("Start the InputThread " + this);
+        log.trace("Start the OctaveInputThread " + this);
         currentInput = input;
         currentSpacer = spacer;
         this.notifyAll();
