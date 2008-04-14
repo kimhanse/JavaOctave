@@ -42,6 +42,8 @@ final class OctaveInputThread extends Thread {
     private boolean close = false;
 
     /**
+     * A factory that returns a named and running thread.
+     * 
      * @param octaveExec
      * @param processWriter
      * @return the constructed and started OctaveInputThread
