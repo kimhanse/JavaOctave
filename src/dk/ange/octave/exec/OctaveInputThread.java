@@ -99,7 +99,7 @@ final class OctaveInputThread extends Thread {
 
     private void doWrite() {
         log.debug("Enter doWrite()");
-        currentInput.doWrite(processWriter);
+        currentInput.doWrites(processWriter);
         try {
             processWriter.write("\nprintf(\"%s\\n\", \"" + currentSpacer + "\");\n");
             processWriter.flush();

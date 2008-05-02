@@ -43,7 +43,7 @@ final class DataWriteFunctor implements WriteFunctor {
         this.octaveTypes = octaveTypes;
     }
 
-    public void doWrite(final Writer writer) {
+    public void doWrites(final Writer writer) {
         try {
             // Enter octave in "read data from input mode"
             writer.write("load(\"-text\", \"-\")\n");

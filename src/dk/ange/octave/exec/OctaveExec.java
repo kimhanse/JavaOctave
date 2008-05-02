@@ -116,16 +116,25 @@ public final class OctaveExec {
         inputThread = OctaveInputThread.factory(this, processWriter);
     }
 
+    /*
+     * New execute
+     */
+
     private final Random random = new Random();
 
     private String generateSpacer() {
         return "-=+X+=- Octave.java spacer -=+X+=- " + random.nextLong() + " -=+X+=-";
     }
 
-    /*
-     * New execute
+    /**
+     * @param input
+     * @param output
      */
+    public void eval(final WriteFunctor input, final ReadFunctor output) {
+        // TODO
+    }
 
+    
     /**
      * @param command
      * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
@@ -213,7 +222,7 @@ public final class OctaveExec {
 
     /**
      * @return Returns always true, return value is needed in order for this to be used in assert statements. If there
-     *         was an error OctaveException would be thrown. '
+     *         was an error OctaveException would be thrown.
      */
     private boolean check() {
         final ExecuteState executeState2 = getExecuteState();

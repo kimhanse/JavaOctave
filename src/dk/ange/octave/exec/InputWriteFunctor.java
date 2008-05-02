@@ -44,7 +44,7 @@ public final class InputWriteFunctor implements WriteFunctor {
         this.currentInput = currentInput;
     }
 
-    public void doWrite(final Writer writer) {
+    public void doWrites(final Writer writer) {
         log.debug("Enter doWrite()");
         try {
             final char[] cbuf = new char[BUFFERSIZE];

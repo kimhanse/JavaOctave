@@ -18,19 +18,19 @@
  */
 package dk.ange.octave.exec;
 
-import java.io.Writer;
+import java.io.Reader;
 
 /**
- * Function object that will execute writes to a Writer
+ * Function object that will execute reads on a Reader
  */
-public interface WriteFunctor {
+public interface ReadFunctor {
 
     /**
-     * Write the input to an eval() 
+     * Read the output from an eval()
      * 
-     * @param writer
-     *                Writer to write to
+     * @param reader
+     *                Reader to read from
      */
-    public void doWrites(Writer writer);
+    public void doReads(Reader reader);
 
 }
