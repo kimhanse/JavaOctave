@@ -16,7 +16,7 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave;
+package dk.ange.octave.exec;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -26,6 +26,8 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
 
+import dk.ange.octave.exec.InputWriteFunctor;
+import dk.ange.octave.exec.OctaveExec;
 import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.type.OctaveType;
 import dk.ange.octave.util.TeeWriter;

@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import dk.ange.octave.WriteFunctor;
 import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.exec.WriteFunctor;
 import dk.ange.octave.type.OctaveType;
 
 /**

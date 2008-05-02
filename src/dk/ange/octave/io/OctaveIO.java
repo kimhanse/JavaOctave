@@ -26,11 +26,11 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import dk.ange.octave.InputWriteFunctor;
-import dk.ange.octave.OctaveExec;
 import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
+import dk.ange.octave.exec.InputWriteFunctor;
+import dk.ange.octave.exec.OctaveExec;
 import dk.ange.octave.io.impl.CellReader;
 import dk.ange.octave.io.impl.CellWriter;
 import dk.ange.octave.io.impl.MatrixReader;
