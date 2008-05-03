@@ -69,8 +69,10 @@ final class OctaveWriterThread extends Thread {
             while (true) {
                 inLoop();
             }
+        } catch (final OctaveException e) {
+            log.debug("Caught OctaveException breaks loop", e);
         } catch (final Throwable t) {
-            log.error("Caught throwable breaks loop", t);
+            log.error("Caught Throwable breaks loop", t);
         }
     }
 
@@ -83,7 +85,7 @@ final class OctaveWriterThread extends Thread {
             setSpacer(null);
             setWriteFunctor(null);
         } catch (final OctaveException e) {
-            log.error("Caught exception", e);
+            log.debug("Caught exception", e);
             exception = e;
             throw e;
         } finally {
@@ -101,7 +103,7 @@ final class OctaveWriterThread extends Thread {
             log.debug("Has written all");
         } catch (final IOException e) {
             final String message = "Unexpected IOException";
-            log.error(message, e);
+            log.debug(message, e);
             throw new OctaveIOException(message, e);
         }
     }
