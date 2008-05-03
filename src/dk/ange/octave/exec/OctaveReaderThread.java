@@ -21,29 +21,21 @@ package dk.ange.octave.exec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 
 /**
- * 
+ * Thread that reads from the octave process
  */
-final class OctaveReaderThread extends Thread {
+final class OctaveReaderThread extends OctaveBaseThread {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
             .getLog(OctaveReaderThread.class);
 
-    private final CyclicBarrier barrier;
-
     private final BufferedReader processReader;
 
-    private String spacer;
-
     private ReadFunctor readFunctor;
-
-    private OctaveException exception;
 
     /**
      * A factory that returns a named and running thread.
@@ -60,45 +52,12 @@ final class OctaveReaderThread extends Thread {
     }
 
     private OctaveReaderThread(final CyclicBarrier barrier, final BufferedReader processReader) {
-        this.barrier = barrier;
+        super(barrier);
         this.processReader = processReader;
     }
 
     @Override
-    public void run() {
-        try {
-            while (true) {
-                try {
-                    inLoop();
-                } catch (final OctaveException e) {
-                    log.debug("Caught OctaveException, stays in loop", e);
-                }
-            }
-        } catch (final Throwable t) {
-            log.error("Caught Throwable, breaks loop", t);
-        }
-    }
-
-    private void inLoop() throws InterruptedException, BrokenBarrierException {
-        // Wait
-        barrier.await();
-        try {
-            doStuff();
-            // Reset vars
-            setSpacer(null);
-            setReadFunctor(null);
-            exception = null;
-        } catch (final OctaveException e) {
-            log.debug("Caught exception", e);
-            exception = e;
-            throw e;
-        } finally {
-            // Release main thread
-            barrier.await();
-        }
-    }
-
-    private void doStuff() {
+    protected void doStuff() {
         try {
             // Read from process
             final Reader reader = new OctaveExecuteReader(processReader, spacer);
@@ -111,18 +70,9 @@ final class OctaveReaderThread extends Thread {
         }
     }
 
-    void setSpacer(final String spacer) {
-        assert this.spacer == null ^ spacer == null;
-        this.spacer = spacer;
-    }
-
     void setReadFunctor(final ReadFunctor readFunctor) {
         assert this.readFunctor == null ^ readFunctor == null;
         this.readFunctor = readFunctor;
-    }
-
-    OctaveException getException() {
-        return exception;
     }
 
 }

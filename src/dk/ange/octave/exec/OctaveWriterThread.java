@@ -20,29 +20,21 @@ package dk.ange.octave.exec;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 
 /**
- * 
+ * Thread that writes to the octave process
  */
-final class OctaveWriterThread extends Thread {
+final class OctaveWriterThread extends OctaveBaseThread {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
             .getLog(OctaveWriterThread.class);
 
-    private final CyclicBarrier barrier;
-
     private final Writer processWriter;
 
-    private String spacer;
-
     private WriteFunctor writeFunctor;
-
-    private OctaveException exception;
 
     /**
      * A factory that returns a named and running thread.
@@ -59,42 +51,12 @@ final class OctaveWriterThread extends Thread {
     }
 
     private OctaveWriterThread(final CyclicBarrier barrier, final Writer processWriter) {
-        this.barrier = barrier;
+        super(barrier);
         this.processWriter = processWriter;
     }
 
     @Override
-    public void run() {
-        try {
-            while (true) {
-                inLoop();
-            }
-        } catch (final OctaveException e) {
-            log.debug("Caught OctaveException breaks loop", e);
-        } catch (final Throwable t) {
-            log.error("Caught Throwable breaks loop", t);
-        }
-    }
-
-    private void inLoop() throws InterruptedException, BrokenBarrierException {
-        // Wait
-        barrier.await();
-        try {
-            doStuff();
-            // Reset vars
-            setSpacer(null);
-            setWriteFunctor(null);
-        } catch (final OctaveException e) {
-            log.debug("Caught exception", e);
-            exception = e;
-            throw e;
-        } finally {
-            // Release main thread
-            barrier.await();
-        }
-    }
-
-    private void doStuff() {
+    protected void doStuff() {
         // Write to process
         try {
             writeFunctor.doWrites(processWriter);
@@ -108,18 +70,9 @@ final class OctaveWriterThread extends Thread {
         }
     }
 
-    void setSpacer(final String spacer) {
-        assert this.spacer == null ^ spacer == null;
-        this.spacer = spacer;
-    }
-
     void setWriteFunctor(final WriteFunctor writeFunctor) {
         assert this.writeFunctor == null ^ writeFunctor == null;
         this.writeFunctor = writeFunctor;
-    }
-
-    OctaveException getException() {
-        return exception;
     }
 
 }
