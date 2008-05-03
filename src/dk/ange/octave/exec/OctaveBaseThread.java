@@ -22,6 +22,8 @@ abstract class OctaveBaseThread extends Thread {
 
     private OctaveException exception;
 
+    private boolean exit = false;
+
     /**
      * Constructor that sets final variables
      * 
@@ -34,7 +36,7 @@ abstract class OctaveBaseThread extends Thread {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!exit) {
                 try {
                     inLoop();
                 } catch (final OctaveException e) {
@@ -44,12 +46,16 @@ abstract class OctaveBaseThread extends Thread {
         } catch (final Throwable t) {
             log.error("Caught Throwable breaks loop", t);
         }
+        log.info("Exit from loop");
     }
 
     private void inLoop() throws InterruptedException, BrokenBarrierException {
         // Wait
         barrier.await();
         exception = null;
+        if (exit) {
+            return;
+        }
         try {
             doStuff();
         } catch (final OctaveException e) {
@@ -88,4 +94,12 @@ abstract class OctaveBaseThread extends Thread {
         return exception;
     }
 
+    /**
+     * Exit the thread
+     */
+    public void exit() {
+        exit  = true;
+        // TODO ping this thread 
+    }
+    
 }

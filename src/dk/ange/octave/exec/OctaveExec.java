@@ -182,6 +182,11 @@ public final class OctaveExec {
         eval(writeFunctor, new WriterReadFunctor(output));
     }
 
+    private void threadsExit() {
+        writerThread.exit();
+        readerThread.exit();
+    }
+
     /*
      * Old execute
      */
@@ -208,7 +213,7 @@ public final class OctaveExec {
             System.err.println("getExecuteState() : " + getExecuteState());
             throw octaveException;
         }
-        // inputThread.close();
+        threadsExit();
         setExecuteState(ExecuteState.CLOSED);
     }
 
@@ -223,7 +228,7 @@ public final class OctaveExec {
         } catch (final IOException e) {
             throw new OctaveIOException(e);
         }
-        // inputThread.close();
+        threadsExit();
     }
 
     /**
