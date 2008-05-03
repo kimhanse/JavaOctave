@@ -18,6 +18,7 @@
  */
 package dk.ange.octave.exec;
 
+import java.io.IOException;
 import java.io.Reader;
 
 /**
@@ -30,7 +31,9 @@ public interface ReadFunctor {
      * 
      * @param reader
      *                Reader to read from
+     * @throws IOException
+     *                 on IO error from reader
      */
-    public void doReads(Reader reader);
+    public void doReads(Reader reader) throws IOException;
 
 }

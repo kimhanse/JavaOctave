@@ -19,21 +19,27 @@
 package dk.ange.octave.exec;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 
+import dk.ange.octave.util.IOUtils;
+
 /**
- * Function object that will execute writes to a Writer
+ * Reads all from the reader and writes it to the writer
  */
-public interface WriteFunctor {
+public final class WriterReadFunctor implements ReadFunctor {
+
+    private final Writer writer;
 
     /**
-     * Write the input to an eval()
-     * 
      * @param writer
-     *                Writer to write to
-     * @throws IOException
-     *                 on IO error from writer
      */
-    public void doWrites(Writer writer) throws IOException;
+    public WriterReadFunctor(final Writer writer) {
+        this.writer = writer;
+    }
+
+    public void doReads(final Reader reader) throws IOException {
+        IOUtils.copy(reader, writer);
+    }
 
 }

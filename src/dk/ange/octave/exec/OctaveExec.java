@@ -26,6 +26,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Random;
+import java.util.concurrent.CyclicBarrier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveStateException;
-import dk.ange.octave.util.IOUtils;
 import dk.ange.octave.util.InputStreamSinkThread;
 import dk.ange.octave.util.NoCloseWriter;
 import dk.ange.octave.util.ReaderWriterPipeThread;
@@ -55,7 +55,14 @@ public final class OctaveExec {
 
     private final BufferedReader processReader;
 
+    @Deprecated
     private final OctaveInputThread inputThread;
+
+    private final CyclicBarrier barrier = new CyclicBarrier(3);
+
+    private final OctaveWriterThread writerThread;
+
+    private final OctaveReaderThread readerThread;
 
     /*
      * TODO We should wait() on this thread before stderrLog is close()'d
@@ -114,6 +121,8 @@ public final class OctaveExec {
                     new OutputStreamWriter(process.getOutputStream()));
         }
         inputThread = OctaveInputThread.factory(this, processWriter);
+        writerThread = OctaveWriterThread.factory(barrier, processWriter);
+        readerThread = OctaveReaderThread.factory(barrier, processReader);
     }
 
     /*
@@ -131,10 +140,57 @@ public final class OctaveExec {
      * @param output
      */
     public void eval(final WriteFunctor input, final ReadFunctor output) {
-        // TODO
+        final String spacer = generateSpacer();
+        writerThread.setWriteFunctor(input);
+        writerThread.setSpacer(spacer);
+        readerThread.setReadFunctor(output);
+        readerThread.setSpacer(spacer);
+        await(); // Start stuff in the other threads
+        await(); // Wait for the other threads to finish
+        final OctaveException e1 = writerThread.getException();
+        if (e1 != null) {
+            throw rethrowException(e1);
+        }
+        final OctaveException e2 = readerThread.getException();
+        if (e2 != null) {
+            throw rethrowException(e2);
+        }
     }
 
-    
+    private OctaveException rethrowException(final OctaveException inException) {
+        final OctaveException outException;
+        try {
+            outException = inException.getClass().getConstructor(String.class, Throwable.class).newInstance(
+                    inException.getMessage(), inException);
+        } catch (final Exception e) {
+            throw new IllegalStateException("Should not happen", e);
+        }
+        if (getExecuteState() == ExecuteState.DESTROYED) {
+            outException.setDestroyed(true);
+        }
+        return outException;
+    }
+
+    private void await() {
+        try {
+            barrier.await();
+        } catch (final Exception e) {
+            throw new IllegalStateException("Problems with barrier");
+        }
+    }
+
+    /**
+     * @param writeFunctor
+     * @param output
+     */
+    public void execute(final WriteFunctor writeFunctor, final Writer output) {
+        eval(writeFunctor, new WriterReadFunctor(output));
+    }
+
+    /*
+     * Old execute
+     */
+
     /**
      * @param command
      * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
@@ -157,28 +213,6 @@ public final class OctaveExec {
         }
         return outputReader;
     }
-
-    /**
-     * @param writeFunctor
-     * @param output
-     */
-    public void execute(final WriteFunctor writeFunctor, final Writer output) {
-        final Reader outputReader = executeReader(writeFunctor);
-        try {
-            IOUtils.copy(outputReader, output);
-            outputReader.close();
-        } catch (final IOException e) {
-            final OctaveException e2 = new OctaveIOException("IOUtils.copy(outputReader, output);", e);
-            if (getExecuteState() == ExecuteState.DESTROYED) {
-                e2.setDestroyed(true);
-            }
-            throw e2;
-        }
-    }
-
-    /*
-     * Old execute
-     */
 
     /**
      * Close the octave process in an orderly fasion.
