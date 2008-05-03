@@ -68,12 +68,14 @@ final class OctaveReaderThread extends Thread {
     public void run() {
         try {
             while (true) {
-                inLoop();
+                try {
+                    inLoop();
+                } catch (final OctaveException e) {
+                    log.debug("Caught OctaveException, stays in loop", e);
+                }
             }
-        } catch (final OctaveException e) {
-            log.debug("Caught OctaveException breaks loop", e);
         } catch (final Throwable t) {
-            log.error("Caught Throwable breaks loop", t);
+            log.error("Caught Throwable, breaks loop", t);
         }
     }
 
@@ -85,6 +87,7 @@ final class OctaveReaderThread extends Thread {
             // Reset vars
             setSpacer(null);
             setReadFunctor(null);
+            exception = null;
         } catch (final OctaveException e) {
             log.debug("Caught exception", e);
             exception = e;
@@ -98,9 +101,9 @@ final class OctaveReaderThread extends Thread {
     private void doStuff() {
         try {
             // Read from process
-            final Reader reader = new OctaveExecuteReader(processReader, spacer, null);
+            final Reader reader = new OctaveExecuteReader(processReader, spacer);
             readFunctor.doReads(reader);
-            // TODO check that reader is closed now
+            reader.close();
         } catch (final IOException e) {
             final String message = "Unexpected IOException";
             log.debug(message, e);

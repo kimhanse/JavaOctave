@@ -50,6 +50,7 @@ public final class IOUtils {
             total += charsRead;
             writer.write(buffer, 0, charsRead);
         }
+        writer.flush();
         return total;
     }
 

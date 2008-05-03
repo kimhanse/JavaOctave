@@ -39,8 +39,6 @@ final class OctaveExecuteReader extends Reader {
 
     private final String spacer;
 
-    private final OctaveExec octaveExec;
-
     private StringBuffer buffer;
 
     private boolean eof = false;
@@ -51,12 +49,10 @@ final class OctaveExecuteReader extends Reader {
      * 
      * @param octaveReader
      * @param spacer
-     * @param octaveExec
      */
-    public OctaveExecuteReader(final BufferedReader octaveReader, final String spacer, final OctaveExec octaveExec) {
+    public OctaveExecuteReader(final BufferedReader octaveReader, final String spacer) {
         this.octaveReader = octaveReader;
         this.spacer = spacer;
-        this.octaveExec = octaveExec;
     }
 
     @Override
@@ -98,8 +94,6 @@ final class OctaveExecuteReader extends Reader {
             throw new IOException("octaveReader is ready()");
         }
         log.debug("Reader closed()");
-        // TODO Move all explicit state handling to OctaveExec
-        octaveExec.setExecuteState(OctaveExec.ExecuteState.NONE);
     }
 
 }

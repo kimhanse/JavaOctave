@@ -26,8 +26,8 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
 
-import dk.ange.octave.exec.InputWriteFunctor;
 import dk.ange.octave.exec.OctaveExec;
+import dk.ange.octave.exec.ReaderWriteFunctor;
 import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.type.OctaveType;
 import dk.ange.octave.util.TeeWriter;
@@ -105,7 +105,7 @@ public final class Octave {
      * @param output
      */
     private void execute(final Reader command, final Writer output) {
-        octaveExec.execute(new InputWriteFunctor(command), output);
+        octaveExec.execute(new ReaderWriteFunctor(command), output);
     }
 
     /**

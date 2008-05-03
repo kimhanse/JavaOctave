@@ -29,8 +29,9 @@ import java.util.Map;
 import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exception.OctaveIOException;
 import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.exec.InputWriteFunctor;
 import dk.ange.octave.exec.OctaveExec;
+import dk.ange.octave.exec.ReaderWriteFunctor;
+import dk.ange.octave.exec.WriteFunctor;
 import dk.ange.octave.io.impl.CellReader;
 import dk.ange.octave.io.impl.CellWriter;
 import dk.ange.octave.io.impl.MatrixReader;
@@ -69,34 +70,6 @@ public final class OctaveIO {
         }
     }
 
-    private BufferedReader getVarReader(final String name) {
-        final BufferedReader resultReader = new BufferedReader(octaveExec.executeReader(new InputWriteFunctor(
-                new StringReader("save -text - " + name))));
-        String line = readerReadLine(resultReader);
-        if (line == null || !line.startsWith("# Created by Octave")) {
-            throw new OctaveParseException("Not created by Octave?: '" + line + "'");
-        }
-        line = readerReadLine(resultReader);
-        if (line == null) {
-            try {
-                resultReader.close(); // Should .close() be done by caller?
-            } catch (final IOException e) {
-                throw new OctaveIOException(e);
-            }
-            throw new OctaveParseException("no such variable '" + name + "'");
-        }
-        final String token = "# name: ";
-        if (!line.startsWith(token)) {
-            throw new OctaveParseException("Expected <" + token + ">, but got <" + line + ">");
-        }
-        final String readname = line.substring(token.length());
-        if (!name.equals(readname)) {
-            throw new OctaveParseException("Expected variable named \"" + name + "\" but got one named \"" + readname
-                    + "\"");
-        }
-        return resultReader;
-    }
-
     /**
      * @param <T>
      *                Type of return value
@@ -107,13 +80,10 @@ public final class OctaveIO {
      */
     @SuppressWarnings("unchecked")
     public <T extends OctaveType> T get(final String name) {
-        final BufferedReader varReader = getVarReader(name);
-        final OctaveType ot = read(varReader);
-        try {
-            varReader.close();
-        } catch (final IOException e) {
-            throw new OctaveIOException("varReader.close()", e);
-        }
+        final WriteFunctor writeFunctor = new ReaderWriteFunctor(new StringReader("save -text - " + name));
+        final DataReadFunctor readFunctor = new DataReadFunctor(name);
+        octaveExec.eval(writeFunctor, readFunctor);
+        final OctaveType ot = readFunctor.getData();
         final T t;
         try {
             // This is the "unchecked" cast

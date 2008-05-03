@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
 import java.util.Random;
 import java.util.concurrent.CyclicBarrier;
@@ -54,9 +53,6 @@ public final class OctaveExec {
     private final Writer processWriter;
 
     private final BufferedReader processReader;
-
-    @Deprecated
-    private final OctaveInputThread inputThread;
 
     private final CyclicBarrier barrier = new CyclicBarrier(3);
 
@@ -120,7 +116,6 @@ public final class OctaveExec {
             processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
                     new OutputStreamWriter(process.getOutputStream()));
         }
-        inputThread = OctaveInputThread.factory(this, processWriter);
         writerThread = OctaveWriterThread.factory(barrier, processWriter);
         readerThread = OctaveReaderThread.factory(barrier, processReader);
     }
@@ -192,29 +187,6 @@ public final class OctaveExec {
      */
 
     /**
-     * @param command
-     * @return Returns a Reader that will return the result from the statements that octave gets from the inputReader
-     */
-    public Reader executeReader(final WriteFunctor command) {
-        final Reader outputReader;
-        assert check();
-        try {
-            final String spacer = generateSpacer();
-            // Read
-            outputReader = new OctaveExecuteReader(processReader, spacer, this);
-            setExecuteState(ExecuteState.BOTH_RUNNING);
-            // Start write
-            inputThread.startWrite(command, spacer);
-        } catch (final OctaveException e) {
-            if (getExecuteState() == ExecuteState.DESTROYED) {
-                e.setDestroyed(true);
-            }
-            throw e;
-        }
-        return outputReader;
-    }
-
-    /**
      * Close the octave process in an orderly fasion.
      */
     public void close() {
@@ -236,7 +208,7 @@ public final class OctaveExec {
             System.err.println("getExecuteState() : " + getExecuteState());
             throw octaveException;
         }
-        inputThread.close();
+        // inputThread.close();
         setExecuteState(ExecuteState.CLOSED);
     }
 
@@ -251,7 +223,7 @@ public final class OctaveExec {
         } catch (final IOException e) {
             throw new OctaveIOException(e);
         }
-        inputThread.close();
+        // inputThread.close();
     }
 
     /**
