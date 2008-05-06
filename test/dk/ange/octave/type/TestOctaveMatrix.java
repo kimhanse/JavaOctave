@@ -170,6 +170,7 @@ public class TestOctaveMatrix extends TestCase {
                 " 3.0 4.0\n" + //
                 "\n" //
         , OctaveIO.toText(m, "m"));
+        octave.close();
     }
 
     /**
@@ -191,7 +192,7 @@ public class TestOctaveMatrix extends TestCase {
         assertEquals(6.0, slicerow.get(1, 3));
         assertEquals(3.0, slicecol.get(1, 1));
         assertEquals(4.0, slicecol.get(2, 1));
-
+        octave.close();
     }
 
     /**
