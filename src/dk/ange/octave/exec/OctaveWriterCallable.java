@@ -20,43 +20,36 @@ package dk.ange.octave.exec;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Callable;
 
 import dk.ange.octave.exception.OctaveIOException;
 
 /**
- * Thread that writes to the octave process
+ * Callable that writes to the octave process
  */
-final class OctaveWriterThread extends OctaveBaseThread {
+final class OctaveWriterCallable implements Callable<Integer> {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
-            .getLog(OctaveWriterThread.class);
+            .getLog(OctaveWriterCallable.class);
 
     private final Writer processWriter;
 
-    private WriteFunctor writeFunctor;
+    private final WriteFunctor writeFunctor;
+
+    private final String spacer;
 
     /**
-     * A factory that returns a named and running thread.
-     * 
-     * @param barrier
      * @param processWriter
-     * @return the constructed and started Thread
+     * @param writeFunctor
+     * @param spacer
      */
-    static OctaveWriterThread factory(final CyclicBarrier barrier, final Writer processWriter) {
-        final OctaveWriterThread writerThread = new OctaveWriterThread(barrier, processWriter);
-        writerThread.setName(Thread.currentThread().getName() + "-OctaveWriterThread");
-        writerThread.start();
-        return writerThread;
-    }
-
-    private OctaveWriterThread(final CyclicBarrier barrier, final Writer processWriter) {
-        super(barrier);
+    public OctaveWriterCallable(final Writer processWriter, final WriteFunctor writeFunctor, final String spacer) {
         this.processWriter = processWriter;
+        this.writeFunctor = writeFunctor;
+        this.spacer = spacer;
     }
 
-    @Override
-    protected void doStuff() {
+    public Integer call() throws Exception {
         // Write to process
         try {
             writeFunctor.doWrites(processWriter);
@@ -68,11 +61,7 @@ final class OctaveWriterThread extends OctaveBaseThread {
             log.debug(message, e);
             throw new OctaveIOException(message, e);
         }
-    }
-
-    void setWriteFunctor(final WriteFunctor writeFunctor) {
-        assert this.writeFunctor == null ^ writeFunctor == null;
-        this.writeFunctor = writeFunctor;
+        return null;
     }
 
 }

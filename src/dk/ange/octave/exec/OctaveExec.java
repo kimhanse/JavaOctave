@@ -25,7 +25,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Random;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,11 +57,7 @@ public final class OctaveExec {
 
     private final BufferedReader processReader;
 
-    private final CyclicBarrier barrier = new CyclicBarrier(3);
-
-    private final OctaveWriterThread writerThread;
-
-    private final OctaveReaderThread readerThread;
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     /*
      * TODO We should wait() on this thread before stderrLog is close()'d
@@ -116,8 +115,6 @@ public final class OctaveExec {
             processWriter = new TeeWriter(new NoCloseWriter(stdinLog),
                     new OutputStreamWriter(process.getOutputStream()));
         }
-        writerThread = OctaveWriterThread.factory(barrier, processWriter);
-        readerThread = OctaveReaderThread.factory(barrier, processReader);
     }
 
     /*
@@ -136,23 +133,27 @@ public final class OctaveExec {
      */
     public void eval(final WriteFunctor input, final ReadFunctor output) {
         final String spacer = generateSpacer();
-        writerThread.setWriteFunctor(input);
-        writerThread.setSpacer(spacer);
-        readerThread.setReadFunctor(output);
-        readerThread.setSpacer(spacer);
-        await(); // Start stuff in the other threads
-        await(); // Wait for the other threads to finish
-        final OctaveException e1 = writerThread.getException();
-        if (e1 != null) {
-            throw rethrowException(e1);
-        }
-        final OctaveException e2 = readerThread.getException();
-        if (e2 != null) {
-            throw rethrowException(e2);
+        final Future<Integer> writerFuture = executor.submit(new OctaveWriterCallable(processWriter, input, spacer));
+        final Future<Integer> readerFuture = executor.submit(new OctaveReaderCallable(processReader, output, spacer));
+        try {
+            writerFuture.get();
+            readerFuture.get();
+        } catch (final InterruptedException e) {
+            // FIXME
+            log.error("Not implemented", e);
+            throw new RuntimeException("Not implemented", e);
+        } catch (final ExecutionException e) {
+            if (e.getCause() instanceof OctaveException) {
+                final OctaveException oe = (OctaveException) e.getCause();
+                throw reInstantiateException(oe);
+            }
+            // FIXME
+            log.error("Not implemented", e);
+            throw new RuntimeException("Not implemented", e);
         }
     }
 
-    private OctaveException rethrowException(final OctaveException inException) {
+    private OctaveException reInstantiateException(final OctaveException inException) {
         final OctaveException outException;
         try {
             outException = inException.getClass().getConstructor(String.class, Throwable.class).newInstance(
@@ -166,25 +167,12 @@ public final class OctaveExec {
         return outException;
     }
 
-    private void await() {
-        try {
-            barrier.await();
-        } catch (final Exception e) {
-            throw new IllegalStateException("Problems with barrier");
-        }
-    }
-
     /**
      * @param writeFunctor
      * @param output
      */
     public void execute(final WriteFunctor writeFunctor, final Writer output) {
         eval(writeFunctor, new WriterReadFunctor(output));
-    }
-
-    private void threadsExit() {
-        writerThread.exit();
-        readerThread.exit();
     }
 
     /*
@@ -213,7 +201,7 @@ public final class OctaveExec {
             System.err.println("getExecuteState() : " + getExecuteState());
             throw octaveException;
         }
-        threadsExit();
+        executor.shutdown();
         setExecuteState(ExecuteState.CLOSED);
     }
 
@@ -228,7 +216,7 @@ public final class OctaveExec {
         } catch (final IOException e) {
             throw new OctaveIOException(e);
         }
-        threadsExit();
+        executor.shutdownNow();
     }
 
     /**

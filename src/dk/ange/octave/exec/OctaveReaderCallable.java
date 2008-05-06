@@ -21,43 +21,36 @@ package dk.ange.octave.exec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Callable;
 
 import dk.ange.octave.exception.OctaveIOException;
 
 /**
- * Thread that reads from the octave process
+ * Callable that reads from the octave process
  */
-final class OctaveReaderThread extends OctaveBaseThread {
+final class OctaveReaderCallable implements Callable<Integer> {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
-            .getLog(OctaveReaderThread.class);
+            .getLog(OctaveReaderCallable.class);
 
     private final BufferedReader processReader;
 
-    private ReadFunctor readFunctor;
+    private final ReadFunctor readFunctor;
+
+    private final String spacer;
 
     /**
-     * A factory that returns a named and running thread.
-     * 
-     * @param barrier
      * @param processReader
-     * @return the constructed and started Thread
+     * @param readFunctor
+     * @param spacer
      */
-    static OctaveReaderThread factory(final CyclicBarrier barrier, final BufferedReader processReader) {
-        final OctaveReaderThread readThread = new OctaveReaderThread(barrier, processReader);
-        readThread.setName(Thread.currentThread().getName() + "-OctaveReaderThread");
-        readThread.start();
-        return readThread;
-    }
-
-    private OctaveReaderThread(final CyclicBarrier barrier, final BufferedReader processReader) {
-        super(barrier);
+    public OctaveReaderCallable(final BufferedReader processReader, final ReadFunctor readFunctor, final String spacer) {
         this.processReader = processReader;
+        this.readFunctor = readFunctor;
+        this.spacer = spacer;
     }
 
-    @Override
-    protected void doStuff() {
+    public Integer call() throws Exception {
         try {
             // Read from process
             final Reader reader = new OctaveExecuteReader(processReader, spacer);
@@ -68,11 +61,7 @@ final class OctaveReaderThread extends OctaveBaseThread {
             log.debug(message, e);
             throw new OctaveIOException(message, e);
         }
-    }
-
-    void setReadFunctor(final ReadFunctor readFunctor) {
-        assert this.readFunctor == null ^ readFunctor == null;
-        this.readFunctor = readFunctor;
+        return null;
     }
 
 }
