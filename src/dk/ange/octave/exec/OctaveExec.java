@@ -30,12 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.exception.OctaveStateException;
 import dk.ange.octave.util.InputStreamSinkThread;
 import dk.ange.octave.util.NoCloseWriter;
 import dk.ange.octave.util.ReaderWriterPipeThread;
@@ -46,7 +42,8 @@ import dk.ange.octave.util.TeeWriter;
  */
 public final class OctaveExec {
 
-    private static final Log log = LogFactory.getLog(OctaveExec.class);
+    private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
+            .getLog(OctaveExec.class);
 
     private static final String[] CMD_ARRAY = { "octave", "--no-history", "--no-init-file", "--no-line-editing",
             "--no-site-file", "--silent" };
@@ -63,6 +60,8 @@ public final class OctaveExec {
      * TODO We should wait() on this thread before stderrLog is close()'d
      */
     private final Thread errorStreamThread;
+
+    private boolean destroyed = false;
 
     /**
      * Will start the octave process.
@@ -135,22 +134,37 @@ public final class OctaveExec {
         final String spacer = generateSpacer();
         final Future<Integer> writerFuture = executor.submit(new OctaveWriterCallable(processWriter, input, spacer));
         final Future<Integer> readerFuture = executor.submit(new OctaveReaderCallable(processReader, output, spacer));
+        final RuntimeException writerException = getFromFuture(writerFuture);
+        final RuntimeException readerException = getFromFuture(readerFuture);
+        if (writerException != null) {
+            throw writerException;
+        }
+        if (readerException != null) {
+            throw readerException;
+        }
+    }
+
+    private RuntimeException getFromFuture(final Future<Integer> future) {
         try {
-            writerFuture.get();
-            readerFuture.get();
+            future.get();
         } catch (final InterruptedException e) {
-            // FIXME
-            log.error("Not implemented", e);
-            throw new RuntimeException("Not implemented", e);
+            final String message = "Should not happen";
+            log.error(message, e);
+            return new RuntimeException(message, e);
         } catch (final ExecutionException e) {
             if (e.getCause() instanceof OctaveException) {
                 final OctaveException oe = (OctaveException) e.getCause();
-                throw reInstantiateException(oe);
+                return reInstantiateException(oe);
             }
-            // FIXME
-            log.error("Not implemented", e);
-            throw new RuntimeException("Not implemented", e);
+            final String message = "Should not happen";
+            log.error(message, e);
+            return new RuntimeException(message, e);
+        } catch (final RuntimeException e) {
+            final String message = "Should not happen";
+            log.error(message, e);
+            return new RuntimeException(message, e);
         }
+        return null;
     }
 
     private OctaveException reInstantiateException(final OctaveException inException) {
@@ -161,7 +175,7 @@ public final class OctaveExec {
         } catch (final Exception e) {
             throw new IllegalStateException("Should not happen", e);
         }
-        if (getExecuteState() == ExecuteState.DESTROYED) {
+        if (isDestroyed()) {
             outException.setDestroyed(true);
         }
         return outException;
@@ -175,17 +189,34 @@ public final class OctaveExec {
         eval(writeFunctor, new WriterReadFunctor(output));
     }
 
-    /*
-     * Old execute
+    private synchronized void setDestroyed(final boolean destroyed) {
+        this.destroyed = destroyed;
+    }
+
+    private synchronized boolean isDestroyed() {
+        return destroyed;
+    }
+
+    /**
+     * Kill the octave process without remorse
      */
+    public void destroy() {
+        setDestroyed(true);
+        executor.shutdownNow();
+        process.destroy();
+        try {
+            processWriter.close();
+        } catch (final IOException e) {
+            throw new OctaveIOException(e);
+        }
+    }
 
     /**
      * Close the octave process in an orderly fasion.
      */
     public void close() {
-        assert check();
-        setExecuteState(ExecuteState.CLOSING);
         try {
+            // TODO rewrite this to use eval() and some specialiced Functors
             processWriter.write("exit\n");
             processWriter.close();
             final String read = processReader.readLine();
@@ -195,82 +226,13 @@ public final class OctaveExec {
             processReader.close();
         } catch (final IOException e) {
             final OctaveIOException octaveException = new OctaveIOException("reader error", e);
-            if (getExecuteState() == ExecuteState.DESTROYED) {
-                octaveException.setDestroyed(true);
-            }
-            System.err.println("getExecuteState() : " + getExecuteState());
-            throw octaveException;
-        }
-        executor.shutdown();
-        setExecuteState(ExecuteState.CLOSED);
-    }
-
-    /**
-     * Kill the octave process without remorse
-     */
-    public void destroy() {
-        setExecuteState(ExecuteState.DESTROYED);
-        process.destroy();
-        try {
-            processWriter.close();
-        } catch (final IOException e) {
-            throw new OctaveIOException(e);
-        }
-        executor.shutdownNow();
-    }
-
-    /**
-     * @return Returns always true, return value is needed in order for this to be used in assert statements. If there
-     *         was an error OctaveException would be thrown.
-     */
-    private boolean check() {
-        final ExecuteState executeState2 = getExecuteState();
-        if (executeState2 != ExecuteState.NONE) {
-            final OctaveStateException octaveException = new OctaveStateException("Failed check(), executeState="
-                    + executeState2);
-            if (executeState2 == ExecuteState.DESTROYED) {
+            if (isDestroyed()) {
                 octaveException.setDestroyed(true);
             }
             throw octaveException;
+        } finally {
+            executor.shutdown();
         }
-        return true;
-    }
-
-    @SuppressWarnings("all")
-    static enum ExecuteState {
-        NONE, BOTH_RUNNING, WRITER_OK, CLOSING, CLOSED, DESTROYED
-    }
-
-    private ExecuteState executeState = ExecuteState.NONE;
-
-    ExecuteState getExecuteState() {
-        return executeState;
-    }
-
-    synchronized void setExecuteState(final ExecuteState executeState) {
-        // Throw exception with isDestroyed if state changes from DESTROYED
-        if (this.executeState == ExecuteState.DESTROYED) {
-            final OctaveStateException octaveException = new OctaveStateException("setExecuteState Error: "
-                    + this.executeState + " -> " + executeState);
-            octaveException.setDestroyed(true);
-            throw octaveException;
-        }
-        // Accepted transitions:
-        // - NONE -> BOTH_RUNNING
-        // - BOTH_RUNNING -> WRITER_OK
-        // - WRITER_OK -> NONE
-        // - NONE -> CLOSING
-        // - CLOSING -> CLOSED
-        // - * -> DESTROYED
-        if (!(this.executeState == ExecuteState.NONE && executeState == ExecuteState.BOTH_RUNNING
-                || this.executeState == ExecuteState.BOTH_RUNNING && executeState == ExecuteState.WRITER_OK
-                || this.executeState == ExecuteState.WRITER_OK && executeState == ExecuteState.NONE
-                || this.executeState == ExecuteState.NONE && executeState == ExecuteState.CLOSING
-                || this.executeState == ExecuteState.CLOSING && executeState == ExecuteState.CLOSED || executeState == ExecuteState.DESTROYED)) {
-            throw new OctaveStateException("setExecuteState Error: " + this.executeState + " -> " + executeState);
-        }
-        log.debug("State changed from " + this.executeState + " to " + executeState);
-        this.executeState = executeState;
     }
 
 }
