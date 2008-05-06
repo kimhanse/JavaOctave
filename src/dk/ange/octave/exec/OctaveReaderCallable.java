@@ -28,7 +28,7 @@ import dk.ange.octave.exception.OctaveIOException;
 /**
  * Callable that reads from the octave process
  */
-final class OctaveReaderCallable implements Callable<Integer> {
+final class OctaveReaderCallable implements Callable<Void> {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
             .getLog(OctaveReaderCallable.class);
@@ -50,7 +50,7 @@ final class OctaveReaderCallable implements Callable<Integer> {
         this.spacer = spacer;
     }
 
-    public Integer call() throws Exception {
+    public Void call() throws Exception {
         try {
             // Read from process
             final Reader reader = new OctaveExecuteReader(processReader, spacer);

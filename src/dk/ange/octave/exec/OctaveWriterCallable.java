@@ -27,7 +27,7 @@ import dk.ange.octave.exception.OctaveIOException;
 /**
  * Callable that writes to the octave process
  */
-final class OctaveWriterCallable implements Callable<Integer> {
+final class OctaveWriterCallable implements Callable<Void> {
 
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
             .getLog(OctaveWriterCallable.class);
@@ -49,7 +49,7 @@ final class OctaveWriterCallable implements Callable<Integer> {
         this.spacer = spacer;
     }
 
-    public Integer call() throws Exception {
+    public Void call() throws Exception {
         // Write to process
         try {
             writeFunctor.doWrites(processWriter);

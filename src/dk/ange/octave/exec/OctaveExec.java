@@ -132,8 +132,8 @@ public final class OctaveExec {
      */
     public void eval(final WriteFunctor input, final ReadFunctor output) {
         final String spacer = generateSpacer();
-        final Future<Integer> writerFuture = executor.submit(new OctaveWriterCallable(processWriter, input, spacer));
-        final Future<Integer> readerFuture = executor.submit(new OctaveReaderCallable(processReader, output, spacer));
+        final Future<Void> writerFuture = executor.submit(new OctaveWriterCallable(processWriter, input, spacer));
+        final Future<Void> readerFuture = executor.submit(new OctaveReaderCallable(processReader, output, spacer));
         final RuntimeException writerException = getFromFuture(writerFuture);
         final RuntimeException readerException = getFromFuture(readerFuture);
         if (writerException != null) {
@@ -144,9 +144,9 @@ public final class OctaveExec {
         }
     }
 
-    private RuntimeException getFromFuture(final Future<Integer> future) {
+    private RuntimeException getFromFuture(final Future<Void> writerFuture) {
         try {
-            future.get();
+            writerFuture.get();
         } catch (final InterruptedException e) {
             final String message = "Should not happen";
             log.error(message, e);
