@@ -20,6 +20,11 @@ package dk.ange.octave.io.spi;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.imageio.spi.ServiceRegistry;
 
 import dk.ange.octave.type.OctaveType;
 
@@ -27,6 +32,28 @@ import dk.ange.octave.type.OctaveType;
  * Interface for the IO handler that can read and write OctaveTypes
  */
 public abstract class OctaveDataWriter {
+
+    private static Map<Class<? extends OctaveType>, OctaveDataWriter> writers;
+
+    /**
+     * @param clazz
+     * @return The OctaveDataWriter or null if it does not exist
+     */
+    public static OctaveDataWriter getOctaveDataWriter(final Class<? extends OctaveType> clazz) {
+        initIfNecessary();
+        return writers.get(clazz);
+    }
+
+    private static synchronized void initIfNecessary() {
+        if (writers == null) {
+            writers = new HashMap<Class<? extends OctaveType>, OctaveDataWriter>();
+            final Iterator<OctaveDataWriter> sp = ServiceRegistry.lookupProviders(OctaveDataWriter.class);
+            while (sp.hasNext()) {
+                final OctaveDataWriter odw = sp.next();
+                writers.put(odw.javaType(), odw);
+            }
+        }
+    }
 
     /**
      * Could be OctaveScalar or OctaveMatrix

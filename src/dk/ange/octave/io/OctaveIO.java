@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.Map;
 
 import dk.ange.octave.exception.OctaveClassCastException;
@@ -32,11 +31,6 @@ import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.exec.OctaveExec;
 import dk.ange.octave.exec.ReaderWriteFunctor;
 import dk.ange.octave.exec.WriteFunctor;
-import dk.ange.octave.io.impl.CellWriter;
-import dk.ange.octave.io.impl.MatrixWriter;
-import dk.ange.octave.io.impl.OctaveStringWriter;
-import dk.ange.octave.io.impl.ScalarWriter;
-import dk.ange.octave.io.impl.StructWriter;
 import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.io.spi.OctaveDataWriter;
 import dk.ange.octave.type.OctaveType;
@@ -123,28 +117,13 @@ public final class OctaveIO {
         return dataReader.read(reader);
     }
 
-    private static final Map<Class<? extends OctaveType>, OctaveDataWriter> writers;
-
-    private static void registerWriter(final OctaveDataWriter octaveDataWriter) {
-        writers.put(octaveDataWriter.javaType(), octaveDataWriter);
-    }
-
-    static {
-        writers = new HashMap<Class<? extends OctaveType>, OctaveDataWriter>();
-        registerWriter(new CellWriter());
-        registerWriter(new MatrixWriter());
-        registerWriter(new ScalarWriter());
-        registerWriter(new OctaveStringWriter());
-        registerWriter(new StructWriter());
-    }
-
     /**
      * @param writer
      * @param octaveType
      * @throws IOException
      */
     public static void write(final Writer writer, final OctaveType octaveType) throws IOException {
-        final OctaveDataWriter dataWriter = writers.get(octaveType.getClass());
+        final OctaveDataWriter dataWriter = OctaveDataWriter.getOctaveDataWriter(octaveType.getClass());
         if (dataWriter == null) {
             throw new OctaveParseException("Unknown type, " + octaveType.getClass());
         }
