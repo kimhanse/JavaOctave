@@ -21,20 +21,22 @@ package dk.ange.octave.io.impl;
 import java.io.BufferedReader;
 
 import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveIO;
+import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveType;
 
 /**
  * The reader of cell
  */
-public final class CellReader implements OctaveDataReader {
+public final class CellReader extends OctaveDataReader {
 
+    @Override
     public String octaveType() {
         return "cell";
     }
 
+    @Override
     public OctaveCell read(final BufferedReader reader) {
         String line;
         String token;

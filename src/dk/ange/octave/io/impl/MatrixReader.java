@@ -21,19 +21,21 @@ package dk.ange.octave.io.impl;
 import java.io.BufferedReader;
 
 import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveIO;
+import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveNdMatrix;
 
 /**
  * The reader of matrix
  */
-public final class MatrixReader implements OctaveDataReader {
+public final class MatrixReader extends OctaveDataReader {
 
+    @Override
     public String octaveType() {
         return "matrix";
     }
 
+    @Override
     public OctaveNdMatrix read(final BufferedReader reader) {
         String line;
         // 2d or 2d+?

@@ -21,19 +21,21 @@ package dk.ange.octave.io.impl;
 import java.io.BufferedReader;
 
 import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveIO;
+import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveString;
 
 /**
  * The reader of string
  */
-public final class OctaveStringReader implements OctaveDataReader {
+public final class OctaveStringReader extends OctaveDataReader {
 
+    @Override
     public String octaveType() {
         return "string";
     }
 
+    @Override
     public OctaveString read(final BufferedReader reader) {
         String line;
         line = OctaveIO.readerReadLine(reader);

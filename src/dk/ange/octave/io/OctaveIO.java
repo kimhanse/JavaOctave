@@ -32,16 +32,12 @@ import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.exec.OctaveExec;
 import dk.ange.octave.exec.ReaderWriteFunctor;
 import dk.ange.octave.exec.WriteFunctor;
-import dk.ange.octave.io.impl.CellReader;
 import dk.ange.octave.io.impl.CellWriter;
-import dk.ange.octave.io.impl.MatrixReader;
 import dk.ange.octave.io.impl.MatrixWriter;
-import dk.ange.octave.io.impl.OctaveStringReader;
 import dk.ange.octave.io.impl.OctaveStringWriter;
-import dk.ange.octave.io.impl.ScalarReader;
 import dk.ange.octave.io.impl.ScalarWriter;
-import dk.ange.octave.io.impl.StructReader;
 import dk.ange.octave.io.impl.StructWriter;
+import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveType;
 
 /**
@@ -119,26 +115,11 @@ public final class OctaveIO {
             throw new OctaveParseException("Expected <" + TYPE + "> got <" + line + ">");
         }
         final String type = line.substring(TYPE.length());
-        final OctaveDataReader dataReader = readers.get(type);
+        final OctaveDataReader dataReader = OctaveDataReader.getOctaveDataReader(type);
         if (dataReader == null) {
             throw new OctaveParseException("Unknown octave type, type='" + type + "'");
         }
         return dataReader.read(reader);
-    }
-
-    private static final Map<String, OctaveDataReader> readers;
-
-    private static void registerReader(final OctaveDataReader octaveDataReader) {
-        readers.put(octaveDataReader.octaveType(), octaveDataReader);
-    }
-
-    static {
-        readers = new HashMap<String, OctaveDataReader>();
-        registerReader(new CellReader());
-        registerReader(new MatrixReader());
-        registerReader(new ScalarReader());
-        registerReader(new OctaveStringReader());
-        registerReader(new StructReader());
     }
 
     private static final Map<Class<? extends OctaveType>, OctaveDataWriter> writers;

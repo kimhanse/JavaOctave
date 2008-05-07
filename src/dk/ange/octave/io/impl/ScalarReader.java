@@ -20,19 +20,21 @@ package dk.ange.octave.io.impl;
 
 import java.io.BufferedReader;
 
-import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveIO;
+import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveScalar;
 
 /**
  * The reader of scalar
  */
-public final class ScalarReader implements OctaveDataReader {
+public final class ScalarReader extends OctaveDataReader {
 
+    @Override
     public String octaveType() {
         return "scalar";
     }
 
+    @Override
     public OctaveScalar read(final BufferedReader reader) {
         String line;
         line = OctaveIO.readerReadLine(reader);

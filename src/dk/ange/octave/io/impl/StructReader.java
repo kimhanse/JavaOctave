@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dk.ange.octave.exception.OctaveParseException;
-import dk.ange.octave.io.OctaveDataReader;
 import dk.ange.octave.io.OctaveIO;
+import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveStruct;
 import dk.ange.octave.type.OctaveType;
@@ -32,14 +32,16 @@ import dk.ange.octave.type.OctaveType;
 /**
  * The reader of struct
  */
-public final class StructReader implements OctaveDataReader {
+public final class StructReader extends OctaveDataReader {
 
     private final static CellReader cellReader = new CellReader();
 
+    @Override
     public String octaveType() {
         return "struct";
     }
 
+    @Override
     public OctaveStruct read(final BufferedReader reader) {
         String line;
 
