@@ -21,19 +21,21 @@ package dk.ange.octave.io.impl;
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.io.OctaveDataWriter;
+import dk.ange.octave.io.spi.OctaveDataWriter;
 import dk.ange.octave.type.OctaveNdMatrix;
 import dk.ange.octave.type.OctaveType;
 
 /**
  * The writer of OctaveNdMatrix
  */
-public final class MatrixWriter implements OctaveDataWriter {
+public final class MatrixWriter extends OctaveDataWriter {
 
+    @Override
     public Class<? extends OctaveType> javaType() {
         return OctaveNdMatrix.class;
     }
 
+    @Override
     public void write(final Writer writer, final OctaveType octaveType) throws IOException {
         final OctaveNdMatrix octaveNdMatrix = (OctaveNdMatrix) octaveType;
         writer.write("# type: matrix\n");

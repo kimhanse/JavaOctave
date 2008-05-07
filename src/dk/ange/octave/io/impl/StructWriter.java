@@ -22,20 +22,22 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import dk.ange.octave.io.OctaveDataWriter;
 import dk.ange.octave.io.OctaveIO;
+import dk.ange.octave.io.spi.OctaveDataWriter;
 import dk.ange.octave.type.OctaveStruct;
 import dk.ange.octave.type.OctaveType;
 
 /**
  * The writer of OctaveStruct
  */
-public final class StructWriter implements OctaveDataWriter {
+public final class StructWriter extends OctaveDataWriter {
 
+    @Override
     public Class<? extends OctaveType> javaType() {
         return OctaveStruct.class;
     }
 
+    @Override
     public void write(final Writer writer, final OctaveType octaveType) throws IOException {
         final OctaveStruct octaveStruct = (OctaveStruct) octaveType;
         final Map<String, OctaveType> data = octaveStruct.getData();

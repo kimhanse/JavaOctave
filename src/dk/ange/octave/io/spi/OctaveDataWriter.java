@@ -16,7 +16,7 @@
 /**
  * @author Kim Hansen
  */
-package dk.ange.octave.io;
+package dk.ange.octave.io.spi;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -26,14 +26,14 @@ import dk.ange.octave.type.OctaveType;
 /**
  * Interface for the IO handler that can read and write OctaveTypes
  */
-public interface OctaveDataWriter {
+public abstract class OctaveDataWriter {
 
     /**
      * Could be OctaveScalar or OctaveMatrix
      * 
      * @return the OctaveType that this IO handler loads and saves
      */
-    public Class<? extends OctaveType> javaType();
+    public abstract Class<? extends OctaveType> javaType();
 
     /**
      * @param writer
@@ -42,6 +42,6 @@ public interface OctaveDataWriter {
      *                the value to write
      * @throws IOException
      */
-    public void write(Writer writer, OctaveType octaveType) throws IOException;
+    public abstract void write(Writer writer, OctaveType octaveType) throws IOException;
 
 }

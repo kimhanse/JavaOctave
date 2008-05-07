@@ -21,19 +21,21 @@ package dk.ange.octave.io.impl;
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.io.OctaveDataWriter;
+import dk.ange.octave.io.spi.OctaveDataWriter;
 import dk.ange.octave.type.OctaveString;
 import dk.ange.octave.type.OctaveType;
 
 /**
  * The writer of OctaveString
  */
-public final class OctaveStringWriter implements OctaveDataWriter {
+public final class OctaveStringWriter extends OctaveDataWriter {
 
+    @Override
     public Class<? extends OctaveType> javaType() {
         return OctaveString.class;
     }
 
+    @Override
     public void write(final Writer writer, final OctaveType octaveType) throws IOException {
         final OctaveString octaveString = (OctaveString) octaveType;
         final String string = octaveString.getString();

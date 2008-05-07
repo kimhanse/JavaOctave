@@ -38,6 +38,7 @@ import dk.ange.octave.io.impl.OctaveStringWriter;
 import dk.ange.octave.io.impl.ScalarWriter;
 import dk.ange.octave.io.impl.StructWriter;
 import dk.ange.octave.io.spi.OctaveDataReader;
+import dk.ange.octave.io.spi.OctaveDataWriter;
 import dk.ange.octave.type.OctaveType;
 
 /**

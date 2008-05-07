@@ -21,20 +21,22 @@ package dk.ange.octave.io.impl;
 import java.io.IOException;
 import java.io.Writer;
 
-import dk.ange.octave.io.OctaveDataWriter;
 import dk.ange.octave.io.OctaveIO;
+import dk.ange.octave.io.spi.OctaveDataWriter;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveType;
 
 /**
  * The writer of OctaveCell
  */
-public final class CellWriter implements OctaveDataWriter {
+public final class CellWriter extends OctaveDataWriter {
 
+    @Override
     public Class<? extends OctaveType> javaType() {
         return OctaveCell.class;
     }
 
+    @Override
     public void write(final Writer writer, final OctaveType octaveType) throws IOException {
         final OctaveCell octaveCell = (OctaveCell) octaveType;
         final int rows = octaveCell.getRowDimension();
