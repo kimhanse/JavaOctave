@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.imageio.spi.ServiceRegistry;
 
-import sun.misc.ServiceConfigurationError;
 import dk.ange.octave.type.OctaveType;
 
 /**
@@ -44,7 +43,7 @@ public abstract class OctaveDataReader {
         return readers.get(type);
     }
 
-    private static synchronized void initIfNecessary() throws ServiceConfigurationError {
+    private static synchronized void initIfNecessary() {
         if (readers == null) {
             readers = new HashMap<String, OctaveDataReader>();
             final Iterator<OctaveDataReader> sp = ServiceRegistry.lookupProviders(OctaveDataReader.class);
