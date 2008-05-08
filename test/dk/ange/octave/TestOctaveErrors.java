@@ -43,7 +43,7 @@ public class TestOctaveErrors extends TestCase {
         stdout.close();
         stderr.close();
         assertEquals("", stdout.toString());
-        // FIXME This test fail some times
+        // 2008-05-08: Does this still fail? I haven't seen this error for a long time, Kim
         assertEquals("This sometime fails, there is some timing problem that prevents all of stderr to get "
                 + "from octave to Java when there is an error in octave.", "error: testError()\n", stderr.toString());
     }
