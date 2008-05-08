@@ -50,14 +50,19 @@ final class OctaveReaderCallable implements Callable<Void> {
         this.spacer = spacer;
     }
 
-    public Void call() throws Exception {
+    public Void call() {
+        final Reader reader = new OctaveExecuteReader(processReader, spacer);
         try {
-            // Read from process
-            final Reader reader = new OctaveExecuteReader(processReader, spacer);
             readFunctor.doReads(reader);
+        } catch (final IOException e) {
+            final String message = "IOException from ReadFunctor";
+            log.debug(message, e);
+            throw new OctaveIOException(message, e);
+        }
+        try {
             reader.close();
         } catch (final IOException e) {
-            final String message = "Unexpected IOException";
+            final String message = "IOException during close";
             log.debug(message, e);
             throw new OctaveIOException(message, e);
         }

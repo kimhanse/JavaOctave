@@ -32,6 +32,10 @@ final class OctaveWriterCallable implements Callable<Void> {
     private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
             .getLog(OctaveWriterCallable.class);
 
+    static final String EXCEPTION_MESSAGE_FUNCTOR = "IOException from WriteFunctor";
+
+    static final String EXCEPTION_MESSAGE_SPACER = "IOException when writing spacer";
+
     private final Writer processWriter;
 
     private final WriteFunctor writeFunctor;
@@ -49,18 +53,22 @@ final class OctaveWriterCallable implements Callable<Void> {
         this.spacer = spacer;
     }
 
-    public Void call() throws Exception {
+    public Void call() {
         // Write to process
         try {
             writeFunctor.doWrites(processWriter);
+        } catch (final IOException e) {
+            log.debug(EXCEPTION_MESSAGE_FUNCTOR, e);
+            throw new OctaveIOException(EXCEPTION_MESSAGE_FUNCTOR, e);
+        }
+        try {
             processWriter.write("\nprintf(\"%s\\n\", \"" + spacer + "\");\n");
             processWriter.flush();
-            log.debug("Has written all");
         } catch (final IOException e) {
-            final String message = "Unexpected IOException";
-            log.debug(message, e);
-            throw new OctaveIOException(message, e);
+            log.debug(EXCEPTION_MESSAGE_SPACER, e);
+            throw new OctaveIOException(EXCEPTION_MESSAGE_SPACER, e);
         }
+        log.debug("Has written all");
         return null;
     }
 
