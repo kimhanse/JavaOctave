@@ -216,7 +216,7 @@ public final class OctaveExec {
      */
     public void close() {
         try {
-            // TODO rewrite this to use eval() and some specialiced Functors
+            // it is not worth it to rewrite this to use eval() and some specialiced Functors
             processWriter.write("exit\n");
             processWriter.close();
             final String read = processReader.readLine();
