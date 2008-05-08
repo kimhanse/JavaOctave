@@ -21,9 +21,6 @@ package dk.ange.octave.util;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Executes the actions on a single writer to multiple writers.
  * 
@@ -34,7 +31,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class TeeWriter extends Writer {
 
-    private static final Log log = LogFactory.getLog(TeeWriter.class);
+    private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
+            .getLog(TeeWriter.class);
 
     private final Writer[] writers;
 
@@ -62,7 +60,7 @@ public class TeeWriter extends Writer {
             try {
                 writer.write(cbuf, off, len);
             } catch (final IOException e) {
-                log.info("Exception during write()", e);
+                log.debug("Exception during write()", e);
                 ioe = e;
             }
         }
@@ -78,7 +76,7 @@ public class TeeWriter extends Writer {
             try {
                 writer.flush();
             } catch (final IOException e) {
-                log.info("Exception during flush()", e);
+                log.debug("Exception during flush()", e);
                 ioe = e;
             }
         }
@@ -94,7 +92,7 @@ public class TeeWriter extends Writer {
             try {
                 writer.close();
             } catch (final IOException e) {
-                log.info("Exception during close()", e);
+                log.debug("Exception during close()", e);
                 ioe = e;
             }
         }
