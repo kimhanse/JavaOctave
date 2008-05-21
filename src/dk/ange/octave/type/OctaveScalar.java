@@ -80,12 +80,8 @@ public class OctaveScalar extends OctaveNdMatrix {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        long temp;
-        temp = Double.doubleToLongBits(value);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        return result;
+        final long temp = Double.doubleToLongBits(value);
+        return (int) (temp ^ (temp >>> 32));
     }
 
     @Override
@@ -104,6 +100,14 @@ public class OctaveScalar extends OctaveNdMatrix {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        final String retValue = "OctaveScalar(" //
+                + this.value //
+                + ")";
+        return retValue;
     }
 
 }

@@ -18,11 +18,9 @@
  */
 package dk.ange.octave.io;
 
-import java.io.OutputStreamWriter;
-
 import junit.framework.TestCase;
-import dk.ange.octave.Octave;
-import dk.ange.octave.exception.OctaveParseException;
+import dk.ange.octave.OctaveEngine;
+import dk.ange.octave.OctaveEngineFactory;
 import dk.ange.octave.type.OctaveScalar;
 
 /** Tests */
@@ -33,15 +31,14 @@ public class TestUnknownVar extends TestCase {
      */
     public void testGetUnknownVar() {
         // FIXME Prevent load of non existing variable from generating output to stderr
-        final Octave octave = new Octave(null, new OutputStreamWriter(System.out), null);
-        try {
-            octave.get("x");
-            fail();
-        } catch (final OctaveParseException e) {
-            // Expect this
-        }
-        octave.set("x", new OctaveScalar(42));
-        octave.get("x");
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
+        // FIXME fails here:
+        final OctaveScalar x1 = octave.get("x");
+        assertNull(x1);
+        final OctaveScalar x = new OctaveScalar(42);
+        octave.put("x", x);
+        final OctaveScalar x2 = octave.get("x");
+        assertEquals(x, x2);
         octave.close();
     }
 

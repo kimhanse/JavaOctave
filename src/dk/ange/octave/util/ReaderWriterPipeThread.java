@@ -19,9 +19,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author Kim Hansen
  * 
@@ -29,22 +26,31 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ReaderWriterPipeThread extends Thread {
 
-    private static final Log log = LogFactory.getLog(ReaderWriterPipeThread.class);
+    private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
+            .getLog(ReaderWriterPipeThread.class);
 
     private static final int BUFFERSIZE = 4 * 1024;
 
     private final Reader reader;
 
-    private final Writer writer;
+    private Writer writer;
 
     /**
-     * Will create a thread that reads from reader and writes to write until reader reaches EOF. Then it will close
-     * reader and finish. Remember to join() this thread before writer is closed.
+     * Will create a thread that reads from reader and writes to write until reader reaches EOF. Then the thread will
+     * close. Remember to join() this thread before closeing reader or writer.
      * 
      * @param reader
      * @param writer
+     * @return Returns the new thread
      */
-    public ReaderWriterPipeThread(final Reader reader, final Writer writer) {
+    public static ReaderWriterPipeThread instantiate(final Reader reader, final Writer writer) {
+        final ReaderWriterPipeThread readerWriterPipeThread = new ReaderWriterPipeThread(reader, writer);
+        readerWriterPipeThread.setName(Thread.currentThread().getName() + "-ReaderWriterPipeThread");
+        readerWriterPipeThread.start();
+        return readerWriterPipeThread;
+    }
+
+    private ReaderWriterPipeThread(final Reader reader, final Writer writer) {
         this.reader = reader;
         this.writer = writer;
     }
@@ -52,33 +58,52 @@ public class ReaderWriterPipeThread extends Thread {
     @Override
     public void run() {
         final char[] b = new char[BUFFERSIZE];
-        while (true) {
+        while (!interrupted()) {
             final int len;
             try {
                 len = reader.read(b);
             } catch (final IOException e) {
-                log.info("Error when reading from reader", e);
-                return;
+                log.error("Error when reading from reader", e);
+                throw new RuntimeException(e);
             }
             if (len == -1) {
                 break;
             }
             try {
-                writer.write(b, 0, len);
-                writer.flush();
+                synchronized (this) {
+                    if (writer != null) {
+                        writer.write(b, 0, len);
+                        writer.flush();
+                    }
+                }
             } catch (final IOException e) {
-                log.info("Error when writing to writer", e);
-                return;
+                log.error("Error when writing to writer", e);
+                throw new RuntimeException(e);
             }
         }
-        try {
-            reader.close();
-            // Don't close writer, other programs might use it
-        } catch (final IOException e) {
-            log.info("Error when closing reader", e);
-            return;
-        }
         log.debug("ReaderWriterPipeThread finished without error");
+    }
+
+    /**
+     * @param writer
+     *                the writer to set
+     */
+    public void setWriter(final Writer writer) {
+        synchronized (this) {
+            this.writer = writer;
+        }
+    }
+
+    /**
+     * Close the thread
+     */
+    public void close() {
+        interrupt();
+        try {
+            join();
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

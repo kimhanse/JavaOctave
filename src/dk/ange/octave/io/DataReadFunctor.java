@@ -28,7 +28,7 @@ import dk.ange.octave.exec.ReadFunctor;
 import dk.ange.octave.type.OctaveType;
 
 /**
- * 
+ * Functor that reads a single variable
  */
 final class DataReadFunctor implements ReadFunctor {
 

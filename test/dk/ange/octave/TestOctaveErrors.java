@@ -15,7 +15,6 @@
  */
 package dk.ange.octave;
 
-import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import junit.framework.TestCase;
@@ -33,8 +32,11 @@ public class TestOctaveErrors extends TestCase {
         final StringWriter stdout = new StringWriter();
         final StringWriter stderr = new StringWriter();
         try {
-            final Octave octave = new Octave(null, new PrintWriter(stdout), stderr);
-            octave.execute("error('testError()');");
+            final OctaveEngineFactory octaveEngineFactory = new OctaveEngineFactory();
+            octaveEngineFactory.setErrorWriter(stderr);
+            final OctaveEngine octave = octaveEngineFactory.getScriptEngine();
+            octave.setWriter(stdout);
+            octave.eval("error('testError()');");
             fail("error in octave should cause execute() to throw an exception");
             octave.close();
         } catch (final OctaveException e) {
@@ -52,8 +54,8 @@ public class TestOctaveErrors extends TestCase {
      * @throws Exception
      */
     public void testOk() throws Exception {
-        final Octave octave = new Octave();
-        octave.execute("ok=1;");
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
+        octave.eval("ok=1;");
         octave.close();
     }
 

@@ -34,7 +34,10 @@ import dk.ange.octave.util.TeeWriter;
 
 /**
  * Interface object
+ * 
+ * @Deprecated use OctaveEngine
  */
+@Deprecated
 public final class Octave {
 
     private final OctaveExec octaveExec;

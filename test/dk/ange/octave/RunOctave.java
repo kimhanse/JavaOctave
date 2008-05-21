@@ -27,12 +27,12 @@ public class RunOctave {
      */
     public static void main(final String[] args) {
         System.out.println("BEGIN");
-        final Octave octave = new Octave();
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
 
-        octave.set("a", new OctaveScalar(42));
-        octave.execute("a");
+        octave.put("a", new OctaveScalar(42));
+        octave.eval("a");
         System.out.println("Java: a = " + octave.get("a"));
-        octave.execute("a=a+10");
+        octave.eval("a=a+10");
         System.out.println("Java: a = " + octave.get("a"));
 
         octave.close();

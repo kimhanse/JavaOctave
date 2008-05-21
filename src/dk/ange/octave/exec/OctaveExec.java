@@ -32,7 +32,6 @@ import java.util.concurrent.Future;
 
 import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
-import dk.ange.octave.util.InputStreamSinkThread;
 import dk.ange.octave.util.NoCloseWriter;
 import dk.ange.octave.util.ReaderWriterPipeThread;
 import dk.ange.octave.util.TeeWriter;
@@ -59,7 +58,7 @@ public final class OctaveExec {
     /*
      * TODO We should wait() on this thread before stderrLog is close()'d
      */
-    private final Thread errorStreamThread;
+    private final ReaderWriterPipeThread errorStreamThread;
 
     private boolean destroyed = false;
 
@@ -97,14 +96,8 @@ public final class OctaveExec {
             throw new OctaveIOException(e);
         }
         // Connect stderr
-        if (stderrLog == null) {
-            new InputStreamSinkThread(process.getErrorStream()).start();
-            errorStreamThread = null;
-        } else {
-            errorStreamThread = new ReaderWriterPipeThread(new InputStreamReader(process.getErrorStream()), stderrLog);
-            errorStreamThread.setName(Thread.currentThread().getName() + "-ErrorPipe");
-            errorStreamThread.start();
-        }
+        errorStreamThread = ReaderWriterPipeThread.instantiate(new InputStreamReader(process.getErrorStream()),
+                stderrLog);
         // Connect stdout
         processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         // Connect stdin
@@ -204,6 +197,7 @@ public final class OctaveExec {
         setDestroyed(true);
         executor.shutdownNow();
         process.destroy();
+        errorStreamThread.close();
         try {
             processWriter.close();
         } catch (final IOException e) {
@@ -224,6 +218,7 @@ public final class OctaveExec {
                 throw new OctaveIOException("Expected reader to be closed: " + read);
             }
             processReader.close();
+            errorStreamThread.close();
         } catch (final IOException e) {
             final OctaveIOException octaveException = new OctaveIOException("reader error", e);
             if (isDestroyed()) {
@@ -233,6 +228,14 @@ public final class OctaveExec {
         } finally {
             executor.shutdown();
         }
+    }
+
+    /**
+     * @param writer
+     *                the new writer to write the error output to
+     */
+    public void setErrorWriter(Writer writer) {
+        errorStreamThread.setWriter(writer);
     }
 
 }

@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
-import java.util.HashMap;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -66,20 +65,19 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testExecute() throws Exception {
-        final Octave octave = new Octave();
-        final HashMap<String, OctaveType> typelist = new HashMap<String, OctaveType>();
-        final OctaveType Y = new OctaveScalar(2);
-        typelist.put("y", Y);
-        final OctaveType X = new OctaveScalar(42);
-        typelist.put("x", X);
-        final OctaveType Z = new OctaveScalar(4);
-        typelist.put("z", Z);
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
 
-        octave.set(typelist);
+        final OctaveType Y = new OctaveScalar(2);
+        octave.put("y", Y);
+        final OctaveType X = new OctaveScalar(42);
+        octave.put("x", X);
+        final OctaveType Z = new OctaveScalar(4);
+        octave.put("z", Z);
+
         OctaveScalar x = octave.get("x");
         Assert.assertEquals(42.0, x.getDouble(), 0.0);
 
-        octave.execute("x = x + 10;");
+        octave.eval("x = x + 10;");
         x = octave.get("x");
         Assert.assertEquals(52.0, x.getDouble(), 0.0);
         octave.close();
@@ -91,9 +89,9 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testExec() throws Exception {
-        final Octave octave = new Octave();
-        octave.set("x", new OctaveScalar(42));
-        octave.execute(new StringReader("x=x+10;"));
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
+        octave.put("x", new OctaveScalar(42));
+        octave.eval(new StringReader("x=x+10;"));
         final OctaveScalar octaveScalar = octave.get("x");
         final double x = octaveScalar.getDouble();
         assertEquals(52.0, x, 0.0);
@@ -104,11 +102,11 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testDestroy() throws Exception {
-        final Octave octave = new Octave();
-        octave.execute("sigterm_dumps_octave_core(0);");
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
+        octave.eval("sigterm_dumps_octave_core(0);");
         new DestroyThread(octave).start();
         try {
-            octave.execute("sleep(10);");
+            octave.eval("sleep(10);");
         } catch (final OctaveException e) {
             assertTrue(e.isDestroyed());
         }
@@ -120,9 +118,9 @@ public class TestOctave extends TestCase {
      * @author Kim Hansen
      */
     private static class DestroyThread extends Thread {
-        private final Octave octave;
+        private final OctaveEngine octave;
 
-        private DestroyThread(final Octave octave) {
+        private DestroyThread(final OctaveEngine octave) {
             this.octave = octave;
         }
 
@@ -138,17 +136,6 @@ public class TestOctave extends TestCase {
     }
 
     /**
-     * Test null input to Octave()
-     * 
-     * @throws Exception
-     */
-    public void testNullInput() throws Exception {
-        final Octave octave = new Octave(null, null, null);
-        octave.execute("disp('Test');");
-        octave.close();
-    }
-
-    /**
      * Test advanced Constructor to Octave()
      * 
      * TODO Detect path instead of having it hardcoded
@@ -156,8 +143,11 @@ public class TestOctave extends TestCase {
      * @throws Exception
      */
     public void testConstructor() throws Exception {
-        final Octave octave = new Octave(null, null, null, new File("/usr/bin/octave"), null, null);
-        octave.execute("disp('Test');");
+        final OctaveEngineFactory octaveEngineFactory = new OctaveEngineFactory();
+        octaveEngineFactory.setOctaveProgram(new File("/usr/bin/octave"));
+        final OctaveEngine octave = octaveEngineFactory.getScriptEngine();
+        octave.setWriter(null);
+        octave.eval("disp('Test');");
         octave.close();
     }
 
@@ -170,12 +160,18 @@ public class TestOctave extends TestCase {
         final Writer stdin = new DontCloseWriter("stdin");
         final Writer stdout = new DontCloseWriter("stdout");
         final Writer stderr = new DontCloseWriter("stderr");
-        final Octave octave = new Octave(stdin, stdout, stderr);
-        octave.execute("disp('Test');");
+        final OctaveEngineFactory octaveEngineFactory = new OctaveEngineFactory();
+        octaveEngineFactory.setErrorWriter(stderr);
+        octaveEngineFactory.setOctaveInputLog(stdin);
+        final OctaveEngine octave = octaveEngineFactory.getScriptEngine();
+        octave.setWriter(stdout);
+        octave.eval("disp('Test');");
         octave.close();
-        final Octave octave2 = new Octave(stdin, stdout, stderr);
+
+        final OctaveEngine octave2 = octaveEngineFactory.getScriptEngine();
+        octave.setWriter(stdout);
         try {
-            octave2.execute("error('Test');");
+            octave2.eval("error('Test');");
             fail();
         } catch (final OctaveException e) {
             assertTrue(e instanceof OctaveIOException);
