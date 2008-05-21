@@ -15,43 +15,33 @@
  */
 package dk.ange.octave.type;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
-import dk.ange.octave.Octave;
-import dk.ange.octave.io.OctaveIO;
 
 /**
  * @author Kim Hansen
  */
 public class TestOctaveString extends TestCase {
-
     /**
-     * @throws Exception
+     * Test
      */
-    public void testToString() throws Exception {
-        final OctaveType string = new OctaveString("tekst");
-        Assert.assertEquals("# name: ans\n# type: string\n# elements: 1\n# length: 5\ntekst\n\n", OctaveIO
-                .toText(string));
-    }
+    public void testValues() {
+        final OctaveString s1a = new OctaveString("1");
+        final OctaveString s1b = new OctaveString("1");
+        final OctaveString s1c = new OctaveString("0");
+        s1c.setString("1");
 
-    /**
-     * @throws Exception
-     */
-    public void testToOctave() throws Exception {
-        final OctaveType string = new OctaveString("mytekst");
-        Assert.assertEquals("# name: tre\n# type: string\n# elements: 1\n# length: 7\nmytekst\n\n", OctaveIO.toText(
-                string, "tre"));
-    }
+        assertEquals(s1a, s1b);
+        assertEquals(s1a, s1c);
+        assertEquals(s1b, s1c);
+        assertNotSame(s1a, s1b);
+        assertNotSame(s1a, s1c);
+        assertNotSame(s1b, s1c);
 
-    /**
-     * @throws Exception
-     */
-    public void testOctaveConnection() throws Exception {
-        final OctaveType s1 = new OctaveString("tekst");
-        final Octave octave = new Octave();
-        octave.set("st", s1);
-        final OctaveString s2 = octave.get("st");
-        Assert.assertEquals(s1, s2);
+        final OctaveString s0 = new OctaveString("0");
+        final OctaveString s2 = new OctaveString("2");
+
+        assertFalse(s1a.equals(s0));
+        assertFalse(s1a.equals(s2));
     }
 
 }

@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Collections;
+import java.util.Map;
 
 import dk.ange.octave.exception.OctaveClassCastException;
 import dk.ange.octave.exec.OctaveExec;
@@ -49,8 +50,8 @@ public final class OctaveEngine {
 
     private Writer writer = new OutputStreamWriter(System.out);
 
-    OctaveEngine(final OctaveEngineFactory factory, Writer octaveInputLog, Writer errorWriter, File octaveProgram,
-            File workingDir) {
+    OctaveEngine(final OctaveEngineFactory factory, final Writer octaveInputLog, final Writer errorWriter,
+            final File octaveProgram, final File workingDir) {
         this.factory = factory;
         octaveExec = new OctaveExec(octaveInputLog, errorWriter, octaveProgram, null, workingDir);
         octaveIO = new OctaveIO(octaveExec);
@@ -72,9 +73,9 @@ public final class OctaveEngine {
         if (writer == null) {
             // If writer is null create a "do nothing" functor
             return new ReadFunctor() {
-                private char[] buffer = new char[4096];
+                private final char[] buffer = new char[4096];
 
-                public void doReads(Reader reader) throws IOException {
+                public void doReads(final Reader reader) throws IOException {
                     while (reader.read(buffer) != -1) {
                         // Do nothing
                     }
@@ -89,7 +90,7 @@ public final class OctaveEngine {
      * @param script
      *                the script to execute
      */
-    public void eval(Reader script) {
+    public void eval(final Reader script) {
         octaveExec.eval(new ReaderWriteFunctor(script), getReadFunctor());
     }
 
@@ -103,6 +104,17 @@ public final class OctaveEngine {
      */
     public void put(final String key, final OctaveType value) {
         octaveIO.set(Collections.singletonMap(key, value));
+    }
+
+    /**
+     * Sets all the mappings in the specified map as variables in octave. These mappings replace any variable that
+     * octave had for any of the keys currently in the specified map.
+     * 
+     * @param vars
+     *                the variables to be stored in octave
+     */
+    public void putAll(final Map<String, OctaveType> vars) {
+        octaveIO.set(vars);
     }
 
     /**

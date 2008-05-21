@@ -53,7 +53,7 @@ public final class OctaveEngineFactory {
      * @param octaveInputLog
      *                the octaveInputLog to set
      */
-    public void setOctaveInputLog(Writer octaveInputLog) {
+    public void setOctaveInputLog(final Writer octaveInputLog) {
         this.octaveInputLog = octaveInputLog;
     }
 
@@ -61,7 +61,7 @@ public final class OctaveEngineFactory {
      * @param errorWriter
      *                the errorWriter to set
      */
-    public void setErrorWriter(Writer errorWriter) {
+    public void setErrorWriter(final Writer errorWriter) {
         this.errorWriter = errorWriter;
     }
 
@@ -69,7 +69,7 @@ public final class OctaveEngineFactory {
      * @param octaveProgram
      *                the octaveProgram to set
      */
-    public void setOctaveProgram(File octaveProgram) {
+    public void setOctaveProgram(final File octaveProgram) {
         this.octaveProgram = octaveProgram;
     }
 
@@ -77,7 +77,7 @@ public final class OctaveEngineFactory {
      * @param workingDir
      *                the workingDir to set
      */
-    public void setWorkingDir(File workingDir) {
+    public void setWorkingDir(final File workingDir) {
         this.workingDir = workingDir;
     }
 

@@ -15,13 +15,7 @@
  */
 package dk.ange.octave.type;
 
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-
-import junit.framework.Assert;
 import junit.framework.TestCase;
-import dk.ange.octave.Octave;
-import dk.ange.octave.io.OctaveIO;
 
 /**
  * @author Kim Hansen
@@ -29,65 +23,26 @@ import dk.ange.octave.io.OctaveIO;
 public class TestOctaveScalar extends TestCase {
 
     /**
-     * @throws Exception
+     * Test
      */
-    public void testToString() throws Exception {
-        final OctaveType integer = new OctaveScalar(42);
-        Assert.assertEquals("# name: ans\n# type: scalar\n42.0\n\n", OctaveIO.toText(integer));
-    }
+    public void testValues() {
+        final OctaveScalar s1a = new OctaveScalar(1);
+        final OctaveScalar s1b = new OctaveScalar(1);
+        final OctaveScalar s1c = new OctaveScalar(0);
+        s1c.set(1);
 
-    /**
-     * @throws Exception
-     */
-    public void testToOctave() throws Exception {
-        final OctaveType integer = new OctaveScalar(43);
-        Assert.assertEquals("# name: tre\n# type: scalar\n43.0\n\n", OctaveIO.toText(integer, "tre"));
-    }
+        assertEquals(s1a, s1b);
+        assertEquals(s1a, s1c);
+        assertEquals(s1b, s1c);
+        assertNotSame(s1a, s1b);
+        assertNotSame(s1a, s1c);
+        assertNotSame(s1b, s1c);
 
-    /**
-     * @throws Exception
-     */
-    public void testOctaveConnection() throws Exception {
-        final OctaveType i1 = new OctaveScalar(42);
-        final Octave octave = new Octave();
-        octave.set("i", i1);
-        final OctaveScalar i2 = octave.get("i");
-        Assert.assertEquals(i1, i2);
-    }
+        final OctaveScalar s0 = new OctaveScalar(0);
+        final OctaveScalar s2 = new OctaveScalar(2);
 
-    /**
-     * Test how the system handles save of Inf and NaN
-     * 
-     * @throws Exception
-     */
-    public void testSaveNanInf() throws Exception {
-        final StringWriter stderr = new StringWriter();
-        final Octave octave = new Octave(null, new OutputStreamWriter(System.out), stderr);
-        octave.execute("ok=1;");
-        @SuppressWarnings("unused")
-        OctaveScalar ok;
-
-        octave.execute("xnan=NaN;");
-        ok = octave.get("ok");
-        final OctaveScalar xnan = octave.get("xnan");
-        assertEquals(Double.NaN, xnan.getDouble());
-        ok = octave.get("ok");
-
-        octave.execute("xinf=Inf;");
-        ok = octave.get("ok");
-        final OctaveScalar xinf = octave.get("xinf");
-        assertEquals(Double.POSITIVE_INFINITY, xinf.getDouble());
-        ok = octave.get("ok");
-
-        octave.execute("xninf=-Inf;");
-        ok = octave.get("ok");
-        final OctaveScalar xninf = octave.get("xninf");
-        assertEquals(Double.NEGATIVE_INFINITY, xninf.getDouble());
-        ok = octave.get("ok");
-
-        octave.close();
-        stderr.close();
-        assertEquals("", stderr.toString());
+        assertFalse(s1a.equals(s0));
+        assertFalse(s1a.equals(s2));
     }
 
 }
