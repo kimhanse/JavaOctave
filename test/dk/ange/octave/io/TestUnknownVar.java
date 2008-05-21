@@ -30,9 +30,7 @@ public class TestUnknownVar extends TestCase {
      * Test Octave.get() on unknown var
      */
     public void testGetUnknownVar() {
-        // FIXME Prevent load of non existing variable from generating output to stderr
         final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
-        // FIXME fails here:
         final OctaveScalar x1 = octave.get("x");
         assertNull(x1);
         final OctaveScalar x = new OctaveScalar(42);

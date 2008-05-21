@@ -31,6 +31,7 @@ import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.exec.OctaveExec;
 import dk.ange.octave.exec.ReaderWriteFunctor;
 import dk.ange.octave.exec.WriteFunctor;
+import dk.ange.octave.exec.WriterReadFunctor;
 import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.io.spi.OctaveDataWriter;
 import dk.ange.octave.type.OctaveType;
@@ -54,7 +55,7 @@ public final class OctaveIO {
      */
     public void set(final Map<String, OctaveType> values) {
         final StringWriter outputWriter = new StringWriter();
-        octaveExec.execute(new DataWriteFunctor(values), outputWriter);
+        octaveExec.eval(new DataWriteFunctor(values), new WriterReadFunctor(outputWriter));
         final String output = outputWriter.toString();
         if (output.length() != 0) {
             throw new IllegalStateException("Unexpected output, " + output);
@@ -65,12 +66,15 @@ public final class OctaveIO {
      * @param <T>
      *                Type of return value
      * @param name
-     * @return Returns the value of the variable from octave
+     * @return Returns the value of the variable from octave or null if the variable does not exist
      * @throws OctaveClassCastException
      *                 if the value can not be cast to T
      */
     @SuppressWarnings("unchecked")
     public <T extends OctaveType> T get(final String name) {
+        if (!checkIfVarExists(name)) {
+            return null;
+        }
         final WriteFunctor writeFunctor = new ReaderWriteFunctor(new StringReader("save -text - " + name));
         final DataReadFunctor readFunctor = new DataReadFunctor(name);
         octaveExec.eval(writeFunctor, readFunctor);
@@ -83,6 +87,14 @@ public final class OctaveIO {
             throw new OctaveClassCastException(e);
         }
         return t;
+    }
+
+    private boolean checkIfVarExists(final String name) {
+        final StringWriter existResult = new StringWriter();
+        octaveExec.eval(new ReaderWriteFunctor(new StringReader("printf(\"%d\", exist(\"" + name + "\",\"var\"));")),
+                new WriterReadFunctor(existResult));
+        final boolean varExists = "1".equals(existResult.toString());
+        return varExists;
     }
 
     /**

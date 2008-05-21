@@ -177,7 +177,9 @@ public final class OctaveExec {
     /**
      * @param writeFunctor
      * @param output
+     * @Deprecated Use eval(writeFunctor, new WriterReadFunctor(output))
      */
+    @Deprecated
     public void execute(final WriteFunctor writeFunctor, final Writer output) {
         eval(writeFunctor, new WriterReadFunctor(output));
     }
@@ -234,7 +236,7 @@ public final class OctaveExec {
      * @param writer
      *                the new writer to write the error output to
      */
-    public void setErrorWriter(Writer writer) {
+    public void setErrorWriter(final Writer writer) {
         errorStreamThread.setWriter(writer);
     }
 
