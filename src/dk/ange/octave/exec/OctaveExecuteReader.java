@@ -41,6 +41,8 @@ final class OctaveExecuteReader extends Reader {
 
     private StringBuffer buffer;
 
+    private boolean firstLine = true;
+
     private boolean eof = false;
 
     /**
@@ -72,8 +74,13 @@ final class OctaveExecuteReader extends Reader {
                 eof = true;
                 return -1;
             }
-            buffer = new StringBuffer(line);
-            buffer.append('\n');
+            buffer = new StringBuffer(line.length() + 1);
+            if (firstLine) {
+                firstLine = false;
+            } else {
+                buffer.append('\n');
+            }
+            buffer.append(line);
         }
         final int charsRead = Math.min(buffer.length(), len);
         buffer.getChars(0, charsRead, cbuf, off);

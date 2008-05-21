@@ -21,6 +21,7 @@ package dk.ange.octave;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 
 import junit.framework.Assert;
@@ -147,7 +148,7 @@ public class TestOctave extends TestCase {
         octaveEngineFactory.setOctaveProgram(new File("/usr/bin/octave"));
         final OctaveEngine octave = octaveEngineFactory.getScriptEngine();
         octave.setWriter(null);
-        octave.eval("disp('Test');");
+        octave.eval("disp('testConstructor');");
         octave.close();
     }
 
@@ -165,13 +166,13 @@ public class TestOctave extends TestCase {
         octaveEngineFactory.setOctaveInputLog(stdin);
         final OctaveEngine octave = octaveEngineFactory.getScriptEngine();
         octave.setWriter(stdout);
-        octave.eval("disp('Test');");
+        octave.eval("disp('testFileClose');");
         octave.close();
 
         final OctaveEngine octave2 = octaveEngineFactory.getScriptEngine();
         octave.setWriter(stdout);
         try {
-            octave2.eval("error('Test');");
+            octave2.eval("error('testFileClose2');");
             fail();
         } catch (final OctaveException e) {
             assertTrue(e instanceof OctaveIOException);
@@ -199,6 +200,33 @@ public class TestOctave extends TestCase {
         public void close() throws IOException {
             throw new IOException("DontCloseWriter '" + name + "' closed.");
         }
+    }
+
+    /**
+     * Test
+     */
+    public void testOutputWithoutNewline() {
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
+        final StringWriter result = new StringWriter();
+        octave.setWriter(result);
+        octave.eval("printf('testOutputWithoutNewline1');");
+        assertEquals("testOutputWithoutNewline1", result.toString());
+        result.getBuffer().setLength(0);
+        octave.eval("disp('testOutputWithoutNewline2');");
+        assertEquals("testOutputWithoutNewline2\n", result.toString());
+        result.getBuffer().setLength(0);
+        octave.eval("printf('testOutput\\nWithoutNewline3');");
+        assertEquals("testOutput\nWithoutNewline3", result.toString());
+        result.getBuffer().setLength(0);
+        octave.eval("disp('testOutput\\nWithoutNewline4');");
+        assertEquals("testOutput\\nWithoutNewline4\n", result.toString());
+        result.getBuffer().setLength(0);
+        octave.eval("disp(\"testOutput\\nWithoutNewline5\");");
+        assertEquals("testOutput\nWithoutNewline5\n", result.toString());
+        result.getBuffer().setLength(0);
+        octave.eval("'testOutputWithoutNewline6'");
+        assertEquals("ans = testOutputWithoutNewline6\n", result.toString());
+        octave.close();
     }
 
 }
