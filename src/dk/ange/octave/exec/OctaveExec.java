@@ -55,9 +55,6 @@ public final class OctaveExec {
 
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
-    /*
-     * TODO We should wait() on this thread before stderrLog is close()'d
-     */
     private final ReaderWriterPipeThread errorStreamThread;
 
     private boolean destroyed = false;
@@ -108,10 +105,6 @@ public final class OctaveExec {
                     new OutputStreamWriter(process.getOutputStream()));
         }
     }
-
-    /*
-     * New execute
-     */
 
     private final Random random = new Random();
 
@@ -172,16 +165,6 @@ public final class OctaveExec {
             outException.setDestroyed(true);
         }
         return outException;
-    }
-
-    /**
-     * @param writeFunctor
-     * @param output
-     * @Deprecated Use eval(writeFunctor, new WriterReadFunctor(output))
-     */
-    @Deprecated
-    public void execute(final WriteFunctor writeFunctor, final Writer output) {
-        eval(writeFunctor, new WriterReadFunctor(output));
     }
 
     private synchronized void setDestroyed(final boolean destroyed) {
