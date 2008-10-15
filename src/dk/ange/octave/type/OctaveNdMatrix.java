@@ -89,11 +89,11 @@ public class OctaveNdMatrix extends OctaveType {
      */
     public OctaveNdMatrix(final double[] data, final int... size) {
         init(size);
-        if (product(size) != data.length) {
+        if (product(size) > data.length) {
             final StringBuilder text = new StringBuilder();
             text.append("length of data(");
             text.append(data.length);
-            text.append(") doesn't fit with size(");
+            text.append(") is smaller than size(");
             text.append("[");
             boolean first = true;
             for (final int i : size) {

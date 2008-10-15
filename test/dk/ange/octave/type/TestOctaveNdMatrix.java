@@ -100,18 +100,14 @@ public class TestOctaveNdMatrix extends TestCase {
             }
         }
 
-        try {
-            new OctaveNdMatrix(data, 2, 2, 4);
-            fail("data and dimenstion must match");
-        } catch (final IllegalArgumentException e) {
-            // ok
-        }
+        // a larger data array is ok
+        new OctaveNdMatrix(data, 2, 2, 4);
 
         try {
-            new OctaveNdMatrix(data, 2, 3, 5);
-            fail("data and dimenstion must match");
+            new OctaveNdMatrix(data, 2, 4, 4);
+            fail("should throw IllegalArgumentException");
         } catch (final IllegalArgumentException e) {
-            // ok
+            assertEquals("length of data(24) is smaller than size([2, 4, 4])", e.getMessage());
         }
     }
 
@@ -158,6 +154,24 @@ public class TestOctaveNdMatrix extends TestCase {
         assertEquals(3.0, matrix.get(2, 2, 3, 2));
         assertEquals(4.0, matrix.get(2, 2, 2, 3));
         assertEquals(Math.PI, matrix.get(4, 5, 7, 6));
+    }
+
+    /** */
+    public void testResize() {
+        final OctaveNdMatrix matrix = new OctaveNdMatrix(0, 4);
+        assertEquals(2, matrix.getSize().length);
+        assertEquals(0, matrix.getSize()[0]);
+        assertEquals(4, matrix.getSize()[1]);
+        // assertEquals(0, matrix.getData().length); is 0
+        assertTrue(matrix.getData().length >= 0);
+
+        matrix.set(42.0, 1, 1);
+        assertEquals(42.0, matrix.get(1, 1));
+        assertEquals(2, matrix.getSize().length);
+        assertEquals(1, matrix.getSize()[0]);
+        assertEquals(4, matrix.getSize()[1]);
+        // assertEquals(4, matrix.getData().length); is 8
+        assertTrue(matrix.getData().length >= 4);
     }
 
 }
