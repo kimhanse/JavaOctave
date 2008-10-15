@@ -69,21 +69,24 @@
     <copy todir="build/test">
       <fileset dir="test" />
     </copy>
-    <junit fork="yes" haltonfailure="no">
+    <junit>
+      <assertions> <enable/> </assertions>
       <classpath>
         <path refid="classpath"/>
         <pathelement location="build/test" />
         <pathelement location="javaoctave.jar" />
         <pathelement location="." />
       </classpath>
-      <batchtest>
+      <batchtest fork="no" errorproperty="testbroken" failureproperty="testbroken">
         <fileset dir="build/test">
-          <include name="**/Test*.class" />
-          <exclude name="**/Test*$$*.class" />
+          <include name="**/*Test*.class"/>
+          <exclude name="**/*TestCase.class"/>
+          <exclude name="**/*$*.class"/>
         </fileset>
       </batchtest>
-      <formatter type="brief" usefile="false" />
+      <formatter type="brief" usefile="false"/>
     </junit>
+    <fail if="testbroken" message="Some tests are broken."/>
   </target>
 
 </project>
