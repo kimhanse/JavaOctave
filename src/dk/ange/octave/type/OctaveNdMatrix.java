@@ -25,14 +25,14 @@ public class OctaveNdMatrix extends OctaveType {
     private static final long serialVersionUID = 4697636627793706177L;
 
     /**
-     * The data, vectorized.
-     */
-    protected double[] data;
-
-    /**
      * The dimensions, rows x columns x depth x ....
      */
     protected int[] size;
+
+    /**
+     * The data, vectorized.
+     */
+    protected double[] data;
 
     /**
      * @return the data
@@ -241,8 +241,8 @@ public class OctaveNdMatrix extends OctaveType {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Arrays.hashCode(data);
         result = prime * result + Arrays.hashCode(size);
+        result = prime * result + Arrays.hashCode(data);
         return result;
     }
 
@@ -258,10 +258,10 @@ public class OctaveNdMatrix extends OctaveType {
             return false;
         }
         final OctaveNdMatrix other = (OctaveNdMatrix) obj;
-        if (!Arrays.equals(data, other.data)) {
+        if (!Arrays.equals(size, other.size)) {
             return false;
         }
-        if (!Arrays.equals(size, other.size)) {
+        if (!Arrays.equals(data, other.data)) {
             return false;
         }
         return true;
