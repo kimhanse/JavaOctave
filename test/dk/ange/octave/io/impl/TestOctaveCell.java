@@ -21,6 +21,7 @@ import dk.ange.octave.OctaveEngine;
 import dk.ange.octave.OctaveEngineFactory;
 import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.type.OctaveCell;
+import dk.ange.octave.type.OctaveNdMatrix;
 import dk.ange.octave.type.OctaveScalar;
 import dk.ange.octave.type.OctaveString;
 
@@ -129,6 +130,51 @@ public class TestOctaveCell extends TestCase {
         // Assert that the returned value is the same as the original
         assertEquals(cell, octave.get("cell_java"));
         octave.close();
+    }
+
+    /**
+     */
+    public void testMatrixInCell() {
+        final OctaveNdMatrix octaveMatrix = new OctaveNdMatrix(2, 3);
+        octaveMatrix.set(42, 1, 1);
+        final OctaveCell cell = new OctaveCell(2, 2);
+        cell.set(1, 1, new OctaveScalar(42));
+        cell.set(1, 2, octaveMatrix);
+        Assert.assertEquals(2, cell.getRowDimension());
+        Assert.assertEquals(2, cell.getColumnDimension());
+        Assert.assertEquals("" //
+                + "# name: mycell2\n" //
+                + "# type: cell\n" //
+                + "# rows: 2\n" //
+                + "# columns: 2\n" //
+
+                + "# name: <cell-element>\n" //
+                + "# type: scalar\n" //
+                + "42.0\n" //
+                + "\n" //
+
+                + "# name: <cell-element>\n" //
+                + "# type: matrix\n" //
+                + "# rows: 0\n" //
+                + "# columns: 0\n" //
+                + "\n" //
+                + "\n" //
+
+                + "# name: <cell-element>\n" //
+                + "# type: matrix\n" //
+                + "# rows: 2\n" //
+                + "# columns: 3\n" //
+                + " 42.0 0.0 0.0\n" //
+                + " 0.0 0.0 0.0\n" //
+                + "\n" //
+
+                + "# name: <cell-element>\n" //
+                + "# type: matrix\n" //
+                + "# rows: 0\n" //
+                + "# columns: 0\n" //
+                + "\n" //
+                + "\n" //
+        , OctaveIO.toText(cell, "mycell2"));
     }
 
 }
