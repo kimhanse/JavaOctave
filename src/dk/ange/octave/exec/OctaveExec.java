@@ -134,7 +134,7 @@ public final class OctaveExec {
         try {
             writerFuture.get();
         } catch (final InterruptedException e) {
-            final String message = "Should not happen";
+            final String message = "InterruptedException should not happen";
             log.error(message, e);
             return new RuntimeException(message, e);
         } catch (final ExecutionException e) {
@@ -142,11 +142,11 @@ public final class OctaveExec {
                 final OctaveException oe = (OctaveException) e.getCause();
                 return reInstantiateException(oe);
             }
-            final String message = "Should not happen";
+            final String message = "ExecutionException should not happen";
             log.error(message, e);
             return new RuntimeException(message, e);
         } catch (final RuntimeException e) {
-            final String message = "Should not happen";
+            final String message = "RuntimeException should not happen";
             log.error(message, e);
             return new RuntimeException(message, e);
         }
@@ -159,7 +159,7 @@ public final class OctaveExec {
             outException = inException.getClass().getConstructor(String.class, Throwable.class).newInstance(
                     inException.getMessage(), inException);
         } catch (final Exception e) {
-            throw new IllegalStateException("Should not happen", e);
+            throw new IllegalStateException("Exception should not happen", e);
         }
         if (isDestroyed()) {
             outException.setDestroyed(true);
