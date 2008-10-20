@@ -121,7 +121,15 @@ public final class OctaveIO {
         if (!line.startsWith(TYPE)) {
             throw new OctaveParseException("Expected <" + TYPE + "> got <" + line + ">");
         }
-        final String type = line.substring(TYPE.length());
+        final String typeGlobal = line.substring(TYPE.length());
+        // Ignore "global " prefix to type (it is not really a type)
+        final String GLOBAL = "global ";
+        final String type;
+        if (typeGlobal.startsWith(GLOBAL)) {
+            type = typeGlobal.substring(GLOBAL.length());
+        } else {
+            type = typeGlobal;
+        }
         final OctaveDataReader dataReader = OctaveDataReader.getOctaveDataReader(type);
         if (dataReader == null) {
             throw new OctaveParseException("Unknown octave type, type='" + type + "'");

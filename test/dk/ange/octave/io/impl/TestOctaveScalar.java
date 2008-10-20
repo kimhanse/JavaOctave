@@ -101,4 +101,17 @@ public class TestOctaveScalar extends TestCase {
         assertEquals("", stderr.toString());
     }
 
+    /** Test that we can get and set globals */
+    public void testGlobal() {
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
+
+        octave.eval("global x");
+        octave.put("x", new OctaveScalar(42.0));
+
+        final OctaveScalar x = octave.get("x");
+        assertEquals(42.0, x.get(1));
+
+        octave.close();
+    }
+
 }
