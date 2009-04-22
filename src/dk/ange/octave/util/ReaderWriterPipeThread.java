@@ -45,7 +45,8 @@ public class ReaderWriterPipeThread extends Thread {
      */
     public static ReaderWriterPipeThread instantiate(final Reader reader, final Writer writer) {
         final ReaderWriterPipeThread readerWriterPipeThread = new ReaderWriterPipeThread(reader, writer);
-        readerWriterPipeThread.setName(Thread.currentThread().getName() + "-ReaderWriterPipeThread");
+        readerWriterPipeThread.setName(Thread.currentThread().getName() + "-javaoctave-"
+                + ReaderWriterPipeThread.class.getSimpleName());
         readerWriterPipeThread.start();
         return readerWriterPipeThread;
     }
