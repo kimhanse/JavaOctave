@@ -15,6 +15,7 @@
  */
 package dk.ange.octave;
 
+import dk.ange.octave.type.OctaveNdMatrix;
 import dk.ange.octave.type.OctaveScalar;
 
 /**
@@ -27,6 +28,12 @@ public class RunOctave {
      */
     public static void main(final String[] args) {
         System.out.println("BEGIN");
+        test1();
+        test2();
+        System.out.println("END.");
+    }
+
+    private static void test1() {
         final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
 
         octave.put("a", new OctaveScalar(42));
@@ -36,7 +43,26 @@ public class RunOctave {
         System.out.println("Java: a = " + octave.get("a"));
 
         octave.close();
-        System.out.println("END.");
+    }
+
+    private static void test2() {
+        final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();
+        final OctaveNdMatrix a = new OctaveNdMatrix(new double[] { 1, 2, 3, 4 }, 2, 2);
+        octave.put("a", a);
+        final String func = "" //
+                + "function res = my_func(a)\n" //
+                + "  res = 2 * a;\n" //
+                + "endfunction\n" //
+                + "";
+        octave.eval(func);
+        octave.eval("b = my_func(a);");
+        final OctaveNdMatrix b = octave.get("b");
+        octave.close();
+
+        System.out.println("Java: b(1,1) = " + b.get(1,1));
+        System.out.println("Java: b(1,2) = " + b.get(1,2));
+        System.out.println("Java: b(2,1) = " + b.get(2,1));
+        System.out.println("Java: b(2,2) = " + b.get(2,2));
     }
 
 }
