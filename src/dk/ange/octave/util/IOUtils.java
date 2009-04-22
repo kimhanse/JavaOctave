@@ -24,6 +24,8 @@ import java.io.Writer;
 
 /**
  * Class for holding static utility functions
+ * 
+ * @author Kim Hansen
  */
 public final class IOUtils {
 

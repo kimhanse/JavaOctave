@@ -22,9 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author Kim Hansen
- * 
  * A Thread that read data from a Reader and throws it away
+ * 
+ * @author Kim Hansen
  */
 public class ReaderSinkThread extends Thread {
 

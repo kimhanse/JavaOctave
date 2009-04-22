@@ -39,6 +39,8 @@ import dk.ange.octave.type.OctaveType;
  * The connection to an octave process.
  * 
  * This is inspired by the javax.script.ScriptEngine interface.
+ * 
+ * @author Kim Hansen
  */
 public final class OctaveEngine {
 

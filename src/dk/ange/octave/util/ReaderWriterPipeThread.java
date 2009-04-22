@@ -20,9 +20,9 @@ import java.io.Reader;
 import java.io.Writer;
 
 /**
- * @author Kim Hansen
- * 
  * A Thread that moves data from a Reader to a Writer
+ * 
+ * @author Kim Hansen
  */
 public class ReaderWriterPipeThread extends Thread {
 

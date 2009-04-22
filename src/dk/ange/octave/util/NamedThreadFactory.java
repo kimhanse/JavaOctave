@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A ThreadFactory that sets thread names
+ * 
+ * @author Kim Hansen
  */
 public final class NamedThreadFactory implements ThreadFactory {
 

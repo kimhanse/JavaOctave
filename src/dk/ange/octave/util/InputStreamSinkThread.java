@@ -22,9 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author Kim Hansen
- * 
  * A Thread that read data from an {@link InputStream} and throws it away
+ * 
+ * @author Kim Hansen
  */
 public final class InputStreamSinkThread extends Thread {
 

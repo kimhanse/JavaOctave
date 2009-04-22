@@ -23,9 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author Kim Hansen
- * 
  * A Thread that moves data from an {@link InputStream} to an {@link OutputStream}
+ * 
+ * @author Kim Hansen
  */
 public final class IOStreamPipeThread extends Thread {
 
