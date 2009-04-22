@@ -32,6 +32,7 @@ import java.util.concurrent.Future;
 
 import dk.ange.octave.exception.OctaveException;
 import dk.ange.octave.exception.OctaveIOException;
+import dk.ange.octave.util.NamedThreadFactory;
 import dk.ange.octave.util.NoCloseWriter;
 import dk.ange.octave.util.ReaderWriterPipeThread;
 import dk.ange.octave.util.TeeWriter;
@@ -53,7 +54,8 @@ public final class OctaveExec {
 
     private final BufferedReader processReader;
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(2);
+    private final ExecutorService executor = Executors.newFixedThreadPool(2, new NamedThreadFactory(OctaveExec.class
+            .getSimpleName()));
 
     private final ReaderWriterPipeThread errorStreamThread;
 
