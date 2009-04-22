@@ -56,7 +56,16 @@
 
   <!-- JAR -->
   <target name="jar" depends="build,install.src" description="--> Assemble jar">
-    <jar destfile="javaoctave.jar" basedir="build/classes" />
+    <exec executable="bzr" outputproperty="bzr.versioninfo" logError="yes">
+      <arg value="version-info"/>
+      <arg value="--custom"/>
+      <arg value="--template=revision-id={revision_id} branch-nick={branch_nick} clean={clean}"/>
+    </exec>
+    <jar destfile="javaoctave.jar" basedir="build/classes">
+      <manifest>
+        <attribute name="Bazaar-version-info" value="${bzr.versioninfo}" />
+      </manifest>
+    </jar>
   </target>
 
   <!-- Test -->
