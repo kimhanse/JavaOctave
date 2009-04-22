@@ -23,6 +23,8 @@ package dk.ange.octave.exception;
  */
 public abstract class OctaveException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor inherited from RuntimeException
      */

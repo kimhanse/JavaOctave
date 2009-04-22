@@ -18,12 +18,10 @@
  */
 package dk.ange.octave.type;
 
-import java.io.Serializable;
-
 /**
  * Common interface for the octave types.
  */
-public abstract class OctaveType implements Serializable {
+public abstract class OctaveType {
 
     /**
      * @param type
