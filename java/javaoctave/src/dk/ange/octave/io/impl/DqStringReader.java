@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Ange Optimization ApS
+ * Copyright 2008, 2009 Ange Optimization ApS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import java.io.BufferedReader;
 import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.io.spi.OctaveDataReader;
-import dk.ange.octave.type.OctaveString;
+import dk.ange.octave.type.OctaveDqString;
 
 /**
  * The reader of string
  */
-public final class OctaveStringReader extends OctaveDataReader {
+public final class DqStringReader extends OctaveDataReader {
 
     @Override
     public String octaveType() {
@@ -36,7 +36,7 @@ public final class OctaveStringReader extends OctaveDataReader {
     }
 
     @Override
-    public OctaveString read(final BufferedReader reader) {
+    public OctaveDqString read(final BufferedReader reader) {
         String line;
         line = OctaveIO.readerReadLine(reader);
         if (!line.equals("# elements: 1")) {
@@ -47,7 +47,7 @@ public final class OctaveStringReader extends OctaveDataReader {
             throw new OctaveParseException("Parse error in String, line='" + line + "'");
         }
         final String string = OctaveIO.readerReadLine(reader);
-        return new OctaveString(string);
+        return new OctaveDqString(string);
     }
 
 }

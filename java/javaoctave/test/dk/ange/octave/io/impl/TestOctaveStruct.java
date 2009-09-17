@@ -22,7 +22,7 @@ import dk.ange.octave.OctaveEngineFactory;
 import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveScalar;
-import dk.ange.octave.type.OctaveString;
+import dk.ange.octave.type.OctaveDqString;
 import dk.ange.octave.type.OctaveStruct;
 import dk.ange.octave.type.OctaveType;
 
@@ -83,7 +83,7 @@ public class TestOctaveStruct extends TestCase {
         final OctaveStruct struct = new OctaveStruct();
         struct.set("scalar", new OctaveScalar(42));
         final OctaveStruct nested_struct = new OctaveStruct();
-        nested_struct.set("string", new OctaveString("a cheese called Horace"));
+        nested_struct.set("string", new OctaveDqString("a cheese called Horace"));
         struct.set("mynestedstruct", nested_struct);
 
         final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();

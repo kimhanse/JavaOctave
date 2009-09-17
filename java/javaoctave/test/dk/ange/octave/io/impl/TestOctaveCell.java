@@ -23,7 +23,7 @@ import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.type.OctaveCell;
 import dk.ange.octave.type.OctaveNdMatrix;
 import dk.ange.octave.type.OctaveScalar;
-import dk.ange.octave.type.OctaveString;
+import dk.ange.octave.type.OctaveDqString;
 
 /**
  * @author Kim Hansen
@@ -102,7 +102,7 @@ public class TestOctaveCell extends TestCase {
         final OctaveCell cell = new OctaveCell();
         cell.set(1, 1, new OctaveScalar(42));
         final OctaveCell cell2 = new OctaveCell();
-        cell2.set(1, 1, new OctaveString("mystring"));
+        cell2.set(1, 1, new OctaveDqString("mystring"));
         cell.set(3, 2, cell2);
 
         final OctaveEngine octave = new OctaveEngineFactory().getScriptEngine();

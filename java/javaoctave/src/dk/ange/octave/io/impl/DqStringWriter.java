@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Ange Optimization ApS
+ * Copyright 2008, 2009 Ange Optimization ApS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,22 @@ import java.io.IOException;
 import java.io.Writer;
 
 import dk.ange.octave.io.spi.OctaveDataWriter;
-import dk.ange.octave.type.OctaveString;
+import dk.ange.octave.type.OctaveDqString;
 import dk.ange.octave.type.OctaveType;
 
 /**
- * The writer of OctaveString
+ * The writer of OctaveDqString
  */
-public final class OctaveStringWriter extends OctaveDataWriter {
+public final class DqStringWriter extends OctaveDataWriter {
 
     @Override
     public Class<? extends OctaveType> javaType() {
-        return OctaveString.class;
+        return OctaveDqString.class;
     }
 
     @Override
     public void write(final Writer writer, final OctaveType octaveType) throws IOException {
-        final OctaveString octaveString = (OctaveString) octaveType;
+        final OctaveDqString octaveString = (OctaveDqString) octaveType;
         final String string = octaveString.getString();
         writer.write("" //
                 + "# type: string\n" //

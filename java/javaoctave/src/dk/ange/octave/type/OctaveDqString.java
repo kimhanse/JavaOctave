@@ -1,5 +1,5 @@
 /*
- * Copyright 2007, 2008 Ange Optimization ApS
+ * Copyright 2007, 2008, 2009 Ange Optimization ApS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * @author kim
- */
 package dk.ange.octave.type;
 
 /**
+ * The double quoted string in Octave.
+ * 
  * http://www.octave.org/mailing-lists/octave-maintainers/2005/258
  * http://www.octave.org/octave-lists/archive/octave-maintainers.2005/msg00280.html
+ * http://osdir.com/ml/gnu.octave.maintainers/2005-04/msg00005.html
  */
-public class OctaveString extends OctaveType {
+public class OctaveDqString extends OctaveType {
 
     private static final long serialVersionUID = 7228885699924118810L;
 
@@ -31,7 +31,7 @@ public class OctaveString extends OctaveType {
     /**
      * @param string
      */
-    public OctaveString(final String string) {
+    public OctaveDqString(final String string) {
         this.value = string;
     }
 
@@ -69,7 +69,7 @@ public class OctaveString extends OctaveType {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final OctaveString other = (OctaveString) obj;
+        final OctaveDqString other = (OctaveDqString) obj;
         if (value == null) {
             if (other.value != null) {
                 return false;
@@ -81,8 +81,8 @@ public class OctaveString extends OctaveType {
     }
 
     @Override
-    public OctaveString makecopy() {
-        return new OctaveString(value);
+    public OctaveDqString makecopy() {
+        return new OctaveDqString(value);
     }
 
 }

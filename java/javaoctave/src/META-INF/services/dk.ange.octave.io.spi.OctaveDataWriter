@@ -1,5 +1,5 @@
 dk.ange.octave.io.impl.CellWriter
 dk.ange.octave.io.impl.MatrixWriter
-dk.ange.octave.io.impl.OctaveStringWriter
+dk.ange.octave.io.impl.DqStringWriter
 dk.ange.octave.io.impl.ScalarWriter
 dk.ange.octave.io.impl.StructWriter

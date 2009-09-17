@@ -1,5 +1,5 @@
 /*
- * Copyright 2007, 2008 Ange Optimization ApS
+ * Copyright 2007, 2008, 2009 Ange Optimization ApS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package dk.ange.octave.type;
 import junit.framework.TestCase;
 
 /**
- * @author Kim Hansen
+ * Test OctaveDqString
  */
-public class TestOctaveString extends TestCase {
-    /**
-     * Test
-     */
+public class TestOctaveDqString extends TestCase {
+
+    /** Test */
     public void testValues() {
-        final OctaveString s1a = new OctaveString("1");
-        final OctaveString s1b = new OctaveString("1");
-        final OctaveString s1c = new OctaveString("0");
+        final OctaveDqString s1a = new OctaveDqString("1");
+        final OctaveDqString s1b = new OctaveDqString("1");
+        final OctaveDqString s1c = new OctaveDqString("0");
         s1c.setString("1");
 
         assertEquals(s1a, s1b);
@@ -37,8 +36,8 @@ public class TestOctaveString extends TestCase {
         assertNotSame(s1a, s1c);
         assertNotSame(s1b, s1c);
 
-        final OctaveString s0 = new OctaveString("0");
-        final OctaveString s2 = new OctaveString("2");
+        final OctaveDqString s0 = new OctaveDqString("0");
+        final OctaveDqString s2 = new OctaveDqString("2");
 
         assertFalse(s1a.equals(s0));
         assertFalse(s1a.equals(s2));
