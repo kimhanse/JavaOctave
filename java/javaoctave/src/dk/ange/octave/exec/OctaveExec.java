@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Random;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,20 +66,20 @@ public final class OctaveExec {
      * Will start the octave process.
      * 
      * @param stdinLog
-     *                This writer will capture all that is written to the octave process via stdin, if null the data
-     *                will not be captured.
+     *            This writer will capture all that is written to the octave process via stdin, if null the data will
+     *            not be captured.
      * @param stderrLog
-     *                This writer will capture all that is written from the octave process on stderr, if null the data
-     *                will not be captured.
+     *            This writer will capture all that is written from the octave process on stderr, if null the data will
+     *            not be captured.
      * @param octaveProgram
-     *                This is the path to the octave program, if it is null the program 'octave' will be assumed to be
-     *                in the PATH.
+     *            This is the path to the octave program, if it is null the program 'octave' will be assumed to be in
+     *            the PATH.
      * @param environment
-     *                The environment for the octave process, if null the process will inherit the environment for the
-     *                virtual mashine.
+     *            The environment for the octave process, if null the process will inherit the environment for the
+     *            virtual mashine.
      * @param workingDir
-     *                This will be the working dir for the octave process, if null the process will inherit the working
-     *                dir of the current process.
+     *            This will be the working dir for the octave process, if null the process will inherit the working dir
+     *            of the current process.
      */
     public OctaveExec(final Writer stdinLog, final Writer stderrLog, final File octaveProgram,
             final String[] environment, final File workingDir) {
@@ -123,18 +124,31 @@ public final class OctaveExec {
         final Future<Void> writerFuture = executor.submit(new OctaveWriterCallable(processWriter, input, spacer));
         final Future<Void> readerFuture = executor.submit(new OctaveReaderCallable(processReader, output, spacer));
         final RuntimeException writerException = getFromFuture(writerFuture);
+        if (writerException instanceof CancellationException) {
+            log.error("Did not expect writer to be canceled", writerException);
+        }
+        if (writerException != null) {
+            if (writerException instanceof CancellationException) {
+                log.error("Did not expect writer to be canceled", writerException);
+            }
+            readerFuture.cancel(true);
+        }
         final RuntimeException readerException = getFromFuture(readerFuture);
         if (writerException != null) {
             throw writerException;
         }
         if (readerException != null) {
+            // Only gets here when writerException==null, and in that case we don't expect the reader to be canceled 
+            if (readerException instanceof CancellationException) {
+                log.error("Did not expect reader to be canceled", writerException);
+            }
             throw readerException;
         }
     }
 
-    private RuntimeException getFromFuture(final Future<Void> writerFuture) {
+    private RuntimeException getFromFuture(final Future<Void> future) {
         try {
-            writerFuture.get();
+            future.get();
         } catch (final InterruptedException e) {
             final String message = "InterruptedException should not happen";
             log.error(message, e);
@@ -147,6 +161,8 @@ public final class OctaveExec {
             final String message = "ExecutionException should not happen";
             log.error(message, e);
             return new RuntimeException(message, e);
+        } catch (final CancellationException e) {
+            return e;
         } catch (final RuntimeException e) {
             final String message = "RuntimeException should not happen";
             log.error(message, e);
@@ -219,7 +235,7 @@ public final class OctaveExec {
 
     /**
      * @param writer
-     *                the new writer to write the error output to
+     *            the new writer to write the error output to
      */
     public void setErrorWriter(final Writer writer) {
         errorStreamThread.setWriter(writer);
