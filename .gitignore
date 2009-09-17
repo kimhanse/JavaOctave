@@ -1,3 +1,5 @@
 java/*/build/
 java/*/eclipse-build/
 java/*/javaoctave.jar
+java/.metadata/
+java/eclipse/eclipse.log

@@ -1,0 +1,87 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Data::Dumper qw( Dumper );
+use Cwd qw( abs_path );
+use File::Copy qw( copy );
+use File::Path qw( mkpath );
+
+### functions
+
+# Returns: configuration
+sub get_config {
+  my $basedir = abs_path($0);
+  $basedir =~ s{/[^/]+$}{} or die;
+  my $config = {
+    common_warnings     =>  "$basedir/org.eclipse.jdt.core.prefs",
+    user_warnings       =>  "$basedir/../.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs",
+    user_warnings_new   =>  "$basedir/../.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs.new",
+  };
+  return $config;
+}
+
+# Arg: configuration of files
+# Returns: hashref with warnings
+sub read_common_warnings {
+  my ($config) = @_;
+  open F, '<', $config->{common_warnings} or die $!;
+  my $warnings = {};
+  for (my $line; defined ($line = <F>); ) {
+    next if $line =~ /^\s*#/; # skip comment
+    my ($key, $value) = $line =~ /^([^=]+)=(.*)\n$/ or die;
+    die if exists $warnings->{$key};
+    $warnings->{$key} = $value;
+  }
+  close F or die $!;
+  return $warnings;
+}
+
+# Arg: configuration of files
+# Arg: hashref with warnings
+# No return
+sub merge_warnings {
+  my ($config, $warnings) = @_;
+  open OUT, '>', $config->{user_warnings_new} or die $!;
+  open IN, '<', $config->{user_warnings} or die $!;
+  for (my $line; defined ($line = <IN>); ) {
+    next if $line =~ /^\s*#/; # skip comment
+    my ($key, $value) = $line =~ /^([^=]+)=(.*)\n$/ or die "Failed match on '$line'";
+    if (not exists $warnings->{$key}) { # Unknown key
+      #print "unknown: $key = $value\n";
+      print OUT $line;
+    } elsif ($warnings->{$key} ne $value) { # Different value
+      print "changed: $key = $value -> $warnings->{$key}\n";
+      print OUT "$key=$warnings->{$key}\n";
+      delete $warnings->{$key};
+    } else { # Same value
+      #print "same: $key = $value\n";
+      print OUT $line;
+      delete $warnings->{$key};
+    }
+  }
+  close IN or die $!;
+  foreach my $key (keys %$warnings) {
+    print "added: $key = $warnings->{$key}\n";
+    print OUT "$key=$warnings->{$key}\n";
+  }
+  close OUT or die $!;
+  rename($config->{user_warnings_new}, $config->{user_warnings});
+}
+
+
+### main
+
+my $config = get_config();
+my $warnings = read_common_warnings($config);
+if (not -e $config->{user_warnings}) {
+  my $path = $config->{user_warnings};
+  $path =~ s|[^/]*$||;
+  mkpath($path);
+  copy($config->{common_warnings}, $config->{user_warnings}) or die $!;
+} else {
+  merge_warnings($config, $warnings);
+}
+
+## end.

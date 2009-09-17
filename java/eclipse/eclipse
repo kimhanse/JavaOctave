@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -e  # Fail on error
+
+# Check that X is available
+if [ -z "$DISPLAY" ]
+then
+  echo 'ERROR: X11 is not available ($DISPLAY is not set), will not start Eclipse.' >&2
+  exit 100
+fi
+
+# Start Eclipse
+dir=$(dirname $(readlink -f $0))
+cd "$dir"
+cd ..
+
+# Config eclipse (only if there is config dir already)
+if [ -e .metadata ]
+then
+  ./eclipse/apply-config
+fi
+
+showlocation="JavaOctave"
+username=$(perl -e'print ((split(/,/,(getpwuid($<))[6]))[0])')
+(
+  date=$(date)
+  echo vvv $date vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+  eclipse -showlocation "$showlocation" -data . \
+    -consolelog \
+    "$@" \
+    -vmargs "-Duser.name=$username" \
+    -XX:MaxGCPauseMillis=10 -XX:MaxHeapFreeRatio=70 -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing \
+    -Dosgi.requiredJavaVersion=1.5 -Xms30m -Xmx200m -XX:MaxPermSize=100m -Djava.library.path=/usr/lib/jni
+
+  echo ^^^ $date ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+) >>eclipse/eclipse.log 2>&1 </dev/null &
