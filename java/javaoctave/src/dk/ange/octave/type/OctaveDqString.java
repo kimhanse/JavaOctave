@@ -26,7 +26,10 @@ public class OctaveDqString extends OctaveType {
 
     private static final long serialVersionUID = 7228885699924118810L;
 
-    private String value;
+    /**
+     * The String
+     */
+    protected String value;
 
     /**
      * @param string
@@ -44,7 +47,7 @@ public class OctaveDqString extends OctaveType {
 
     /**
      * @param string
-     *                the string to set
+     *            the string to set
      */
     public void setString(final String string) {
         this.value = string;
@@ -67,6 +70,10 @@ public class OctaveDqString extends OctaveType {
             return false;
         }
         if (getClass() != obj.getClass()) {
+            if (obj instanceof OctaveDqString) {
+                final OctaveDqString other = (OctaveDqString) obj;
+                return other.equals(obj);
+            }
             return false;
         }
         final OctaveDqString other = (OctaveDqString) obj;

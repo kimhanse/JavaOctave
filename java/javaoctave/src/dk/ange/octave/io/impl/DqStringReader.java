@@ -24,10 +24,13 @@ import dk.ange.octave.exception.OctaveParseException;
 import dk.ange.octave.io.OctaveIO;
 import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveDqString;
+import dk.ange.octave.type.OctaveString;
 
 /**
  * The reader of string
  */
+// FIXME Change OctaveString to OctaveDqString 
+@SuppressWarnings("deprecation")
 public final class DqStringReader extends OctaveDataReader {
 
     @Override
@@ -47,7 +50,7 @@ public final class DqStringReader extends OctaveDataReader {
             throw new OctaveParseException("Parse error in String, line='" + line + "'");
         }
         final String string = OctaveIO.readerReadLine(reader);
-        return new OctaveDqString(string);
+        return new OctaveString(string);
     }
 
 }

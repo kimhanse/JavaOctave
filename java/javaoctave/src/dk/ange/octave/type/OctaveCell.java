@@ -169,4 +169,10 @@ public class OctaveCell extends OctaveType {
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    // Workaround the Unsupported hashCode
+    @Override
+    public String toString() {
+        return getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(this));
+    }
+
 }
