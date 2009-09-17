@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Ange Optimization ApS
+ * Copyright 2008, 2009 Ange Optimization ApS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,27 +23,29 @@ import dk.ange.octave.io.spi.OctaveDataReader;
 import dk.ange.octave.type.OctaveString;
 
 /**
- * The reader of string
+ * The reader of sq_string
  */
-public final class OctaveStringReader extends OctaveDataReader {
+public final class OctaveSqStringReader extends OctaveDataReader {
 
     @Override
     public String octaveType() {
-        return "string";
+        return "sq_string";
     }
 
     @Override
     public OctaveString read(final BufferedReader reader) {
-        String line;
-        line = OctaveIO.readerReadLine(reader);
-        if (!line.equals("# elements: 1")) {
-            throw new OctaveParseException("Only implementet for single-line strings '" + line + "'");
+        final String elements = OctaveIO.readerReadLine(reader);
+        if (!elements.equals("# elements: 1")) {
+            throw new OctaveParseException("Only implementet for single-line strings '" + elements + "'");
         }
-        line = OctaveIO.readerReadLine(reader);
-        if (!line.startsWith("# length: ")) {
-            throw new OctaveParseException("Parse error in String, line='" + line + "'");
+        final String length = OctaveIO.readerReadLine(reader);
+        if (!length.startsWith("# length: ")) {
+            throw new OctaveParseException("Parse error in String, line='" + length + "'");
         }
         final String string = OctaveIO.readerReadLine(reader);
+        if (string.contains("\\")) {
+            throw new OctaveParseException("Handling of escape char (\\) not done, line='" + string + "'");
+        }
         return new OctaveString(string);
     }
 
